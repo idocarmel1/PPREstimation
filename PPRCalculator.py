@@ -4,10 +4,9 @@ import sympy as sm
 from tqdm.notebook import tqdm
 from scipy.stats import gamma
 import igraph as ig
-from pebble import ProcessPool
-from concurrent.futures import TimeoutError
 
-from utils import ModelData, mat_from_np, remove_cycles, move_scattered_identity
+from ModelData import ModelData
+from utils import mat_from_np, remove_cycles, move_scattered_identity
 from copy import deepcopy
 
 class PPRCalculator:
@@ -73,8 +72,6 @@ class PPRCalculator:
         self.n_balance_runs = 0
         self.is_balanced, _, _ = self.is_model_balanced()
         self.balanced_model = self.balance_model(change_production=False)
-
-        # TODO: test if rows of _DC sum to 1 when trophic_info == Regular
 
         # sort:
         self._sort()
@@ -956,7 +953,7 @@ class PPRCalculator:
         return sppr, sppr_det
 
     def monte_carlo_SPPR(self, n_samples=1000, TE_error_percent=10, TE_error_cut_percent=20,
-                            TE_option='GE', DET_TE_vals=1, kind='new', silent=True):
+                            TE_option='GE', DET_TE_vals=1, kind='new', diet_import_option='as_DC', silent=True):
         """
 
         Args:
@@ -964,7 +961,6 @@ class PPRCalculator:
             TE_error_percent (float, optional): percentage of TE std relative to it's mean. Defaults to 0.1.
             TE_error_cut_percent (float, optional): cut value to TE in percentage relative to it's mean. Defaults to 0.2.
         """
-        diet_import_option = 'as_DC'
 
         # define basis sequence:
         PP_seq = self.get_PP_seq()

@@ -1,162 +1,23 @@
-from pathlib import Path
-current_dir = Path(__file__).parent
-
 import numpy as np
 import sympy as sm
 import pandas as pd
-import json
-from dataclasses import dataclass
 
-# from calc_2015.SPPR_2015 import get_model_groups_data, get_seq2name, get_DC
-
-
-def load_json_dict(filename):
-    # Open a file in read mode ('r')
-    with open(f'{current_dir}/{filename}.json', 'r') as json_file:
-        # Use json.load() to read the data and convert it back to a dictionary
-        return json.load(json_file)
-    
-def get_model_metadata(model_id):
-    return model_metadatas[str(model_id)]
-
-def get_model_data(model_id):
-    return model_datas[str(model_id)]
-
-def get_model_diet_data(model_id):
-    return model_diet_datas[str(model_id)]
+# Import ModelData components
+from ModelData import (
+    ModelData, 
+    SpeciesGroup, 
+    species_groups, 
+    model_diet_datas,
+    get_seq2name as _get_seq2name,
+    get_DC as _get_DC
+)
 
 
-@dataclass
-class SpeciesGroup:
-    group_name: str
-    group_seq: int
-    model_number: int
-    model_name: str
-    model_country: str
-    model_year: str
-    lme: int
-    tl: float
-    biomass: float
-    pb: float
-    qb: float
-    ee: float
-    M0b: float
-    flow_to_det: float
-    gross_efficiency: float
-    prop_unassimilated_food: float
-    respiration: float
-    biomass_accum: float
-    biomass_accum_rate: float
-    immigration: float
-    emigration: float
-    export: float
-    trophic_info: str
-    detritus_import: float
-    diet_import: float
-    taxons_included: list[dict] 
+# SpeciesGroup, ModelData and related functions are imported from ModelData.py
 
-    @classmethod
-    def from_dict(cls, data: dict):
-        """Factory method to create an instance from a dictionary."""
-        return cls(**data)
-
-    def __str__(self):
-        return f"[{self.model_number}] '{self.model_name}' {self.model_country} ({self.model_year}) -> {self.group_seq}: {self.group_name} | tl: {self.tl}, taxons included: {[self.taxons_included[i]['taxon_name'] + ' (' + self.taxons_included[i]['AphiaID'] + ')' for i in range(len(self.taxons_included))]}"
-    
-    def to_df_row(self):
-        dct = self.__dict__.copy()
-        dct.pop("taxons_included")
-        return pd.DataFrame(dct)
-
-def read_json_SpeciesGroup_list(filename):
-    def decoder(dct):
-        return SpeciesGroup.from_dict(dct)
-
-    # Open the JSON file and load the data
-    with open(f'{current_dir}/{filename}.json', 'r') as f:
-        # Use json.load and specify the object_hook
-        return json.load(f, object_hook=decoder)
-
-class ModelData:
-
-    def __init__(self, model_number: int):
-        def _groups_data(model_number):
-            def to_df_row(c: SpeciesGroup):
-                dct = c.__dict__.copy()
-                dct.pop("taxons_included")
-                return pd.DataFrame([dct])
-            
-            df_rows = []
-            taxons = {}
-            for i in range(len(species_groups)):
-                if species_groups[i].model_number == model_number:
-                    model_index = i
-                    row = to_df_row(species_groups[i])
-                    df_rows.append(row)
-                    taxons[species_groups[i].group_seq] = species_groups[i].taxons_included
-
-            df_rows = [to_df_row(species_groups[i]) for i in range(len(species_groups)) if species_groups[i].model_number == model_number]
-            df = pd.concat(df_rows, ignore_index=True)
-            df = df.replace("-9999", np.nan).replace(-9999, np.nan)
-
-            df = df.rename(columns={  # change names
-                'export': 'catch',
-                'prop_unassimilated_food': 'gs',
-                'gross_efficiency': 'ge'
-                })
-            
-            df['p'] = df['pb'] * df['biomass']  # production
-            df['q'] = df['qb'] * df['biomass']  # consumption
-            df['M0'] = df['p'] * (1-df['ee'])  # other mortality
-            df['net_migration'] = df['emigration'] - df['immigration']  # net migration
-            
-            # production*EE = catch + predation + biomass_accum + net_migration:
-            df['predation'] = df['p'] * df['ee'] - (df['catch'] + df['biomass_accum'] + df['net_migration'])
-            df['egestion'] = df['q'] * df['gs']
-
-            df['flow_to_det'] = df['egestion'] + df['M0']
-
-            cols_to_return = ['group_name', 'trophic_info', 'tl', 'ge', 'ee', 'catch', 
-                'biomass', 'pb', 'qb', 'p', 'q', 'predation', 'M0', 'gs', 'egestion', 'respiration', 'biomass_accum', 'emigration', 'immigration', 'net_migration',
-                'flow_to_det', 'detritus_import'    
-            ]
-
-            groups_data = df.set_index('group_seq')[cols_to_return]
-            groups_data = groups_data.sort_index(ascending=False)
-            diet_import = df.set_index('group_seq')['diet_import'].sort_index(ascending=False)
-
-            return groups_data, taxons, model_index, diet_import
-
-        self.groups_data: pd.DataFrame
-        self.groups_taxons: dict[int, list[dict]]  # group_seq: taxons_list
-        
-        self.groups_data, self.groups_taxons, model_index, diet_import = _groups_data(model_number)
-        model_species_group_example = species_groups[model_index]
-
-        self.model_number: int = model_number
-        self.model_name: str = model_species_group_example.model_name
-        self.model_country: str = model_species_group_example.model_country
-        self.model_year: str = model_species_group_example.model_year
-        self.lme: int = model_species_group_example.lme
-        
-        self.seq2name = get_seq2name(model_number)
-        self.name2seq = {v: k for k, v in self.seq2name.items()}
-        import_seq = max(self.seq2name)
-
-        self.groups_data.loc[import_seq] = np.nan
-        self.groups_data.loc[import_seq, 'group_name'] = 'diet_import'
-        self.groups_data.loc[import_seq, 'trophic_info'] = 'Import'
-        self.groups_data.loc[import_seq, 'tl'] = 1.0
-        diet_import.loc[import_seq] = 0
-
-        # DC and Detritus fate:
-        DC, det_fate= get_DC(model_number)
-        DC.loc[import_seq] = 0  # add import data to DC
-        DC[import_seq] = diet_import  # add import data to DC
-        self.DC = DC.sort_index(ascending=False).sort_index(axis=1, ascending=False)
-        self.det_fate = det_fate.sort_index(ascending=False).sort_index(axis=1, ascending=False)
 
 def mat_from_np(x, resolution=None):
+    """Convert numpy array to sympy Matrix with optional rational resolution."""
     x = np.array(x)
 
     if resolution is not None:
@@ -175,58 +36,6 @@ def mat_from_np(x, resolution=None):
             raise Exception(f'array has too many dimensions: {x.ndim}')
     return sm.Matrix(rationals_list)
 
-def get_seq2name(model_number):
-    model = get_model_diet_data(model_number)
-    if not isinstance(model, dict):
-        return None
-    
-    groups = model.get('group', {})
-    if len(groups) == 0:
-        return None
-    
-    seq2name = {int(g["group_seq"]): g["group_name"] for g in groups}
-    import_seq = max(seq2name) + 1
-    seq2name[import_seq] = 'diet_import'
-
-    return seq2name
-
-
-def get_DC(model_number):
-    model = get_model_diet_data(model_number)
-    if not isinstance(model, dict):
-        return None
-    
-    groups = model.get('group', {})
-    if len(groups) == 0:
-        return None
-        
-    DC_dict = {}
-    detritus_fate_dict = {}
-
-    for g in groups:
-        diet_descr = g.get('diet_descr', {})
-        diet_descr = diet_descr if diet_descr else {}
-        diet = diet_descr.get('diet', None)
-        if not diet:
-            DC_dict[int(g['group_seq'])] = {int(g['group_seq']): None}
-            detritus_fate_dict[int(g['group_seq'])] = {int(g['group_seq']): None}
-        else:
-            diet = diet if isinstance(diet, list) else [diet]
-            DC_dict[int(g['group_seq'])] = {int(d['prey_seq']): float(d['proportion']) for d in diet}
-            detritus_fate_dict[int(g['group_seq'])] = {int(d['prey_seq']): float(d['detritus_fate']) for d in diet}
-    
-    # add missing columns:
-    DC = pd.DataFrame.from_dict(DC_dict, orient='index').fillna(0)
-    for g in groups:
-        if int(g['group_seq']) not in DC.columns:
-            DC[int(g['group_seq'])] = 0
-
-    DC = DC.sort_index().sort_index(axis=1)
-
-    detritus_fate = pd.DataFrame.from_dict(detritus_fate_dict, orient='index').fillna(0)
-    detritus_fate = detritus_fate.sort_index().sort_index(axis=1)
-
-    return DC, detritus_fate
 
 def move_scattered_identity(df):
     """
@@ -402,11 +211,11 @@ def get_model_groups_data(model_number):
 def SPPR_2015(model_number):
 
     # general data:
-    seq2name = get_seq2name(model_number)
+    seq2name = _get_seq2name(model_number, model_diet_datas)
     groups_data = get_model_groups_data(model_number).fillna(0)
 
     # DC and detritus_fate matrices:
-    DC, det_fate = get_DC(model_number)
+    DC, det_fate = _get_DC(model_number, model_diet_datas)
 
     Z = DC.mul(groups_data['q'], axis='index')
     DET_seq = list(groups_data[groups_data['trophic_info'] == 'DET'].index.values)
@@ -461,8 +270,4 @@ def SPPR_2015(model_number):
     return SPPR, seq2name, DC, Z, P, A, L, groups_data, PP_seq, DET_seq, new_index
 
 
-# Load Data:
-model_metadatas = load_json_dict('calc_2015/model_metadatas')
-model_datas = load_json_dict('calc_2015/model_datas')
-model_diet_datas = load_json_dict('calc_2015/model_diet_datas')
-species_groups = read_json_SpeciesGroup_list("calc_2015/SpeciesGroups")
+# Data loading is now handled in ModelData.py
