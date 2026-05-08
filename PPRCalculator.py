@@ -1,0 +1,1147 @@
+import numpy as np
+import pandas as pd
+import sympy as sm
+from tqdm.notebook import tqdm
+from scipy.stats import gamma
+import igraph as ig
+from pebble import ProcessPool
+from concurrent.futures import TimeoutError
+
+from utils import ModelData, mat_from_np, remove_cycles, move_scattered_identity
+from copy import deepcopy
+
+class PPRCalculator:
+
+    # constructors:
+    def __init__(self, model_number):
+        # load model:
+        self._model = ModelData(model_number)
+
+        groups_df = self._model.groups_data.sort_index(ascending=False)
+        self._groups_df = groups_df
+        self.n_groups = groups_df.shape[0]
+
+        # DC and Detritus fate:
+        self._DC = self._model.DC.sort_index(ascending=False).sort_index(axis=1, ascending=False).copy()
+        self._det_fate = self._model.det_fate.sort_index(ascending=False).sort_index(axis=1, ascending=False).copy()
+
+        # useful dicts:
+        self.seq2name = self._model.seq2name.copy()
+        self.name2seq = self._model.name2seq.copy()
+
+        DET_seq = self.get_DET_seq()
+        if len(DET_seq) > 1:
+            raise Exception('more than 1 DET groups')
+
+        # important vectors:
+        self.catch = groups_df['catch'].fillna(0).copy()
+        self.predation = groups_df['predation'].fillna(0).copy()
+        self.growth = groups_df['biomass_accum'].fillna(0).copy()
+        self.immigration = groups_df['immigration'].fillna(0).copy()
+        self.emigration = groups_df['emigration'].fillna(0).copy()
+        self.net_migration = (groups_df['net_migration'] - groups_df['detritus_import']).fillna(0).copy()
+        self.M0 = groups_df['M0'].fillna(0).copy()
+        self.respiration = groups_df['respiration'].fillna(0).copy()
+        self.egestion = groups_df['egestion'].fillna(0).copy()
+        self.EE = groups_df['ee'].fillna(1).copy()
+        self.GE = groups_df['ge'].fillna(1).copy()
+        self.GS = groups_df['gs'].fillna(0).copy()
+        self.TL = groups_df['tl'].fillna(1).copy()
+
+        # fixes:
+        self.predation[self.get_PP_seq()] = self.get_Z(DET_as_PP=True).sum(axis=0)[self.get_PP_seq()]
+        self.predation[self.get_Import_seq()] = self.get_Z(DET_as_PP=True).sum(axis=0)[self.get_Import_seq()]
+        self.predation[self.get_DET_seq()] = self.get_Z(DET_as_PP=False).sum(axis=0)[self.get_DET_seq()]
+
+        # p and q:
+        self.p = groups_df['p'].fillna(0).copy()
+        basis_seq = list(self.get_Import_seq()) + list(self.get_PP_seq()) + list(self.get_DET_seq())
+        self.p[basis_seq] = (self.catch + self.net_migration + self.M0 + self.predation + self.growth)[basis_seq]
+        self.q = groups_df['q'].fillna(0).copy()
+        self.q[self.get_PP_seq()] = self.p[self.get_PP_seq()]
+        self.q[self.get_Import_seq()] = self.p[self.get_Import_seq()]
+        self.q[self.get_DET_seq()] = (self.M0 + self.egestion).sum()
+        self.growth[self.get_DET_seq()] = (
+            self.q - (self.egestion + self.respiration + 
+            (self.catch + self.net_migration + self.M0 + self.predation))
+            )[self.get_DET_seq()]
+        self.p[self.get_DET_seq()] = (
+            self.catch + self.net_migration + self.M0 + self.predation + self.growth
+            )[self.get_DET_seq()]
+
+        # balance:
+        self.n_balance_runs = 0
+        self.is_balanced, _, _ = self.is_model_balanced()
+        self.balanced_model = self.balance_model(change_production=False)
+
+        # TODO: test if rows of _DC sum to 1 when trophic_info == Regular
+
+        # sort:
+        self._sort()
+    
+    @classmethod
+    def from_dict(cls, data_dict):
+        instance = cls.__new__(cls)
+        instance.__dict__.update(data_dict)
+        # sort according to seq:
+        return instance._sort()
+
+    def _sort(self):
+        for name, value in vars(self).items():
+            if isinstance(value, pd.Series):
+                setattr(self, name, value.sort_index(ascending=False))
+            elif isinstance(value, pd.DataFrame) and name != '_groups_df':
+                setattr(self, name, value.sort_index(ascending=False).sort_index(ascending=False, axis=1))
+        return self
+
+    # balancing checks:
+    def is_model_balanced(self):
+
+        # production = catch + predation + growth + net_migration + M0
+        production = self.catch + self.predation + self.growth + self.net_migration + self.M0
+        p_is_balanced = all(np.isclose(production, self.p))
+
+        # consumpotion = production + egestion + respiration
+        consumption = production + self.egestion + self.respiration
+        q_is_balanced =  all(np.isclose(consumption, self.q))
+
+        model_is_balanced = p_is_balanced and q_is_balanced
+
+        return model_is_balanced, production, consumption
+    
+    def balance_model(self, change_production=False):
+        """rebalance by changing growth, and net_migration (if change_production=False) or production (otherwise)"""
+        # TODO: change this function so I can decide which subset of parameters stays constant
+        balanced_self = deepcopy(self)
+        close_enough = False
+        while not close_enough:
+            balanced_self.growth = (
+                balanced_self.q - (balanced_self.egestion + balanced_self.respiration + 
+                (balanced_self.catch + balanced_self.net_migration + balanced_self.M0 + balanced_self.predation))
+            )
+            if not change_production:
+                balanced_self.net_migration = balanced_self.p - (balanced_self.catch + balanced_self.M0 + balanced_self.predation + balanced_self.growth)
+            else:
+                balanced_self.p = balanced_self.catch + balanced_self.net_migration + balanced_self.M0 + balanced_self.predation + balanced_self.growth
+            predation = balanced_self.get_Z(DET_as_PP=True).sum(axis=0)
+            M0 = balanced_self.p * (1 - balanced_self.EE)
+            close_enough = (
+                all(np.isclose(predation, balanced_self.predation))
+                and all(np.isclose(M0, balanced_self.M0))
+            )
+            balanced_self.predation = predation
+            balanced_self.M0 = balanced_self.p * (1 - balanced_self.EE)
+            balanced_self.n_balance_runs += 1
+        
+        return balanced_self
+    
+    def is_sppr_balanced(self, sppr, diet_import_equations=None):
+        def _helper_old(sppr):
+            sppr = PPRCalculator.rename_results(sppr, self.name2seq)
+
+            if isinstance(sppr, pd.DataFrame):
+                sppr = sppr.sum(axis=1)  # fix when sppr includes sppr_import: then we should sum only within the region
+
+            basis_seq = list(self.get_PP_seq()) + list(self.get_Import_seq())
+            inflow = self.p[basis_seq].sum()
+            outflow = (self.catch + self.growth + self.net_migration).mul(sppr, fill_value=1).sum()
+
+            is_balanced = bool(np.isclose(inflow, outflow))
+            return is_balanced, inflow, outflow
+
+        def _helper_new(sppr, diet_import_equations):
+            
+            equations, variabls = diet_import_equations
+
+            sppr = PPRCalculator.rename_results(sppr, self.name2seq)
+            basis_seq = list(self.get_PP_seq())
+            inflow_from_within = self.p[basis_seq].sum()
+
+            sol = sm.linsolve(equations, variabls)
+            sol_tuple = list(sol)[0]
+            sol_dict = dict(zip(variabls, sol_tuple))
+            PP_dict = {sm.Symbol(f'SPPR_{self.seq2name[s]}'.replace(' ', '_')): 1 for s in self.get_PP_seq()}
+            d = {k: float(v.subs(PP_dict)) for k, v in sol_dict.items()}
+            r_dict = {k: sm.Symbol(f'DIET_SPPR_{self.seq2name[k]}'.replace(' ', '_')) for k in self.GE.index}
+            a = self.get_Z()[self.get_Import_seq()].squeeze().rename(index=r_dict)
+            inflow_from_diet_import = a.mul(pd.Series(d), fill_value=0).sum()
+
+            inflow = inflow_from_within + inflow_from_diet_import
+            outflow = (self.catch + self.growth + self.net_migration).mul(sppr.sum(axis=1), fill_value=1).sum()
+
+            is_balanced = bool(np.isclose(inflow, outflow))
+            return is_balanced, inflow, outflow
+        
+        if diet_import_equations is None:
+            return _helper_old(sppr)
+        else:
+            return _helper_new(sppr, diet_import_equations)
+    # getters:
+    def get_model(self):
+        return self._model
+    
+    def get_groups_df(self):
+        return self._groups_df.copy().sort_index(ascending=False)
+    
+    def get_DC(self, DET_as_PP=True, normalize=False):
+        """
+        Args:
+            DET_as_PP (bool, optional): if True, DET row is set to 1. otherwise, it is (M0 + egestion)/(flow2det).
+                Defaults to True.
+            normalize (bool, optional): if True, DC rows sum to 1. else, they keep original sum.
+                Defaults to normalize.
+        """
+        if DET_as_PP:
+            DC = self._DC.copy()
+        else:
+            Z = self.get_Z(DET_as_PP=False)
+            DC = Z.div(Z.sum(axis=1), axis=0).fillna(0)
+            # keep the sum correct:
+            non_DET_seq = [i for i in self._DC.index if i not in self.get_DET_seq()]
+            DC.loc[non_DET_seq] = DC.loc[non_DET_seq].multiply(self._DC.sum(axis=1).loc[non_DET_seq], axis=0)
+
+        if normalize:
+            DC = DC.div(DC.sum(axis=1), axis=0).fillna(0)
+        return DC.sort_index(ascending=False).sort_index(ascending=False, axis=1)
+    
+    def get_Z(self, DET_as_PP=False):
+        """get Z matrix. if DET_as_PP is False (default), DET row is flow_to_det. otherwise it is set to 0"""
+        Z = self._DC.mul(self._groups_df['q'].fillna(0), axis='index')
+        if not DET_as_PP:
+            Z.loc[self.get_DET_seq()[0], :] = (self.M0 + self.egestion).fillna(0)
+        else:
+            Z.loc[self.get_DET_seq()[0], :] = 0
+        return Z.sort_index(ascending=False).sort_index(ascending=False, axis=1)
+    
+    def get_DET_seq(self):
+        return sorted(self._groups_df.index[self._groups_df['trophic_info'] == 'DET'].values)
+    
+    def get_PP_seq(self):
+        return sorted(self._groups_df.index[self._groups_df['trophic_info'] == 'PP'].values)
+    
+    def get_Regular_seq(self):
+        return sorted(self._groups_df.index[self._groups_df['trophic_info'] == 'Regular'].values)
+    
+    def get_Import_seq(self):
+        return sorted(self._groups_df.index[self._groups_df['trophic_info'] == 'Import'].values)
+    
+    def get_TE(self, TE_option: str, DET_values=1, as_matrix=True, global_TE='mean'):
+        """
+        Args:
+            TE_option (str): should be one of ['GE', 'TE', 'With Egestion', 'global']. if 'global', global_value must be set.
+            DET_values (int, optional): TE of Detritus (from detritus to others). Defaults to 1.
+            as_matrix (bool, optional): whether to return pd.Dataframe (nxn) or pd.Series (nx1). Defaults to True.
+            global_TE (str or int, optional): global value for TE in case of TE_option == 'global'. 
+                Defaults to 'mean', and then it is the mean TE of catch if sum(catch)!=0, else to mean of biomass.
+        Returns:
+            if as_matrix: TE DataFrame, else TE Series.
+        """
+        TE_options = ['GE', 'TE', 'With Egestion', 'global']
+        if TE_option == 'GE':
+            te = (self.p / self.q).fillna(1)
+        elif TE_option == 'TE':
+            te = ((self.p / self.q).fillna(1)) * (1 - self.M0 / self.p).fillna(1)
+        elif TE_option == 'With Egestion':
+            # te = ((self.p + self.egestion) / self.q).fillna(1)
+            te = (self.p / self.q).fillna(1) * (self.q / (self.q - self.egestion)).fillna(1)
+        elif TE_option == 'global':
+            if global_TE == 'mean':
+                weights=self.catch
+                if weights.sum() == 0:
+                    weights = self.get_groups_df()['biomass'].fillna(0)
+                te = ((self.p / self.q).fillna(1)) * (1 - self.M0 / self.p).fillna(1)
+                te = np.average(te, weights=weights)
+            else:
+                te = global_TE
+            te = pd.Series(np.ones(self.n_groups) * te, index=self.GE.index)
+        else:
+            raise Exception(f"TE_option should be one of {TE_options}")
+
+        te.loc[self.get_DET_seq()] = DET_values
+        # te.loc[self.get_DET_seq()] = self.EE[self.get_DET_seq()]
+
+        if as_matrix:
+            te = pd.DataFrame([te] * len(te), index=te.index, columns=te.index).T
+            te = te.sort_index(axis=1, ascending=False)
+        
+        return te.sort_index(ascending=False)
+    
+    def get_TL(self, break_cycles: bool, DET_as_PP: bool, TE_option='With Egestion'):
+
+        DET_seq = self.get_DET_seq()
+        Regular_seq = self.get_Regular_seq()
+        
+        Z = self.get_Z(DET_as_PP=DET_as_PP)
+        DC = self.get_DC(DET_as_PP=DET_as_PP)
+
+        # breake cycles:
+        if break_cycles:
+            Z = remove_cycles(Z, new=False)
+            DC = Z.div(Z.sum(axis=1), axis=0).fillna(0)
+        
+        # change DC according to TE_option:
+        flow2det = (self.M0 + self.egestion).sum()
+        if TE_option == 'TE':
+            DC.loc[DET_seq, Regular_seq] = 0
+        elif TE_option == 'GE':
+            DC.loc[self.get_DET_seq()[0], :] = ((self.M0) / flow2det).fillna(0)
+
+        # calculate TL:
+        B = np.ones(DC.shape[0])
+        TL = np.linalg.inv((np.identity(DC.shape[0]) - DC)) @ B
+        TL = pd.Series(TL, index=DC.index).sort_index(ascending=False)
+        return TL
+
+    def get_PPR(self, sppr, only_inner=False):
+        sppr = sppr.copy().fillna(0) # sppr is an output of an SPPR calculating method from this class.
+        sppr = PPRCalculator.rename_results(sppr, self.name2seq)
+        sppr = sppr.reindex(self.catch.index, fill_value=0)
+        sppr = sppr.replace(np.inf, 0)
+
+        if only_inner:
+            sppr = sppr.drop(columns=self.get_Import_seq())
+
+        if isinstance(sppr, pd.DataFrame):
+            return self.catch.dot(sppr).to_frame().T
+        else:
+            return self.catch.dot(sppr)
+    
+    def get_NPP(self, only_inner=True):
+        if only_inner:
+            return self.p[self.get_PP_seq()].sum()
+        else:
+            raise Exception('not implemented yet')
+    
+    def get_PPR2NPP_ratio(self, sppr):
+        return self.get_PPR(sppr, only_inner=True).sum(axis=1).sum() / self.get_NPP(only_inner=True)
+        
+    ##########################################################################################
+    ############################## SPPR calculating methods ##################################
+    ##########################################################################################
+    def SPPR_1986(self):
+        if all(self.catch == 0):
+            return pd.DataFrame(0, index=self.GE.index, columns=['sppr'])
+        TE = 0.1
+        TL = np.average(self.get_TL(break_cycles=True, DET_as_PP=True), weights=self.catch)  # break cylces in DC, force DET to be of TL=1 before TL calculation.
+        SPPR = TE ** (1 - TL)
+        SPPR = pd.DataFrame(SPPR, index=self.GE.index, columns=['sppr'])
+        return SPPR
+    
+    def SPPR_1995(self, global_TE=0.1):
+        """
+        Args:
+            global_TE (float, optional): 'mean' or float. Defaults to 0.1.
+        """
+        TE = self.get_TE(TE_option='global', global_TE=global_TE, as_matrix=False)
+        TL = self.get_TL(break_cycles=True, DET_as_PP=True)  # break cylces in DC and force DET to be of TL=1.
+        SPPR = TE ** (1 - TL)
+        return SPPR.to_frame(name='sppr')
+    
+    def SPPR_1995_TL_fix(self, global_TE=0.1):
+        TE = self.get_TE(TE_option='global', global_TE=global_TE, as_matrix=False)
+        TL = self.get_TL(break_cycles=True, DET_as_PP=True)  # break cylces in DC and force DET to be of TL=1.
+        TL_fraction = TL % 1
+        TL_int = TL.astype(int)
+        sppr = (1-TL_fraction) * (1/TE)**(TL_int-1) + TL_fraction * (1/TE)**(TL_int)
+        sppr = sppr.fillna(1)
+        return sppr.to_frame(name='sppr')
+        
+    def SPPR_EwE(self, TE_option: str, use_EE=True, return_paths=True, silent=True):
+        def _get_paths_with_safety_valve(g, start_node, terminal_indices, max_paths=1_000_000):
+            """
+            Increments depth until either all paths are found
+            or the 10 million path limit is breached.
+            """
+            final_paths = []
+
+            # Define steps of depth.
+            # Most food webs are 'thin' enough that steps of 5 are fine.
+            # We go up to 45 as you requested earlier.
+            n_paths_prev = -1
+            for depth in range(1, len(self.EE), 2):
+                try:
+                    # Get paths at current depth limit
+                    current_paths = g.get_all_simple_paths(
+                        start_node,
+                        to=terminal_indices,
+                        maxlen=depth
+                    )
+
+                    # Update our collection
+                    final_paths = current_paths
+
+                    # Check if we've hit the "explosion" threshold
+                    n_paths = len(final_paths)
+                    # print(start_node, depth, n_paths)
+                    # print(current_paths)
+                    # print("=" * 50)
+
+                    if n_paths >= max_paths:
+                        # We stop here because the next depth step
+                        # will likely hang or exceed memory
+                        break
+
+                    # OPTIONAL: If the number of paths didn't increase from the
+                    # last depth, it means we've found ALL possible paths already.
+                    # (Checking this requires keeping the previous count)
+                    if n_paths_prev == n_paths:
+                        break
+
+                    n_paths_prev = n_paths
+
+                except Exception as e:
+                    # If igraph itself runs out of memory or hits an internal error
+                    print(f"Depth {depth} too complex, returning paths from depth {depth - 3}: {e}")
+                    break
+
+            return final_paths
+        def _slow_EwE_with_paths(TE_option, use_EE, silent):
+            DC = self.get_DC(DET_as_PP=True)
+            TE = self.get_TE(TE_option=TE_option, as_matrix=True, DET_values=1)
+            A = (DC / TE).fillna(0)
+
+            # 1. Cache nodes as a tuple for hyper-fast, memory-efficient string referencing
+            nodes_tuple = tuple(DC.index)
+            num_nodes = len(nodes_tuple)
+
+            # 2. Convert matrix to a pure Python list-of-lists.
+            # Indexing A_list[i][j] is MUCH faster than A_vals[i, j] in a tight loop.
+            A_list = A.values.tolist()
+            DC_vals = DC.values
+
+            # 3. Identify terminals
+            terminal_mask = (DC_vals == 0).all(axis=1)
+            terminal_indices = np.where(terminal_mask)[0].tolist()
+            terminal_nodes = [nodes_tuple[i] for i in terminal_indices]
+            num_terminals = len(terminal_indices)
+
+            # Map terminal indices to their column index in the final 2D array
+            term_idx_to_col = {t_idx: col for col, t_idx in enumerate(terminal_indices)}
+
+            # 4. Pre-allocate the SPPR matrix and Output Dictionary
+            sppr_matrix = np.zeros((num_nodes, num_terminals), dtype=np.float64)
+            paths_dict = {n: {s: [] for s in terminal_nodes} for n in nodes_tuple}
+
+            # 5. Create igraph
+            adj_matrix = (DC_vals != 0).astype(int)
+            g = ig.Graph.Adjacency(adj_matrix.tolist(), mode="directed")
+
+            # 6. Iterate and calculate
+            for start_idx, start_node in tqdm(enumerate(nodes_tuple), desc="Outer Loop", total=len(nodes_tuple), disable=silent):
+                # Edge case: start node is already a terminal
+                if start_idx in terminal_indices:
+                    paths_dict[start_node][start_node].append([start_node])
+                    sppr_matrix[start_idx, term_idx_to_col[start_idx]] = 1.0
+                    continue
+
+                # Fetch all simple paths at C-speed (returns list of integer lists)
+                # paths = g.get_all_simple_paths(start_idx, to=terminal_indices)
+                paths = _get_paths_with_safety_valve(g, start_idx, terminal_indices)
+
+                for path in tqdm(paths, disable=silent, desc="Inner Loop", leave=False):
+                    sink_idx = path[-1]
+                    sink_node = nodes_tuple[sink_idx]
+
+                    prod = 1.0
+                    for i in range(len(path) - 1):
+                        prod *= A_list[path[i]][path[i + 1]]
+
+                    # Add directly to the pre-allocated matrix using mapped indices
+                    sppr_matrix[start_idx, term_idx_to_col[sink_idx]] += prod
+
+                    # Construct the string path using our cached tuple
+                    paths_dict[start_node][sink_node].append([nodes_tuple[v] for v in path])
+
+            # 7. Wrap the matrix in a DataFrame instantly
+            SPPR = pd.DataFrame(
+                sppr_matrix,
+                index=DC.index,
+                columns=terminal_nodes
+            )
+
+            if use_EE:
+                SPPR = SPPR.mul(self.EE, axis='index')
+
+            return SPPR, A, paths_dict
+        def _fast_EwE_no_paths(TE_option, use_EE, silent):
+            """
+            High-performance SPPR calculation using vectorized edge lookups
+            and segmented products.
+            """
+            # 1. Data Preparation
+            DC = self.get_DC(DET_as_PP=True)
+            TE = self.get_TE(TE_option=TE_option, as_matrix=True, DET_values=1)
+
+            # Pre-clean to avoid NaNs/Infs
+            TE = TE.replace(0, np.nan).fillna(1.0)
+            A = (DC / TE).replace([np.inf, -np.inf], 0).fillna(0)
+
+            A_vals = A.values
+            nodes = DC.index.tolist()
+            num_nodes = len(nodes)
+
+            # 2. Identify Terminal Nodes (Sinks)
+            terminal_mask = (DC.values == 0).all(axis=1)
+            terminal_indices = np.where(terminal_mask)[0]
+            terminal_nodes = [nodes[i] for i in terminal_indices]
+            term_idx_to_col = {t_idx: col for col, t_idx in enumerate(terminal_indices)}
+
+            # 3. Graph Traversal (C-Backend)
+            # Generate the graph structure for igraph
+            adj_matrix = (DC.values != 0).astype(int)
+            g = ig.Graph.Adjacency(adj_matrix.tolist(), mode="directed")
+
+            # Fetch all simple paths as integer index lists
+            # This is the fastest way to traverse millions of paths
+            all_paths = []
+            for start_idx in tqdm(range(num_nodes), disable=silent, desc="fetching paths"):
+                # paths = g.get_all_simple_paths(start_idx, to=terminal_indices)
+                paths = _get_paths_with_safety_valve(g, start_idx, terminal_indices)
+                all_paths.extend(paths)
+
+            if not all_paths:
+                return pd.DataFrame(0.0, index=DC.index, columns=terminal_nodes), A
+
+            # 4. Vectorized "Segmented" Math
+            # We flatten all paths into edges to calculate products in bulk
+            edge_starts = []
+            edge_ends = []
+            lengths = []
+            metadata = []  # (start_node_idx, sink_node_idx)
+
+            for p in tqdm(all_paths, disable=silent, desc="traversing paths"):
+                metadata.append((p[0], p[-1]))
+                if len(p) > 1:
+                    edge_starts.extend(p[:-1])
+                    edge_ends.extend(p[1:])
+                    lengths.append(len(p) - 1)
+                else:
+                    lengths.append(0)
+
+            # Convert to arrays for BLAS-speed operations
+            edge_starts = np.array(edge_starts)
+            edge_ends = np.array(edge_ends)
+            lengths = np.array(lengths)
+
+            # Bulk-fetch all edge weights from A at once
+            all_edge_values = A_vals[edge_starts, edge_ends]
+
+            # Calculate products using reduceat (C-level segmented product)
+            path_products = np.ones(len(all_paths))
+            if len(all_edge_values) > 0:
+                # Calculate the starting index of each path in the flattened edge array
+                indices = np.zeros(len(lengths), dtype=int)
+                indices[1:] = np.cumsum(lengths)[:-1]
+
+                # Only process paths that actually have edges (length > 0)
+                valid_mask = lengths > 0
+                path_products[valid_mask] = np.multiply.reduceat(all_edge_values, indices[valid_mask])
+
+            # 5. Aggregate into final SPPR Matrix
+            sppr_matrix = np.zeros((num_nodes, len(terminal_indices)))
+
+            # Map metadata to coordinate indices
+            meta_arr = np.array(metadata)
+            rows = meta_arr[:, 0]
+            cols = np.array([term_idx_to_col[tid] for tid in meta_arr[:, 1]])
+
+            # Vectorized 'Scatter-Add'
+            np.add.at(sppr_matrix, (rows, cols), path_products)
+
+            # 6. Final DataFrame formatting
+            SPPR = pd.DataFrame(sppr_matrix, index=DC.index, columns=terminal_nodes)
+
+            if use_EE:
+                SPPR = SPPR.mul(self.EE, axis='index')
+
+            return SPPR, A, {}
+
+        if return_paths:
+            return _slow_EwE_with_paths(TE_option=TE_option, use_EE=use_EE, silent=silent)
+        else:
+            return _fast_EwE_no_paths(TE_option=TE_option, use_EE=use_EE, silent=silent)
+
+    def SPPR_EwE_Ido(self, TE_option: str, global_TE='mean', use_EE=True):
+        """
+        Args:
+            TE_option (str): should be one of ['GE', 'TE', 'With Egestion', 'global']. if 'global', global_value must be set.
+            global_TE (str or int, optional): global value for TE in case of TE_option == 'global'. 
+                Defaults to 'mean', and then it is the mean TE of catch if sum(catch)!=0, else to mean of biomass.
+        """
+        DC = self.get_DC(DET_as_PP=True)
+        DCNoCyc = remove_cycles(DC.copy(), new=False)  # should work on Z instead?
+        # zero values of DC where DCNoCyc is 0:
+        DC[DCNoCyc == 0] = 0
+        # DC = DC.div(DC.sum(axis=1), axis=0).fillna(0)
+
+        # according to 2015's article, EwE uses TE = GE*EE. in to EwE user guide, they use just GE.
+        TE = self.get_TE(TE_option=TE_option, global_TE=global_TE, as_matrix=True,  DET_values=1)
+        
+        A = (DC / TE).fillna(0).values
+        A[TE.values == 0] = 0
+        for i in range(len(DC)):# Replace producer rows with identity rows
+            if DC.values[i, :].sum() == 0:
+                A[i, :] = sm.zeros(1, len(DC))
+                A[i, i] = 1
+        A = pd.DataFrame(A, index=DC.index, columns=DC.columns)
+        A, new_index, new_columns = move_scattered_identity(A)
+        A = mat_from_np(A)
+
+        # calculate L matrix
+        L = A - sm.eye(A.rows)
+        
+        # solve for SPPR
+        ns = L.nullspace()
+
+        if len(ns) == 0:
+            raise ValueError("No steady-state solution found. Check matrix connectivity.")
+        
+        # normalize by the first primary producer:
+        ns = [np.array(s).T.flatten() for s in ns]
+        M = sm.Matrix(ns)
+        rref_matrix, _ = M.rref()
+        basis = [np.array(rref_matrix.row(i).evalf()).astype(float).flatten()
+                    for i in range(rref_matrix.rows)
+                    if not rref_matrix.row(i).is_zero]
+        basis = np.array(basis, dtype=float).T
+
+        # turn back to DataFrames:
+        SPPR = pd.DataFrame(basis, index=new_index)
+        SPPR = SPPR.rename(columns=lambda c: SPPR.index.values[SPPR[c] == 1][0])
+        if use_EE:
+            SPPR = SPPR.mul(self.EE, axis='index')
+        A = pd.DataFrame(np.array(A.tolist(), dtype=float), index=new_index, columns=new_columns)
+        L = pd.DataFrame(np.array(L.tolist(), dtype=float), index=new_index, columns=new_columns)
+
+        return SPPR, A, L
+
+    def SPPR_2015(self, only_pp_det=True):
+        only_pp_det=True
+
+        groups_data = self.get_groups_df()
+        production = self.p.copy()
+        PP_seq = list(self.get_Import_seq()) + list(self.get_PP_seq())
+        DET_seq = self.get_DET_seq()[0]  # assuming there is only one DET
+        Z = self.get_Z(DET_as_PP=False)
+
+        # combine part of DET that is PP into PP row:
+        Z_without_DET = Z.copy()
+        percent_of_det_that_is_PP = Z_without_DET.loc[DET_seq, PP_seq] / Z_without_DET.loc[DET_seq, :].sum()  # 98%
+        if only_pp_det:  # this is what is implemented in the article
+            for i in PP_seq:
+                Z_without_DET.loc[:, i] += percent_of_det_that_is_PP[i] * Z_without_DET.loc[:, DET_seq]
+        else:
+            Z_without_DET.loc[:, PP_seq] += Z_without_DET.loc[:, DET_seq]
+        Z_without_DET = Z_without_DET.drop(index=DET_seq, columns=DET_seq)
+
+        # production of living compartments:
+        new_index = Z_without_DET.index
+        P = production[new_index].copy()
+        ee = groups_data.loc[new_index, "ee"]
+        non_PP = groups_data['trophic_info'] == 'Regular'
+        P[non_PP] = P[non_PP].mul(ee[non_PP])   # P*EE = (export + predation + growth + net_migration), without M0
+        # EE = (export + predation + growth + net_migration) / (export + predation + growth + net_migration + M0)
+        P = P.sort_index(ascending=False)
+
+        # production-normalized transaction matrix:
+        A = Z_without_DET.T.sort_index(ascending=False).sort_index(axis=1, ascending=False) / P
+
+        # production requirement matrix:
+        seq_to_drop = P.index[P == 0]
+        A = A.drop(columns=seq_to_drop, index=seq_to_drop)
+        L = pd.DataFrame(np.linalg.inv((np.identity(A.shape[0]) - A)), index=A.index, columns=A.columns)
+        L[seq_to_drop] = 0
+        new_index = L.index.union(seq_to_drop)
+        L = L.reindex(new_index).fillna(0)
+        L.loc[seq_to_drop, seq_to_drop] = 1
+        SPPR = L.loc[PP_seq, :].T
+
+        # add back sppr_det that makes model balanced:
+        SPPR = SPPR.reindex(self.catch.index, fill_value=0)
+        for i in PP_seq:
+            SPPR.loc[self.get_DET_seq(), i] = self.M0.loc[PP_seq][i] / (self.M0 + self.egestion).sum()
+
+        return SPPR, A, L
+        
+    def SPPR_new(self, TE=None, TE_option='GE', DET_TE_vals=1):
+        # get DC:
+        DC = self.get_DC(DET_as_PP=True, normalize=False)
+        
+        # get TE matrix:
+        if TE is not None:
+            GE = TE.copy()
+        else:
+            GE = self.get_TE(TE_option=TE_option, DET_values=DET_TE_vals, as_matrix=True)
+
+        # calculate A matrix and turn to symbolic matrix:
+        A = (DC / GE).fillna(0).values
+        A[GE.values == 0] = 0
+        for i in range(len(DC)):# Replace producer rows with identity rows
+            if DC.values[i, :].sum() == 0:
+                A[i, :] = sm.zeros(1, len(DC))
+                A[i, i] = 1
+        A = pd.DataFrame(A, index=DC.index, columns=DC.columns)
+        A, new_index, new_columns = move_scattered_identity(A)
+        A = mat_from_np(A)
+
+        # calculate L matrix
+        L = A - sm.eye(A.rows)
+        
+        # solve for SPPR
+        ns = L.nullspace()
+
+        if len(ns) == 0:
+            raise ValueError("No steady-state solution found. Check matrix connectivity.")
+        
+        # normalize by the first primary producer:
+        ns = [np.array(s).T.flatten() for s in ns]
+        M = sm.Matrix(ns)
+        rref_matrix, _ = M.rref()
+        basis = [np.array(rref_matrix.row(i).evalf()).astype(float).flatten()
+                    for i in range(rref_matrix.rows)
+                    if not rref_matrix.row(i).is_zero]
+        basis = np.array(basis, dtype=float).T
+
+        # turn back to DataFrames:
+        SPPR = pd.DataFrame(basis, index=new_index)
+        SPPR = SPPR.rename(columns=lambda c: SPPR.index.values[SPPR[c] == 1][0])
+        A = pd.DataFrame(np.array(A.tolist(), dtype=float), index=new_index, columns=new_columns)
+        L = pd.DataFrame(np.array(L.tolist(), dtype=float), index=new_index, columns=new_columns)
+
+        # find sppr_det if it is in the output:
+        DET_seq = self.get_DET_seq()
+        if TE_option == 'TE':
+            flow2det = self.get_Z(DET_as_PP=False).loc[self.get_DET_seq()[0], :].sum()
+            sppr_det = (self.M0 + self.egestion)[list(self.get_PP_seq() + self.get_Import_seq())].sum() / flow2det
+            SPPR[DET_seq] *= sppr_det
+        elif TE_option == 'GE':
+            x = sm.symbols('x')
+            sppr = SPPR.drop(columns=DET_seq).sum(axis=1) + (x * SPPR[DET_seq]).sum(axis=1)
+            sppr = pd.DataFrame(sppr, index=self.get_DC().index)
+            sppr = sppr.loc[:, :].sum(axis=1)
+            flow2det = self.get_Z(DET_as_PP=False).loc[self.get_DET_seq()[0], :].sum()
+            m = (self.M0 / flow2det).fillna(0)
+            e = (self.egestion / flow2det).fillna(0)
+            sppr_det = float(sm.solve(x - (m @ sppr), x)[0])
+            SPPR[DET_seq] *= sppr_det
+        elif TE_option == 'With Egestion':
+            x = sm.symbols('x')
+            sppr = SPPR.drop(columns=DET_seq).sum(axis=1) + (x * SPPR[DET_seq]).sum(axis=1)
+            sppr = pd.DataFrame(sppr, index=self.get_DC().index)
+            sppr = sppr.loc[:, :].sum(axis=1)
+            flow2det = self.get_Z(DET_as_PP=False).loc[self.get_DET_seq()[0], :].sum()
+            flow2det = (self.M0 + self.egestion).sum()
+            m = (self.M0 / flow2det).fillna(0)
+            e = (self.egestion / flow2det).fillna(0)
+            sppr_det = float(sm.solve(x - (m @ sppr + (DC @ sppr) @ e), x)[0])
+            SPPR[DET_seq] *= sppr_det
+        else:
+            raise Exception("TE_option should be in ['GE', 'TE', 'With Egestion', 'global']")
+
+        return SPPR, A, L
+    
+    def _SPPR_symbolic_helper_diet_import_as_PP(self, TE, TE_option, DET_TE_vals, sppr_det_value):
+        DET_seq = self.get_DET_seq()
+        non_DET_seq = [i for i in self.GE.index if i not in DET_seq]
+        Regular_seq = self.get_Regular_seq()
+        Import_seq = self.get_Import_seq()
+        PP_seq = self.get_PP_seq()
+
+        # get DC and TE matrix:
+        DC = self.get_DC(DET_as_PP=False, normalize=False)
+        GE = self.get_TE(TE_option=TE_option, DET_values=DET_TE_vals, as_matrix=True)
+        flow2det = (self.M0 + self.egestion).sum()
+        if TE_option == 'TE':
+            DC.loc[DET_seq, Regular_seq] = 0
+        elif TE_option == 'GE':
+            DC.loc[self.get_DET_seq()[0], :] = ((self.M0) / flow2det).fillna(0)
+        elif TE_option == 'With Egestion':
+            DC.loc[self.get_DET_seq()[0], :] = 0
+            m = (self.M0 / flow2det).fillna(0)
+            e = (self.egestion / flow2det).fillna(0)
+            DC.loc[self.get_DET_seq()[0], :] = (m + e @ DC)
+        else:
+            raise Exception("diet_import_option should be in one of ['GE', 'TE', 'With Egestion', 'global']")
+            
+        if TE is not None:
+            GE = TE.copy()
+
+        # calculate A matrix and turn to symbolic matrix:
+        A = (DC / GE).fillna(0).values
+        A[GE.values == 0] = 0
+        for i in range(len(DC)):  # Replace producer rows with identity rows
+            if DC.values[i, :].sum() == 0:
+                A[i, :] = sm.zeros(1, len(DC))
+                A[i, i] = 1
+        A = pd.DataFrame(A, index=DC.index, columns=DC.columns)
+
+        # define and order symbols:
+        # solve linear equation:
+        index = Regular_seq + DET_seq + Import_seq + PP_seq
+        symbols_by_trophic_info = {
+            'Regular': sm.symbols([f'SPPR_{self.seq2name[s]}'.replace(' ', '_') for s in Regular_seq]),
+            'DET': sm.symbols([f'SPPR_{self.seq2name[s]}'.replace(' ', '_') for s in DET_seq]),
+            'Import': sm.symbols([f'SPPR_{self.seq2name[s]}'.replace(' ', '_') for s in Import_seq]),
+            'PP': sm.symbols([f'SPPR_{self.seq2name[s]}'.replace(' ', '_') for s in PP_seq]),
+        }
+        ordered_symbols = symbols_by_trophic_info['Regular'] + symbols_by_trophic_info['DET'] \
+                        + symbols_by_trophic_info['Import'] + symbols_by_trophic_info['PP']
+        sppr_vec = pd.DataFrame(ordered_symbols, index=index)
+        equations = A @ sppr_vec - sppr_vec
+        equation_DET = equations.loc[DET_seq]
+        equations_non_DET = equations.loc[non_DET_seq]
+        sol = sm.linsolve(equations_non_DET.squeeze().tolist(), ordered_symbols)
+        sol_tuple1 = list(sol)[0]
+        sol_dict1 = dict(zip(ordered_symbols, sol_tuple1))
+        sppr = sppr_vec.replace(sol_dict1)
+
+        # solve DET equation:
+        equation_DET = equation_DET.applymap(lambda x: x.subs(sol_dict1) if hasattr(x, 'evalf') else x)
+        sol = sm.linsolve([equation_DET.squeeze()], symbols_by_trophic_info['DET'])
+        sol_tuple2 = list(sol)[0]
+        sol_dict2 = dict(zip(symbols_by_trophic_info['DET'], sol_tuple2))
+        sppr_det_symbol = sppr_vec.loc[DET_seq].values[0, 0]
+        sppr_det = sol_dict2[sppr_det_symbol]
+
+        # sub:
+        target_free_seq = DET_seq + Import_seq + PP_seq
+        target_free_symbols = symbols_by_trophic_info['DET'] + symbols_by_trophic_info['Import'] + symbols_by_trophic_info['PP']
+        sppr = sppr_vec.replace(sol_dict1)
+        subs_dict = {v: 1 for v in sppr_vec.squeeze().loc[target_free_seq]}
+        sppr_symbolic = sppr.applymap(lambda x: x.evalf(subs=subs_dict) if hasattr(x, 'evalf') else x)
+
+        sppr_mat, _ = sm.linear_eq_to_matrix(sol_tuple1, target_free_symbols)
+        sppr_mat = sm.lambdify([], sppr_mat, 'numpy')() # Converts SymPy matrix to NumPy
+        sppr_mat = pd.DataFrame(sppr_mat, index=index, columns=target_free_seq)
+        if sppr_det_value is None:
+            sppr_mat[DET_seq] *= float(sppr_det.evalf(subs=subs_dict))
+        else:
+            sppr_mat[DET_seq] *= float(sppr_det_value)
+
+        equations = equations.squeeze().tolist()
+        variables = ordered_symbols
+
+        return sppr_symbolic, sppr_mat, equations, variables
+    
+    def _SPPR_symbolic_helper_diet_import_as_DC(self, TE, TE_option, DET_TE_vals, sppr_det_value):
+        DET_seq = self.get_DET_seq()
+        Regular_seq = self.get_Regular_seq()
+        Import_seq = self.get_Import_seq()
+        PP_seq = self.get_PP_seq()
+
+        # get DC and TE matrix:
+        DC = self.get_DC(DET_as_PP=False, normalize=False)
+        GE = self.get_TE(TE_option=TE_option, DET_values=DET_TE_vals, as_matrix=True)
+        flow2det = (self.M0 + self.egestion).sum()
+        if TE_option == 'TE':
+            DC.loc[DET_seq, Regular_seq] = 0
+        elif TE_option == 'GE':
+            DC.loc[self.get_DET_seq()[0], :] = ((self.M0) / flow2det).fillna(0)
+        elif TE_option == 'With Egestion':
+            DC.loc[self.get_DET_seq()[0], :] = 0
+            m = (self.M0 / flow2det).fillna(0)
+            e = (self.egestion / flow2det).fillna(0)
+            DC.loc[self.get_DET_seq()[0], :] = (m + e @ DC)
+        else:
+            raise Exception("diet_import_option should be in one of ['GE', 'TE', 'With Egestion', 'global']")
+            
+        if TE is not None:
+            GE = TE.copy()
+
+        # calculate A matrix and turn to symbolic matrix:
+        A = (DC / GE).fillna(0).values
+        A[GE.values == 0] = 0
+        for i in range(len(DC)):  # Replace producer rows with identity rows
+            if DC.values[i, :].sum() == 0:
+                A[i, :] = sm.zeros(1, len(DC))
+                A[i, i] = 1
+        A = pd.DataFrame(A, index=DC.index, columns=DC.columns)
+
+        # define and order symbols:
+        index = Regular_seq + DET_seq + PP_seq
+        diet_sppr_symbols = sm.symbols([f'DIET_SPPR_{self.seq2name[s]}'.replace(' ', '_') for s in index])
+        diet_sppr_vec = pd.DataFrame(diet_sppr_symbols, index=index, columns=Import_seq)
+        A = A.loc[index, :]
+
+        # solve linear equation:
+        symbols_by_trophic_info = {
+            'Regular': sm.symbols([f'SPPR_{self.seq2name[s]}'.replace(' ', '_') for s in Regular_seq]),
+            'DET': sm.symbols([f'SPPR_{self.seq2name[s]}'.replace(' ', '_') for s in DET_seq]),
+            'PP': sm.symbols([f'SPPR_{self.seq2name[s]}'.replace(' ', '_') for s in PP_seq]),
+        }
+        ordered_symbols = symbols_by_trophic_info['Regular'] + symbols_by_trophic_info['DET'] \
+                        + symbols_by_trophic_info['PP']
+        sppr_vec = pd.DataFrame(ordered_symbols, index=index)
+        equations = ((A.loc[index, index] @ sppr_vec).squeeze() + (A.loc[index, Import_seq] * diet_sppr_vec).squeeze()) - sppr_vec.squeeze()
+        equation_DET = equations.loc[DET_seq]
+        equations_non_DET = equations.loc[[i for i in index if i not in DET_seq]]
+        sol = sm.linsolve(equations_non_DET.squeeze().tolist(), ordered_symbols)
+        sol_tuple1 = list(sol)[0]
+        sol_dict1 = dict(zip(ordered_symbols, sol_tuple1))
+        sppr = sppr_vec.replace(sol_dict1)
+
+        # solve DET equation:
+        equation_DET = equation_DET.apply(lambda x: x.subs(sol_dict1) if hasattr(x, 'evalf') else x)
+        sol = sm.linsolve([equation_DET.squeeze()], symbols_by_trophic_info['DET'])
+        sol_tuple2 = list(sol)[0]
+        sol_dict2 = dict(zip(symbols_by_trophic_info['DET'], sol_tuple2))
+        sppr_det_symbol = sppr_vec.loc[DET_seq].values[0, 0]
+        sppr_det = sol_dict2[sppr_det_symbol]
+
+        # solve diet import equation:
+        sppr = sppr_vec.replace(sol_dict1)
+        subs_dict_PP = {v: 1 for v in sppr_vec.squeeze().loc[PP_seq]}
+        subs_dict = subs_dict_PP | {sppr_det_symbol: sppr_det.subs(subs_dict_PP)}
+        sppr = sppr.applymap(lambda x: x.evalf(subs=subs_dict) if hasattr(x, 'evalf') else x)
+        equations_di = (DC.loc[index, index] @ sppr).squeeze() + (DC.loc[index, Import_seq] * diet_sppr_vec).squeeze() - diet_sppr_vec.squeeze()
+
+        equations_di = equations_di.squeeze().tolist()
+        diet_symbols = diet_sppr_vec.squeeze().tolist()
+
+        sol = sm.linsolve(equations_di, diet_symbols)
+        sol_tuple3 = list(sol)[0]
+        sol_dict3 = dict(zip(diet_sppr_symbols, sol_tuple3))
+
+        # sub:
+        target_free_seq = PP_seq
+        sppr = sppr_vec.replace(sol_dict1)
+        subs_dict = {v: 1 for v in sppr_vec.squeeze().loc[PP_seq]} | sol_dict3
+        sppr_symbolic = sppr.applymap(lambda x: x.evalf(subs=subs_dict) if hasattr(x, 'evalf') else x)
+
+        target_free_symbols = diet_sppr_symbols + symbols_by_trophic_info['DET'] + symbols_by_trophic_info['PP']
+        target_free_seq = DET_seq + PP_seq
+        sppr_mat, _ = sm.linear_eq_to_matrix(sol_tuple1, target_free_symbols)
+        sppr_mat = sm.lambdify([], sppr_mat, 'numpy')() # Converts SymPy matrix to NumPy
+        cols = [f'DIET_{s}'.replace(' ', '_') for s in index] + target_free_seq
+        sppr_mat = pd.DataFrame(sppr_mat, index=index, columns=cols)
+        if sppr_det_value is None:
+            sppr_mat[DET_seq] *= float(sppr_det.evalf(subs=subs_dict))
+        else:
+            sppr_mat[DET_seq] *= float(sppr_det_value)
+        for s in index:
+            s_symbol = diet_sppr_vec.loc[s].values[0]
+            sppr_mat[f'DIET_{s}'.replace(' ', '_')] *= float(sol_dict3[s_symbol])
+        sppr_mat[Import_seq[0]] = sppr_mat.loc[:, [f'DIET_{s}'.replace(' ', '_') for s in index]].sum(axis=1)
+        sppr_mat.drop(columns=[f'DIET_{s}'.replace(' ', '_') for s in index], inplace=True)
+
+        equations = equations.squeeze().tolist() + equations_di
+        variabls = diet_sppr_symbols + ordered_symbols
+
+        return sppr_symbolic, sppr_mat, equations, variabls
+
+    def SPPR_symbolic(self, TE=None, TE_option='GE', diet_import_option='as_DC', DET_TE_vals=1, sppr_det_value=None):
+        if diet_import_option == 'as_PP':
+            return self._SPPR_symbolic_helper_diet_import_as_PP(TE=TE, TE_option=TE_option, DET_TE_vals=DET_TE_vals, sppr_det_value=sppr_det_value)
+        elif diet_import_option == 'as_DC':
+            return self._SPPR_symbolic_helper_diet_import_as_DC(TE=TE, TE_option=TE_option, DET_TE_vals=DET_TE_vals, sppr_det_value=sppr_det_value)
+
+    def _sample_SPPR_new_forced_balance(self, TE=None, sppr_det=None):
+        sppr, _, _ = self.SPPR_new(
+            DET_modeling='as_PP', DET_TE_vals=1, TE=TE
+        )
+
+        x = sm.symbols('x')  # x = sppr_det
+        sppr_det_vec = (sppr.loc[:, self.get_DET_seq()] * x).sum(axis=1)
+        sppr_pp = sppr.loc[:, self.get_PP_seq()].sum(axis=1)
+        sppr_symbolic = sppr_det_vec + sppr_pp
+        
+        inflow = self.p[self.get_PP_seq()].sum()
+        outflow = ((self.catch + self.growth + self.net_migration)* sppr_symbolic).sum()
+
+        sppr_det = float(sm.solve(inflow - outflow, x)[0])
+        
+        # multiply sppr[det] column by sppr_det
+        sppr.loc[:, self.get_DET_seq()] *= sppr_det
+
+        return sppr, sppr_det
+
+    def monte_carlo_SPPR(self, n_samples=1000, TE_error_percent=10, TE_error_cut_percent=20,
+                            TE_option='GE', DET_TE_vals=1, kind='new', silent=True):
+        """
+
+        Args:
+            n_samples (int, optional): number of sppr samples. Defaults to 1000.
+            TE_error_percent (float, optional): percentage of TE std relative to it's mean. Defaults to 0.1.
+            TE_error_cut_percent (float, optional): cut value to TE in percentage relative to it's mean. Defaults to 0.2.
+        """
+        diet_import_option = 'as_DC'
+
+        # define basis sequence:
+        PP_seq = self.get_PP_seq()
+        Import_seq = self.get_Import_seq()
+        DET_seq = self.get_DET_seq()
+        if TE_option == 'GE':
+            basis_seq = list(PP_seq) + list(DET_seq) + list(Import_seq)
+        else:
+            basis_seq = list(PP_seq) + list(Import_seq)
+        basis_seq = sorted(basis_seq, reverse=True)
+            
+        # choose TE matrix:
+        TE_means = self.get_TE(TE_option=TE_option, DET_values=DET_TE_vals, as_matrix=False)
+
+        def sample_TE(TE_error_percent, TE_error_cut_percent):  # TE samplers as gamma distributions:
+            # mean = shape * scale = TE
+            # variance = shape * scale^2
+            # std = sqrt(shape) * scale
+            # std / mean = 1/sqrt(shape) = TE_error (given)
+            # shape = 1/(TE_error^2)
+            # scale = TE / shape = TE * TE_error^2
+            TE_error = TE_error_percent / 100
+            shape = 1/(TE_error**2)
+
+            sampler = lambda: gamma.rvs(a=shape, scale=TE_means/shape)
+            TE_sample = sampler()
+
+            TE_high = (TE_means * (1 + TE_error_cut_percent/100)).values
+            TE_low = (TE_means * (1 - TE_error_cut_percent/100)).values
+            TE_sample[TE_sample >= TE_high] = TE_high[TE_sample >= TE_high]
+            TE_sample[TE_sample <= TE_low] = TE_low[TE_sample <= TE_low]
+
+            TE_sample = pd.DataFrame([TE_sample]*self.n_groups, index=TE_means.index, columns=TE_means.index).T
+
+            TE_sample.loc[basis_seq, :] = 1
+
+            return TE_sample
+
+        # initialize collectors:
+        if kind == 'new':
+            sppr, _, _ = self.SPPR_new(TE=None, TE_option=TE_option, DET_TE_vals=DET_TE_vals)
+        elif kind == 'symbolic':
+            _, sppr, e, v = self.SPPR_symbolic(TE=None, TE_option=TE_option, DET_TE_vals=DET_TE_vals, diet_import_option=diet_import_option)
+        else:
+            raise Exception(f'kind = {kind}')
+
+        index = sppr.index
+        columns = sppr.columns
+        sppr_array = np.zeros((n_samples, len(index), len(columns)))
+        not_counted_counter = 0
+        counted_rows_array = np.ones(n_samples).astype(bool)
+
+        # perform monte-carlo:
+        for i in tqdm(range(n_samples), disable=silent, desc="monte-carlo on TE"):
+            TE_sample = sample_TE(TE_error_percent, TE_error_cut_percent)
+            if  kind == 'new':
+                sppr, _, _ = self.SPPR_new(TE=TE_sample, TE_option=TE_option, DET_TE_vals=DET_TE_vals)
+                # sppr = sppr.sort_index(ascending=False)
+            elif kind == 'symbolic':
+                _, sppr, _, _ = self.SPPR_symbolic(TE=TE_sample, TE_option=TE_option, DET_TE_vals=DET_TE_vals, diet_import_option=diet_import_option)
+            # turn to numpy and collect:
+            sppr = sppr.values
+            if np.any(sppr < -1e-10):
+                not_counted_counter += 1
+                counted_rows_array[i] = False
+                continue
+            sppr_array[i, :, :] = sppr
+                
+        # take average SPPR:
+        sppr = np.mean(sppr_array[counted_rows_array], axis=0)
+
+        if not silent:
+            print(f'    proportion of un-counted calculations: {not_counted_counter}/{n_samples}')
+
+        # back to dataframe:
+        sppr = pd.DataFrame(sppr, index=index, columns=columns)
+
+        if kind == 'new':
+            return sppr, sppr_array[counted_rows_array], not_counted_counter/n_samples, None, None
+        else:
+            return sppr, sppr_array[counted_rows_array], not_counted_counter/n_samples, e, v
+
+    def monte_carlo_SPPR_2(self, n_samples=1000, TE_error_percent=10, TE_error_cut_percent=20,
+                         TE_option='GE', DET_TE_vals=1, kind='new', silent=True):
+        """
+
+        Args:
+            n_samples (int, optional): number of sppr samples. Defaults to 1000.
+            TE_error_percent (float, optional): percentage of TE std relative to it's mean. Defaults to 0.1.
+            TE_error_cut_percent (float, optional): cut value to TE in percentage relative to it's mean. Defaults to 0.2.
+        """
+
+        # define basis sequence:
+        PP_seq = self.get_PP_seq()
+        Import_seq = self.get_Import_seq()
+        DET_seq = self.get_DET_seq()
+        if TE_option == 'GE':
+            basis_seq = list(PP_seq) + list(DET_seq) + list(Import_seq)
+        else:
+            basis_seq = list(PP_seq) + list(Import_seq)
+        basis_seq = sorted(basis_seq, reverse=True)
+            
+        # choose TE matrix:
+        TE_means = self.get_TE(TE_option=TE_option, DET_values=DET_TE_vals, as_matrix=False)
+
+        def sample_TE(TE_error_percent, TE_error_cut_percent):  # TE samplers as gamma distributions:
+            # mean = shape * scale = TE
+            # variance = shape * scale^2
+            # std = sqrt(shape) * scale
+            # std / mean = 1/sqrt(shape) = TE_error (given)
+            # shape = 1/(TE_error^2)
+            # scale = TE / shape = TE * TE_error^2
+            TE_error = TE_error_percent / 100
+            shape = 1/(TE_error**2)
+
+            sampler = lambda: gamma.rvs(a=shape, scale=TE_means/shape)
+            TE_sample = sampler()
+
+            TE_high = (TE_means * (1 + TE_error_cut_percent/100)).values
+            TE_low = (TE_means * (1 - TE_error_cut_percent/100)).values
+            TE_sample[TE_sample >= TE_high] = TE_high[TE_sample >= TE_high]
+            TE_sample[TE_sample <= TE_low] = TE_low[TE_sample <= TE_low]
+
+            TE_sample = pd.DataFrame([TE_sample]*n_groups, index=TE_means.index, columns=TE_means.index).T
+
+            TE_sample.loc[basis_seq, :] = 1
+
+            return TE_sample
+
+        # initialize collectors:
+        sppr, _, _ = self.SPPR_new(TE=None, TE_option=TE_option, DET_TE_vals=DET_TE_vals)
+        index = sppr.index
+        columns = sppr.columns
+        n_PP = len(columns)
+        n_groups = self.n_groups
+        sppr_array = np.zeros((n_samples, n_groups, n_PP))
+        not_counted_counter = 0
+        counted_rows_array = np.ones(n_samples).astype(bool)
+
+        # perform monte-carlo:
+        for i in tqdm(range(n_samples), disable=silent):
+            TE_sample = sample_TE(TE_error_percent, TE_error_cut_percent)
+            if  kind == 'new':
+                sppr, _, _ = self.SPPR_new(TE=TE_sample, TE_option=TE_option, DET_TE_vals=DET_TE_vals)
+                # sppr = sppr.sort_index(ascending=False)
+            else:
+                raise Exception(f'kind = {kind}')
+            # turn to numpy and collect:
+            sppr = sppr.values
+            if np.any(sppr < -1e-10):
+                not_counted_counter += 1
+                counted_rows_array[i] = False
+                continue
+            sppr_array[i, :, :] = sppr
+            
+        # take average SPPR:
+        sppr = np.mean(sppr_array[counted_rows_array], axis=0)
+
+        if not silent:
+            print(f'    proportion of un-counted calculations: {not_counted_counter}/{n_samples}')
+
+        # back to dataframe:
+        sppr = pd.DataFrame(sppr, index=index, columns=columns)
+        return sppr, sppr_array[counted_rows_array], not_counted_counter/n_samples
+    
+    # class methods:
+    @classmethod
+    def rename_results(cls, results: list, renaming_dict):
+        is_list = isinstance(results, list)
+        results = results if isinstance(results, list) else [results]
+        for i in range(len(results)):
+            r = results[i]
+            if isinstance(r, pd.DataFrame):
+                r = r.sort_index(ascending=False).sort_index(axis=1, ascending=False).rename(index=renaming_dict, columns=renaming_dict)
+            elif isinstance(r, pd.Series):
+                r = r.sort_index(ascending=False).rename(index=renaming_dict)
+            results[i] = r
+        if not is_list:
+            return results[0]
+        return results
