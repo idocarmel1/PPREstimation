@@ -4,6 +4,7 @@ import sympy as sm
 from tqdm.notebook import tqdm
 from scipy.stats import gamma
 import igraph as ig
+from scipy.optimize import minimize
 
 from ModelData import ModelData
 from utils import mat_from_np, remove_cycles, move_scattered_identity
@@ -12,11 +13,15 @@ from copy import deepcopy
 class PPRCalculator:
 
     # constructors:
-    def __init__(self, model_number):
+    def __init__(self, model_number, underdetermined=False):
         # load model:
         self._model = ModelData(model_number)
 
         groups_df = self._model.groups_data.sort_index(ascending=False)
+
+        if underdetermined:
+            groups_df = self._solve_lim_model(groups_df.copy(), force_EE_calculation=True)
+
         self._groups_df = groups_df
         self.n_groups = groups_df.shape[0]
 
@@ -77,10 +82,16 @@ class PPRCalculator:
         self._sort()
     
     @classmethod
-    def from_dict(cls, data_dict):
+    def from_dict(cls, data_dict, underdetermined=False):
         instance = cls.__new__(cls)
         instance.__dict__.update(data_dict)
+
         # sort according to seq:
+        instance = instance._sort()
+
+        if underdetermined:
+            instance._groups_df = instance._solve_lim_model(instance._groups_df.copy(), force_EE_calculation=True)
+        
         return instance._sort()
 
     def _sort(self):
@@ -90,6 +101,129 @@ class PPRCalculator:
             elif isinstance(value, pd.DataFrame) and name != '_groups_df':
                 setattr(self, name, value.sort_index(ascending=False).sort_index(ascending=False, axis=1))
         return self
+
+    def _apply_ecopath_defaults(self, df):
+        """
+        Applies standard Ecopath defaults using uppercase column names.
+        """
+        if 'gs' in df.columns:
+            is_regular = df['trophic_info'] == 'Regular'
+            # Regular groups default to 0.2, others (PP/DET) to 0
+            df.loc[is_regular, 'gs'] = df.loc[is_regular, 'gs'].fillna(0.2)
+            df.loc[~is_regular, 'gs'] = df.loc[~is_regular, 'gs'].fillna(0)
+        
+        cols_to_zero = ['biomass_accum', 'immigration', 'emigration', 'net_migration']
+        for col in cols_to_zero:
+            if col in df.columns:
+                df[col] = df[col].fillna(0)
+        return df
+
+    def _solve_lim_model(self, groups_df, force_EE_calculation=True):
+        """
+        LIM Solver with an optional toggle for EE rigidity.
+        
+        force_EE_calculation=True:  Hard-calculates M0 from EE before solving.
+        force_EE_calculation=False: Uses EE to inform the starting guess but lets the solver adjust M0.
+        """
+        df = groups_df.copy()
+
+        # --- Pre-processing Ratio Logic ---
+        mask_egestion = df['egestion'].isna() & df['q'].notna() & df['gs'].notna()
+        df.loc[mask_egestion, 'egestion'] = df['q'] * df['gs']
+        
+        mask_gs = df['egestion'].notna() & df['q'].notna() & df['gs'].isna()
+        df.loc[mask_gs, 'gs'] = df['egestion'] / df['q']
+
+        # Handle EE -> M0 relationship based on the user's preference
+        if force_EE_calculation:
+            # Rigid: If we have P and EE, we hard-lock M0 now.
+            mask_calc_M0 = df['ee'].notna() & df['p'].notna() & df['M0'].isna()
+            df.loc[mask_calc_M0, 'M0'] = df['p'] * (1 - df['ee'])
+        
+        # If M0 is already there (or was just calculated), we can calculate EE
+        mask_calc_ee = df['ee'].isna() & df['p'].notna() & df['M0'].notna()
+        df.loc[mask_calc_ee, 'ee'] = 1 - (df['M0'] / df['p'])
+
+        # --- STAGE 1: Apply Defaults ---
+        df = self._apply_ecopath_defaults(df)
+
+        # --- STAGE 2: Optimization Setup ---
+        solve_cols = ['p', 'q', 'respiration', 'egestion', 'M0']
+        missing_mask = df[solve_cols].isna()
+        num_unknowns = missing_mask.sum().sum()
+
+        if num_unknowns == 0:
+            df['ee'] = 1 - (df['M0'] / df['p'])
+            df['ge'] = df['p'] / df['q']
+            return df
+
+        # --- STAGE 3: Initial Guess Construction ---
+        guess_values = []
+        for col in solve_cols:
+            nas = df[col].isna()
+            if nas.any():
+                if col == 'M0':
+                    # If not forced, use EE as a hint (defaulting to 0.95 if EE is also NaN)
+                    implied_m0 = df['p'] * (1 - df['ee'].fillna(0.95))
+                    guess_values.extend(implied_m0[nas].values)
+                else:
+                    guess_values.extend([10.0] * nas.sum())
+        
+        initial_guess = np.array(guess_values)
+
+        def objective(x):
+            temp_df = df.copy()
+            x_idx = 0
+            for col in solve_cols:
+                nas = temp_df[col].isna()
+                num_nas = nas.sum()
+                if num_nas > 0:
+                    temp_df.loc[nas, col] = x[x_idx:x_idx + num_nas]
+                    x_idx += num_nas
+            
+            # Mass Balance: Q - (P_uses + Respiration + Egestion)
+            balance = temp_df['q'] - (
+                temp_df['catch'] + temp_df['M0'] + temp_df['predation'] + 
+                temp_df['net_migration'] + temp_df['biomass_accum'] + 
+                temp_df['respiration'] + temp_df['egestion']
+            )
+            return np.sum(balance**2)
+
+        # Constraint: P >= M0 (ensures EE <= 1.0 and EE >= 0)
+        def constraint_ee(x):
+            temp_df = df.copy()
+            x_idx = 0
+            for col in solve_cols:
+                nas = temp_df[col].isna()
+                num_nas = nas.sum()
+                if num_nas > 0:
+                    temp_df.loc[nas, col] = x[x_idx:x_idx + num_nas]
+                    x_idx += num_nas
+            return temp_df['p'].values - temp_df['M0'].values
+
+        cons = {'type': 'ineq', 'fun': constraint_ee}
+        bounds = [(1e-8, None) for _ in range(num_unknowns)]
+        
+        result = minimize(objective, initial_guess, bounds=bounds, 
+                        constraints=cons, method='SLSQP')
+
+        if result.success:
+            x_final = result.x
+            x_idx = 0
+            for col in solve_cols:
+                nas = df[col].isna()
+                num_nas = nas.sum()
+                if num_nas > 0:
+                    df.loc[nas, col] = x_final[x_idx:x_idx + num_nas]
+                    x_idx += num_nas
+            
+            # Final cleanup of ratios
+            df['ee'] = 1 - (df['M0'] / df['p'])
+            df['ge'] = df['p'] / df['q']
+            return df
+        else:
+            print(f"Optimization warning: {result.message}")
+            return df
 
     # balancing checks:
     def is_model_balanced(self):
