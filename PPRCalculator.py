@@ -35,9 +35,50 @@ class PPRCalculator:
         self.seq2name = self._model.seq2name.copy()
         self.name2seq = self._model.name2seq.copy()
 
+        # error and exit if needed:
         DET_seq = self.get_DET_seq()
         if len(DET_seq) > 1:
             raise Exception('more than 1 DET groups')
+
+        # define all object properties:
+        self._fill_properties(groups_df)
+
+        # sort:
+        self._sort()
+    
+    @classmethod
+    def from_dict(cls, data_dict, underdetermined=False, zero_biomass_accum=True, default_gs=True):
+        instance = cls.__new__(cls)
+        instance.__dict__.update(data_dict)
+
+        if underdetermined:
+            instance._groups_df = instance._solve_lim_model(
+                instance._groups_df.copy(), force_EE_calculation=True, zero_biomass_accum=zero_biomass_accum, default_gs=default_gs
+                )
+        
+        # define all object properties:
+        instance._fill_properties(instance._groups_df.copy())
+
+        # sort according to seq:
+        instance = instance._sort()
+        
+        return instance
+
+    def _sort(self):
+        for name, value in vars(self).items():
+            if isinstance(value, pd.Series):
+                setattr(self, name, value.sort_index(ascending=False))
+            elif isinstance(value, pd.DataFrame) and name != '_groups_df':
+                setattr(self, name, value.sort_index(ascending=False).sort_index(ascending=False, axis=1))
+        return self
+
+    def _fill_properties(self, groups_df):
+
+        # add missing columns:
+        if 'detritus_import' not in groups_df.columns:
+            groups_df['detritus_import'] = 0
+        if 'tl' not in groups_df.columns:
+            groups_df['tl'] = self.get_TL(break_cycles=False, DET_as_PP=True)
 
         # important vectors:
         self.catch = groups_df['catch'].fillna(0).copy()
@@ -79,32 +120,6 @@ class PPRCalculator:
         self.n_balance_runs = 0
         self.is_balanced, _, _ = self.is_model_balanced()
         self.balanced_model = self.balance_model(change_production=False)
-
-        # sort:
-        self._sort()
-    
-    @classmethod
-    def from_dict(cls, data_dict, underdetermined=False, zero_biomass_accum=True, default_gs=True):
-        instance = cls.__new__(cls)
-        instance.__dict__.update(data_dict)
-
-        # sort according to seq:
-        instance = instance._sort()
-
-        if underdetermined:
-            instance._groups_df = instance._solve_lim_model(
-                instance._groups_df.copy(), force_EE_calculation=True, zero_biomass_accum=zero_biomass_accum, default_gs=default_gs
-                )
-        
-        return instance._sort()
-
-    def _sort(self):
-        for name, value in vars(self).items():
-            if isinstance(value, pd.Series):
-                setattr(self, name, value.sort_index(ascending=False))
-            elif isinstance(value, pd.DataFrame) and name != '_groups_df':
-                setattr(self, name, value.sort_index(ascending=False).sort_index(ascending=False, axis=1))
-        return self
 
     def _apply_ecopath_defaults(self, df, zero_biomass_accum=True, default_gs=True):
         """Applies Ecopath defaults and ensures flows are synced with ratios."""
