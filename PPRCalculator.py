@@ -13,14 +13,16 @@ from copy import deepcopy
 class PPRCalculator:
 
     # constructors:
-    def __init__(self, model_number, underdetermined=False):
+    def __init__(self, model_number, underdetermined=False, zero_biomass_accum=True, default_gs=True):
         # load model:
         self._model = ModelData(model_number)
 
         groups_df = self._model.groups_data.sort_index(ascending=False)
 
         if underdetermined:
-            groups_df = self._solve_lim_model(groups_df.copy(), force_EE_calculation=True)
+            groups_df = self._solve_lim_model(
+                groups_df.copy(), force_EE_calculation=True, zero_biomass_accum=zero_biomass_accum, default_gs=default_gs
+                )
 
         self._groups_df = groups_df
         self.n_groups = groups_df.shape[0]
@@ -82,7 +84,7 @@ class PPRCalculator:
         self._sort()
     
     @classmethod
-    def from_dict(cls, data_dict, underdetermined=False):
+    def from_dict(cls, data_dict, underdetermined=False, zero_biomass_accum=True, default_gs=True):
         instance = cls.__new__(cls)
         instance.__dict__.update(data_dict)
 
@@ -90,7 +92,9 @@ class PPRCalculator:
         instance = instance._sort()
 
         if underdetermined:
-            instance._groups_df = instance._solve_lim_model(instance._groups_df.copy(), force_EE_calculation=True)
+            instance._groups_df = instance._solve_lim_model(
+                instance._groups_df.copy(), force_EE_calculation=True, zero_biomass_accum=zero_biomass_accum, default_gs=default_gs
+                )
         
         return instance._sort()
 
@@ -102,128 +106,170 @@ class PPRCalculator:
                 setattr(self, name, value.sort_index(ascending=False).sort_index(ascending=False, axis=1))
         return self
 
-    def _apply_ecopath_defaults(self, df):
-        """
-        Applies standard Ecopath defaults using uppercase column names.
-        """
-        if 'gs' in df.columns:
-            is_regular = df['trophic_info'] == 'Regular'
-            # Regular groups default to 0.2, others (PP/DET) to 0
-            df.loc[is_regular, 'gs'] = df.loc[is_regular, 'gs'].fillna(0.2)
-            df.loc[~is_regular, 'gs'] = df.loc[~is_regular, 'gs'].fillna(0)
-        
-        cols_to_zero = ['biomass_accum', 'immigration', 'emigration', 'net_migration']
+    def _apply_ecopath_defaults(self, df, zero_biomass_accum=True, default_gs=True):
+        """Applies Ecopath defaults and ensures flows are synced with ratios."""
+        # for DET, M0 is 0 (so ee=1):
+        is_DET = df.get("trophic_info") == "DET"
+        df.loc[is_DET, 'M0'] = 0
+        df.loc[is_DET, 'ee'] = 1
+
+        if "gs" in df.columns:
+            is_regular = df["trophic_info"] == "Regular"
+            if default_gs:
+                df.loc[is_regular, "gs"] = df.loc[is_regular, "gs"].fillna(0.2)
+            # PP and Detritus always default to 0
+            df.loc[~is_regular, "gs"] = df.loc[~is_regular, "gs"].fillna(0)
+
+        # Sync gs -> egestion
+        mask_sync = df["egestion"].isna() & df["q"].notna() & df["gs"].notna()
+        df.loc[mask_sync, "egestion"] = df["q"] * df["gs"]
+
+        # Handle biomass accumulation and migration
+        cols_to_zero = ["net_migration", "immigration", "emmigration"]
+        if zero_biomass_accum:
+            cols_to_zero.append("biomass_accum")
+
         for col in cols_to_zero:
             if col in df.columns:
-                df[col] = df[col].fillna(0)
+                if col == 'biomass_accum':
+                    # Detritus often has accumulation; others default to 0
+                    df.loc[~is_DET, col] = df.loc[~is_DET, col].fillna(0)
+                else:
+                    df[col] = df[col] .fillna(0)
         return df
 
-    def _solve_lim_model(self, groups_df, force_EE_calculation=True):
-        """
-        LIM Solver with an optional toggle for EE rigidity.
-        
-        force_EE_calculation=True:  Hard-calculates M0 from EE before solving.
-        force_EE_calculation=False: Uses EE to inform the starting guess but lets the solver adjust M0.
-        """
-        df = groups_df.copy()
-
-        # --- Pre-processing Ratio Logic ---
-        mask_egestion = df['egestion'].isna() & df['q'].notna() & df['gs'].notna()
-        df.loc[mask_egestion, 'egestion'] = df['q'] * df['gs']
-        
-        mask_gs = df['egestion'].notna() & df['q'].notna() & df['gs'].isna()
-        df.loc[mask_gs, 'gs'] = df['egestion'] / df['q']
-
-        # Handle EE -> M0 relationship based on the user's preference
-        if force_EE_calculation:
-            # Rigid: If we have P and EE, we hard-lock M0 now.
-            mask_calc_M0 = df['ee'].notna() & df['p'].notna() & df['M0'].isna()
-            df.loc[mask_calc_M0, 'M0'] = df['p'] * (1 - df['ee'])
-        
-        # If M0 is already there (or was just calculated), we can calculate EE
-        mask_calc_ee = df['ee'].isna() & df['p'].notna() & df['M0'].notna()
-        df.loc[mask_calc_ee, 'ee'] = 1 - (df['M0'] / df['p'])
-
-        # --- STAGE 1: Apply Defaults ---
-        df = self._apply_ecopath_defaults(df)
-
-        # --- STAGE 2: Optimization Setup ---
-        solve_cols = ['p', 'q', 'respiration', 'egestion', 'M0']
-        missing_mask = df[solve_cols].isna()
-        num_unknowns = missing_mask.sum().sum()
-
-        if num_unknowns == 0:
-            df['ee'] = 1 - (df['M0'] / df['p'])
-            df['ge'] = df['p'] / df['q']
+    def _solve_lim_model(self, groups_df, force_EE_calculation=True, zero_biomass_accum=True, default_gs=True):
+        def _finalize_ratios(df):
+            df['ee'] = (1 - (df['M0'] / df['p'])).replace([np.inf, -np.inf], 1).fillna(1)
+            # Ensure gs is 0 for PP/DET
+            is_reg = df['trophic_info'] == 'Regular'
+            df.loc[is_reg, 'gs'] = (df['egestion'] / df['q']).fillna(0.2)
+            df.loc[~is_reg, 'gs'] = 0
+            df['ge'] = (df['p'] / df['q']).fillna(0)
             return df
 
-        # --- STAGE 3: Initial Guess Construction ---
-        guess_values = []
+        df = groups_df.copy()
+
+        # 1. Pre-process ratios
+        mask_egest = df["egestion"].isna() & df["q"].notna() & df["gs"].notna()
+        df.loc[mask_egest, "egestion"] = df["q"] * df["gs"]
+
+        if force_EE_calculation:
+            mask_m0 = df["ee"].notna() & df["p"].notna() & df["M0"].isna()
+            df.loc[mask_m0, "M0"] = df["p"] * (1 - df["ee"])
+
+        # 2. Defaults
+        df = self._apply_ecopath_defaults(df, zero_biomass_accum=zero_biomass_accum, default_gs=default_gs)
+
+        # 3. Setup Optimization
+        solve_cols = ['p', 'q', 'respiration', 'egestion', 'M0', 'biomass_accum']
+        missing_mask = df[solve_cols].isna()
+        
+        if missing_mask.sum().sum() == 0:
+            return _finalize_ratios(df)
+
+        # Build Guess and Bounds
+        guess_values, bounds = [], []
         for col in solve_cols:
             nas = df[col].isna()
             if nas.any():
-                if col == 'M0':
-                    # If not forced, use EE as a hint (defaulting to 0.95 if EE is also NaN)
-                    implied_m0 = df['p'] * (1 - df['ee'].fillna(0.95))
-                    guess_values.extend(implied_m0[nas].values)
+                if col == 'egestion':
+                    vals = (df['q'] * 0.2).fillna(1.0)[nas].values
+                elif col == 'respiration':
+                    vals = (df['q'] * 0.7).fillna(1.0)[nas].values
+                elif col == 'M0':
+                    vals = (df['p'] * 0.1).fillna(1.0)[nas].values
                 else:
-                    guess_values.extend([10.0] * nas.sum())
-        
-        initial_guess = np.array(guess_values)
+                    vals = np.full(nas.sum(), 0.0 if col == 'biomass_accum' else 1.0)
+                
+                guess_values.extend(vals)
+                bounds.extend([(None, None) if col == 'biomass_accum' else (1e-10, None)] * nas.sum())
 
+        def get_temp_df(x):
+            tdf = df.copy()
+            curr = 0
+            for col in solve_cols:
+                nas = tdf[col].isna()
+                if nas.any():
+                    tdf.loc[nas, col] = x[curr:curr+nas.sum()]
+                    curr += nas.sum()
+            return tdf
+
+        # def objective(x):
+        #     return np.sum(x**2)
+        
         def objective(x):
-            temp_df = df.copy()
-            x_idx = 0
-            for col in solve_cols:
-                nas = temp_df[col].isna()
-                num_nas = nas.sum()
-                if num_nas > 0:
-                    temp_df.loc[nas, col] = x[x_idx:x_idx + num_nas]
-                    x_idx += num_nas
+            tdf = get_temp_df(x)
             
-            # Mass Balance: Q - (P_uses + Respiration + Egestion)
-            balance = temp_df['q'] - (
-                temp_df['catch'] + temp_df['M0'] + temp_df['predation'] + 
-                temp_df['net_migration'] + temp_df['biomass_accum'] + 
-                temp_df['respiration'] + temp_df['egestion']
-            )
-            return np.sum(balance**2)
+            # --- Term 1: Flow Minimization (L2 Norm) ---
+            # Keeps the overall "size" of the ecosystem's energy under control
+            flow_penalty = np.sum(x**2)
+            # flow_penalty = 0
+            
+            # --- Term 2: GS Deviation Penalty ---
+            # Specifically targets the GS 'clumping' issue
+            is_reg = tdf['trophic_info'] == 'Regular'
+            # Avoid division by zero if q is 0
+            # gs_calc = tdf.loc[is_reg, 'egestion'] / tdf.loc[is_reg, 'q'].replace(0, 1e-5)
+            gs_dev = (tdf.loc[is_reg, 'egestion'] - 0.2 * tdf.loc[is_reg, 'q'])
+            gs_penalty = np.sum((gs_dev)**2)
+            
+            # --- Term 3: Initial Guess Fidelity (Optional but recommended) ---
+            # Penalizes moving too far from the 'guess_values' we calculated
+            # This prevents the solver from jumping to extreme bounds immediately
+            guess_penalty = np.sum((x - guess_values)**2)
 
-        # Constraint: P >= M0 (ensures EE <= 1.0 and EE >= 0)
-        def constraint_ee(x):
-            temp_df = df.copy()
-            x_idx = 0
-            for col in solve_cols:
-                nas = temp_df[col].isna()
-                num_nas = nas.sum()
-                if num_nas > 0:
-                    temp_df.loc[nas, col] = x[x_idx:x_idx + num_nas]
-                    x_idx += num_nas
-            return temp_df['p'].values - temp_df['M0'].values
+            # Weights: 
+            # w1 (0.01) makes flow size less important than 'shape'
+            # w2 (100.0) makes GS realism the primary driver
+            return (1.0 * flow_penalty) + (0.0 * gs_penalty) + (0.0 * guess_penalty)
 
-        cons = {'type': 'ineq', 'fun': constraint_ee}
-        bounds = [(1e-8, None) for _ in range(num_unknowns)]
-        
-        result = minimize(objective, initial_guess, bounds=bounds, 
-                        constraints=cons, method='SLSQP')
+        def equality_constraints(x):
+            tdf = get_temp_df(x)
+            eqs = []
+            for i, row in tdf.iterrows():
+                # Only Consumer groups (Regular) have a Consumption Balance
+                if row['trophic_info'] == 'Regular':
+                    # Check if this specific row has unknowns in Q, P, R, or E
+                    if missing_mask.loc[i, ['q', 'p', 'respiration', 'egestion']].any():
+                        eqs.append(row['q'] - (row['p'] + row['respiration'] + row['egestion']))
+                
+                # All groups have a Production Balance
+                if missing_mask.loc[i, ['p', 'M0', 'biomass_accum']].any():
+                    eqs.append(row['p'] - (row['catch'] + row['M0'] + row['predation'] + 
+                                        row['net_migration'] + row['biomass_accum']))
+            return np.array(eqs)
+
+        def inequality_constraints(x):
+            tdf = get_temp_df(x)
+            ineqs = []
+            # 1. EE <= 1.0 (P - M0 >= 0)
+            ineqs.extend((tdf['p'] - tdf['M0']).values)
+            
+            # 2. Free GS limits [0.1, 0.3]
+            if not default_gs:
+                is_reg = tdf['trophic_info'] == 'Regular'
+                # Lower: E - 0.1*Q >= 0 | Upper: 0.3*Q - E >= 0
+                gs_low = tdf.loc[is_reg, 'egestion'] - 0.0 * tdf.loc[is_reg, 'q']
+                gs_high = 0.3 * tdf.loc[is_reg, 'q'] - tdf.loc[is_reg, 'egestion']
+                ineqs.extend(gs_low.values)
+                ineqs.extend(gs_high.values)
+                
+            return np.array(ineqs)
+
+        cons = [
+            {'type': 'eq', 'fun': equality_constraints},
+            {'type': 'ineq', 'fun': inequality_constraints}
+        ]
+
+        result = minimize(objective, np.array(guess_values), bounds=bounds, 
+                        constraints=cons, method='SLSQP', options={'maxiter': 1000})
 
         if result.success:
-            x_final = result.x
-            x_idx = 0
-            for col in solve_cols:
-                nas = df[col].isna()
-                num_nas = nas.sum()
-                if num_nas > 0:
-                    df.loc[nas, col] = x_final[x_idx:x_idx + num_nas]
-                    x_idx += num_nas
-            
-            # Final cleanup of ratios
-            df['ee'] = 1 - (df['M0'] / df['p'])
-            df['ge'] = df['p'] / df['q']
-            return df
+            return _finalize_ratios(get_temp_df(result.x))
         else:
-            print(f"Optimization warning: {result.message}")
-            return df
+            print(f"LIM Failed: {result.message}")
+            return _finalize_ratios(get_temp_df(result.x))
 
     # balancing checks:
     def is_model_balanced(self):
