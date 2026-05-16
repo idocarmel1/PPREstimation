@@ -819,6 +819,7 @@ class PPRCalculator:
         # combine part of DET that is PP into PP row:
         Z_without_DET = Z.copy()
         percent_of_det_that_is_PP = Z_without_DET.loc[DET_seq, PP_seq] / Z_without_DET.loc[DET_seq, :].sum()  # 98%
+        percent_of_det_that_is_PP = percent_of_det_that_is_PP.fillna(0)
         if only_pp_det:  # this is what is implemented in the article
             for i in PP_seq:
                 Z_without_DET.loc[:, i] += percent_of_det_that_is_PP[i] * Z_without_DET.loc[:, DET_seq]
