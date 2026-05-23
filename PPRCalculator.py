@@ -32,14 +32,16 @@ class PPRCalculator:
         instance = cls.__new__(cls)
         instance.__dict__.update(data_dict)
         
-        # define all object properties:
-        instance._fill_properties(instance._groups_df.copy())
+        groups_df = deepcopy(instance._groups_df)
+        instance.is_underdetermined = underdetermined
 
         if underdetermined:
             groups_df = instance._solve_lim_model(
-                groups_df.copy(), force_EE_calculation=True, zero_biomass_accum=zero_biomass_accum, default_gs=default_gs, solve_cols=solve_cols
+                groups_df, force_EE_calculation=True, zero_biomass_accum=zero_biomass_accum, default_gs=default_gs, solve_cols=solve_cols
                 )
-            instance._fill_properties(groups_df)
+            
+        # define all object properties:
+        instance._fill_properties(groups_df)
 
         # sort according to seq:
         instance = instance._sort()
@@ -51,6 +53,7 @@ class PPRCalculator:
                        solve_cols=['p', 'q', 'respiration', 'egestion', 'M0', 'biomass_accum']):
         instance = cls.__new__(cls)
         instance._model = modeldata
+        instance.is_underdetermined = underdetermined
 
         groups_df = instance._model.groups_data.sort_index(ascending=False)
 
@@ -70,14 +73,14 @@ class PPRCalculator:
         if len(DET_seq) > 1:
             raise Exception('more than 1 DET groups')
 
-        # define all object properties:
-        instance._fill_properties(groups_df)
+        # # define all object properties:
+        # instance._fill_properties(groups_df)
 
         if underdetermined:
             groups_df = instance._solve_lim_model(
-                instance._groups_df.copy(), force_EE_calculation=True, zero_biomass_accum=zero_biomass_accum, default_gs=default_gs, solve_cols=solve_cols
+                deepcopy(instance._groups_df), force_EE_calculation=True, zero_biomass_accum=zero_biomass_accum, default_gs=default_gs, solve_cols=solve_cols
                 )
-            instance._fill_properties(groups_df)
+        instance._fill_properties(groups_df)
 
         # sort:
         instance._sort()
@@ -128,19 +131,29 @@ class PPRCalculator:
         self.q[self.get_PP_seq()] = self.p[self.get_PP_seq()]
         self.q[self.get_Import_seq()] = self.p[self.get_Import_seq()]
         self.q[self.get_DET_seq()] = (self.M0 + self.egestion).sum()
-        self.growth[self.get_DET_seq()] = (
+        det_seq = self.get_DET_seq()
+        self.growth[det_seq] = (
             self.q - (self.egestion + self.respiration + 
             (self.catch + self.net_migration + self.M0 + self.predation))
-            )[self.get_DET_seq()]
+            )[det_seq]
         self.p[self.get_DET_seq()] = (
             self.catch + self.net_migration + self.M0 + self.predation + self.growth
             )[self.get_DET_seq()]
         
+        # if self.is_underdetermined:
+        #     self.growth = (
+        #         self.q - (self.egestion + self.respiration + 
+        #         (self.catch + self.net_migration + self.M0 + self.predation))
+        #     )
+        #     self.p = self.catch + self.net_migration + self.M0 + self.predation + self.growth
+            
+        
         # fixes in groups_df:
         na_cols = [c for c in groups_df.columns if groups_df[c].isna().all()]
+
         # na_vals = groups_df.isna()
-        # groups_df['p'] = self.p.copy()
-        # groups_df['q'] = self.q.copy()
+        groups_df['p'] = self.p.copy()
+        groups_df['q'] = self.q.copy()
         groups_df['catch'] = self.catch.copy()
         groups_df['predation'] = self.predation.copy()
         groups_df['biomass_accum'] = self.growth.copy()
@@ -150,12 +163,14 @@ class PPRCalculator:
         groups_df['M0'] = self.M0.copy()
         groups_df['respiration'] = self.respiration.copy()
         groups_df['egestion'] = self.egestion.copy()
-        # groups_df['ee'] = self.EE.copy()
-        # groups_df['ge'] = self.GE.copy()
-        # groups_df['gs'] = self.GS.copy()
-        # groups_df['tl'] = self.TL.copy()
+        groups_df['ee'] = self.EE.copy()
+        groups_df['ge'] = self.GE.copy()
+        groups_df['gs'] = self.GS.copy()
+        groups_df['tl'] = self.TL.copy()
+
         # return na cols to beeing na:
         groups_df[na_cols] = np.nan
+
         self._groups_df = groups_df.copy()
 
         # balance:
@@ -181,9 +196,10 @@ class PPRCalculator:
         mask_sync = df["M0"].isna() & df["p"].notna() & df["ee"].notna()
         df.loc[mask_sync, "M0"] = df["p"] * (1 - df["ee"])
 
-        # for DET, M0 is 0 (so ee=1):
+        # for DET, M0 is 0 (so ee=1), respiration is 0:
         is_DET = df.get("trophic_info") == "DET"
         df.loc[is_DET, 'M0'] = 0
+        df.loc[is_DET, 'respiration'] = 0
         df.loc[is_DET, 'ee'] = 1
 
         # Handle biomass accumulation and migration
@@ -227,23 +243,61 @@ class PPRCalculator:
         # 3. Setup Optimization
         valid_flows = ['p', 'q', 'respiration', 'egestion', 'M0', 'biomass_accum']
         solve_cols = [c for c in solve_cols if c in valid_flows]
+        # if 'biomass_accum' not in solve_cols:
+        #     solve_cols.append('biomass_accum')
         if zero_biomass_accum and ('biomass_accum' in solve_cols):
-            solve_cols.remove('biomass_accum')
+            if 'trophic_info' in df.columns and not (df['trophic_info'] == 'DET').any():
+                solve_cols.remove('biomass_accum')
         if default_gs and 'egestion' in solve_cols:
             solve_cols.remove('egestion')
         if ('M0' in solve_cols) and df["M0"].notna().all():
             solve_cols.remove('M0')
         missing_mask = df[solve_cols].isna()
+
+        # Force DET row to be Optimized
+        is_DET = df['trophic_info'] == 'DET'
+        if is_DET.any():
+            for col in ['p', 'q', 'biomass_accum']:
+                # Ensure biomass_accum is kept in solve_cols dynamically
+                if col not in solve_cols:
+                    solve_cols.append(col)
+                    # Re-calculate missing_mask to include the newly appended column
+                    missing_mask = df[solve_cols].isna()
+                if col in ['p', 'q']:
+                    zero_or_neg = (df[col] <= 0) | df[col].isna()
+                    df.loc[is_DET & zero_or_neg, col] = 1e-3
+                missing_mask.loc[is_DET, col] = True
         
         if missing_mask.sum().sum() == 0:
             return _finalize_ratios(df)
+        
+        if not zero_biomass_accum:
+            missing_mask.loc[:, 'biomass_accum'] = True
+
+        # --- PRE-CACHING STRATEGY FOR HIGH SPEED ---
+        # Cache basic structural masks and properties as native arrays
+        trophic_info_arr = df['trophic_info'].values if 'trophic_info' in df.columns else np.array([])
+        is_regular_arr = (trophic_info_arr == 'Regular')
+        is_det_arr = (trophic_info_arr == 'DET')
+        is_pp_arr = (trophic_info_arr == 'PP')
+        is_import_arr = (trophic_info_arr == 'Import')
+        
+        # Pull background constant vectors once to avoid checking inside loops
+        static_flows = {c: df[c].fillna(0).values for c in ['catch', 'predation', 'net_migration', 'biomass_accum'] if c in df.columns}
+        for c in ['catch', 'predation', 'net_migration', 'biomass_accum']:
+            if c not in static_flows:
+                static_flows[c] = np.zeros(len(df))
+
+        # Store baseline variable states as numpy 1D arrays
+        base_arrays = {}
+        for col in ['p', 'q', 'respiration', 'egestion', 'M0', 'biomass_accum']:
+            base_arrays[col] = df[col].fillna(0).values if col in df.columns else np.zeros(len(df))
 
         # Build Guess and Bounds
         guess_values, bounds = [], []
         for col in solve_cols:
-            nas = df[col].isna()
+            nas = missing_mask[col] # Use the adjusted missing_mask here
             if nas.any():
-            # if nas.all():
                 if col == 'egestion':
                     vals = (df['q'] * 0.2).fillna(1.0)[nas].values
                 elif col == 'respiration':
@@ -251,100 +305,173 @@ class PPRCalculator:
                 elif col == 'M0':
                     vals = (df['p'] * 0.1).fillna(1.0)[nas].values
                 else:
-                    vals = np.full(nas.sum(), 0.0 if col == 'biomass_accum' else 1.0)
+                    if col == 'biomass_accum':
+                        # 1. Start with a baseline array of zeros (the safe default for Regular rows)
+                        vals = np.zeros(nas.sum())
+                
+                        # nas is a boolean Series representing rows where biomass_accum is missing
+                        missing_indices = df.index[nas]
+                        
+                        for i, idx in enumerate(missing_indices):
+                            if df.loc[idx, 'trophic_info'] == 'DET':
+                                # Calculate the mass balance residual: Q - (E + R + Catch + Net_Mig + M0 + Pred)
+                                # Using the base_arrays dictionary already cached in your code
+                                q_val = base_arrays['q'][df.index == idx][0]
+                                e_val = base_arrays['egestion'][df.index == idx][0]
+                                r_val = base_arrays['respiration'][df.index == idx][0]
+                                
+                                outflows = (
+                                    static_flows['catch'][df.index == idx][0] +
+                                    static_flows['net_migration'][df.index == idx][0] +
+                                    base_arrays['M0'][df.index == idx][0] +
+                                    static_flows['predation'][df.index == idx][0]
+                                )
+                                
+                                # Set the guess to the exact missing residual fraction
+                                vals[i] = q_val - (e_val + r_val + outflows)
+                    else:
+                        vals = np.full(nas.sum(), 1.0)
                 
                 guess_values.extend(vals)
                 bounds.extend([(None, None) if col == 'biomass_accum' else (1e-10, None)] * nas.sum())
 
+        guess_values = np.array(guess_values)
+
+        # Precalculate slice offsets and row indexes for optimized mapping
+        col_meta = {}
+        curr = 0
+        for col in solve_cols:
+            nas = missing_mask[col]
+            if nas.any():
+                n_elements = nas.sum()
+                col_meta[col] = {
+                    'idx': np.where(nas.values)[0],
+                    'slice': slice(curr, curr + n_elements),
+                    'any_missing': missing_mask[col].values
+                }
+                curr += n_elements
+
+        # Precalculate active constraint filters
+        cons_cols = [c for c in ['q', 'p', 'respiration', 'egestion'] if c in solve_cols]
+        prod_cols = [c for c in ['p', 'M0', 'biomass_accum'] if c in solve_cols]
+        
+        # Row index filters matching exactly your .any() checks
+        production_input = df['catch'] + df['predation'] + df['biomass_accum'] + df['net_migration'] + df['M0']
+        imbalanced_production = ~np.isclose(df['p'], production_input, atol=1e-5)
+
+        consumption_input = df['p'] + df['respiration'] + df['egestion']
+        imbalanced_consumption = ~np.isclose(df['q'], consumption_input, atol=1e-5)
+
+        # Force the constraint filters to be True for these rows
+        active_prod_rows = missing_mask[prod_cols].any(axis=1).values | imbalanced_production
+        active_cons_rows = missing_mask[cons_cols].any(axis=1).values | imbalanced_consumption
+
+        # active_prod_rows = missing_mask[prod_cols].any(axis=1).values
+        # active_cons_rows = missing_mask[cons_cols].any(axis=1).values
+        
+        ee_active_rows = np.zeros(len(df), dtype=bool)
+        for col in ['p', 'M0']:
+            if col in solve_cols:
+                ee_active_rows |= missing_mask[col].values
+
+        def get_temp_arrays(x):
+            """Generates raw numpy working states quickly without modifying DataFrame memory."""
+            arrs = {k: v.copy() for k, v in base_arrays.items()}
+            for col, meta in col_meta.items():
+                arrs[col][meta['idx']] = x[meta['slice']]
+            return arrs
+
         def get_temp_df(x):
+            """Constructs final DataFrame chunk once upon completion."""
             tdf = df.copy()
-            curr = 0
-            for col in solve_cols:
-                nas = tdf[col].isna()
-                if nas.any():
-                    tdf.loc[nas, col] = x[curr:curr+nas.sum()]
-                    curr += nas.sum()
+            for col, meta in col_meta.items():
+                tdf.iloc[meta['idx'], tdf.columns.get_loc(col)] = x[meta['slice']]
             return tdf
 
-        # def objective(x):
-        #     return np.sum(x**2)
-        
+        # --- Vectorized Objectives & Constraints ---
         def objective(x):
-            tdf = get_temp_df(x)
+            arrs = get_temp_arrays(x)
             
-            # --- Term 1: Flow Minimization ---
-            flow_penalty = np.sum(x**2)
+            # Term 1: Flow Minimization
+            # flow_penalty = np.sum(x**2)
+            scaled_x = x / (guess_values + 1e-5)
+            flow_penalty = np.sum(scaled_x**2)
             
-            # --- Term 2: GS Deviation Penalty ---
+            # Term 2: GS Deviation Penalty
             gs_penalty = 0
-            # Safely check if columns exist before calculating
-            if 'egestion' in tdf.columns and 'q' in tdf.columns and 'trophic_info' in tdf.columns:
-                is_reg = tdf['trophic_info'] == 'Regular'
-                if is_reg.any():
-                    gs_dev = (tdf.loc[is_reg, 'egestion'] - 0.2 * tdf.loc[is_reg, 'q'])
+            if 'egestion' in base_arrays and 'q' in base_arrays and len(is_regular_arr) > 0:
+                if is_regular_arr.any():
+                    gs_dev = (arrs['egestion'][is_regular_arr] - 0.2 * arrs['q'][is_regular_arr])
                     gs_penalty = np.sum(gs_dev**2)
             
-            # --- Term 3: Initial Guess Fidelity ---
+            # Term 3: Initial Guess Fidelity
             guess_penalty = np.sum((x - guess_values)**2)
 
             return (1.0 * flow_penalty) + (0.0 * gs_penalty) + (0.0 * guess_penalty)
 
         def equality_constraints(x):
-            tdf = get_temp_df(x)
+            arrs = get_temp_arrays(x)
             eqs = []
             
-            # Dynamically find which columns actually exist in the mask to avoid KeyErrors
-            cons_cols = [c for c in ['q', 'p', 'respiration', 'egestion'] if c in missing_mask.columns]
-            prod_cols = [c for c in ['p', 'M0', 'biomass_accum'] if c in missing_mask.columns]
+            # 1. Consumption Balance
+            if cons_cols:
+                consumer_mask = active_cons_rows
+                if consumer_mask.any():
+                    res_consumers = arrs['q'][consumer_mask] - (
+                        arrs['p'][consumer_mask] + arrs['respiration'][consumer_mask] + arrs['egestion'][consumer_mask]
+                    )
+                    eqs.extend(res_consumers)
 
-            for i, row in tdf.iterrows():
-                # 1. Consumption Balance
-                if row.get('trophic_info') == 'Regular':
-                    # Check if this row has unknowns in the existing cons_cols
-                    if cons_cols and missing_mask.loc[i, cons_cols].any():
-                        # .get() safely pulls the value, or defaults to 0 if the column doesn't exist
-                        q = row.get('q', 0)
-                        p = row.get('p', 0)
-                        r = row.get('respiration', 0)
-                        e = row.get('egestion', 0)
-                        eqs.append(q - (p + r + e))
-                
-                # 2. Production Balance
-                if prod_cols and missing_mask.loc[i, prod_cols].any():
-                    p = row.get('p', 0)
-                    catch = row.get('catch', 0)
-                    m0 = row.get('M0', 0)
-                    pred = row.get('predation', 0)
-                    nm = row.get('net_migration', 0)
-                    ba = row.get('biomass_accum', 0)
-                    eqs.append(p - (catch + m0 + pred + nm + ba))
+                # # A) Standard Consumers (Regular & Detritus): Q = P + R + E
+                # consumer_mask = (is_regular_arr | is_det_arr) & active_cons_rows
+                # if consumer_mask.any():
+                #     res_consumers = arrs['q'][consumer_mask] - (
+                #         arrs['p'][consumer_mask] + arrs['respiration'][consumer_mask] + arrs['egestion'][consumer_mask]
+                #     )
+                #     eqs.extend(res_consumers)
+                    
+                # # B) Framework Rule (PP & Import): Q = P
+                # basis_mask = (is_pp_arr | is_import_arr) & active_cons_rows
+                # if basis_mask.any():
+                #     res_basis = arrs['q'][basis_mask] - arrs['p'][basis_mask]
+                #     eqs.extend(res_basis)
+
+
+            
+            # 2. Production Balance
+            if prod_cols:
+                if active_prod_rows.any():
+                    res = arrs['p'][active_prod_rows] - (
+                        static_flows['catch'][active_prod_rows] + 
+                        arrs['M0'][active_prod_rows] + 
+                        static_flows['predation'][active_prod_rows] + 
+                        static_flows['net_migration'][active_prod_rows] + 
+                        arrs['biomass_accum'][active_prod_rows]
+                    )
+                    eqs.extend(res)
                     
             return np.array(eqs)
 
         def inequality_constraints(x):
-            tdf = get_temp_df(x)
+            arrs = get_temp_arrays(x)
             ineqs = []
             
             # 1. EE <= 1.0 (P - M0 >= 0)
-            # Use .get with a default Series of 0s to prevent crashes on whole columns
-            p_vals = tdf.get('p', pd.Series(0, index=tdf.index))
-            m0_vals = tdf.get('M0', pd.Series(0, index=tdf.index))
-            ineqs.extend((p_vals - m0_vals).values)
+            if ee_active_rows.any():
+                ineqs.extend(arrs['p'][ee_active_rows] - arrs['M0'][ee_active_rows])
             
             # 2. Free GS limits [0.0, 0.4]
             if not default_gs:
-                if 'trophic_info' in tdf.columns:
-                    is_reg = tdf['trophic_info'] == 'Regular'
-                    if is_reg.any():
-                        q_vals = tdf.loc[is_reg].get('q', 0)
-                        e_vals = tdf.loc[is_reg].get('egestion', 0)
-                        
-                        # Lower: E - 0.0*Q >= 0 | Upper: 0.4*Q - E >= 0
-                        gs_low = e_vals - 0.0 * q_vals
-                        gs_high = 0.4 * q_vals - e_vals
-                        
-                        ineqs.extend(gs_low.values)
-                        ineqs.extend(gs_high.values)
+                gs_active_mask = is_regular_arr & missing_mask['egestion'].values if 'egestion' in missing_mask.columns else np.zeros(len(df), dtype=bool)
+                if gs_active_mask.any():
+                    q_vals = arrs['q'][gs_active_mask]
+                    e_vals = arrs['egestion'][gs_active_mask]
+                    
+                    gs_low = e_vals - 0.0 * q_vals
+                    gs_high = 0.4 * q_vals - e_vals
+                    
+                    ineqs.extend(gs_low)
+                    ineqs.extend(gs_high)
                 
             return np.array(ineqs)
 
@@ -353,13 +480,27 @@ class PPRCalculator:
             {'type': 'ineq', 'fun': inequality_constraints}
         ]
 
-        result = minimize(objective, np.array(guess_values), bounds=bounds, 
-                        constraints=cons, method='SLSQP', options={'maxiter': 1000})
+        result = minimize(
+            objective, 
+            guess_values, 
+            bounds=bounds, 
+            constraints=cons, 
+            method='SLSQP', 
+            tol=1e-5,  # Add an overall optimization tolerance
+            options={
+                'maxiter': 1500, 
+                'ftol': 1e-5  # Slightly relaxed from 1e-6 to stop linesearch panic
+            }
+        )
 
         if result.success:
             return _finalize_ratios(get_temp_df(result.x))
         else:
-            print(f"LIM Failed: {result.message}")
+            model = self.get_model()
+            if model is not None:
+                print(f"Model {model.model_number} - LIM Failed: {result.message}")
+            else:
+                print(f"Toy Model - LIM Failed: {result.message}")
             return _finalize_ratios(get_temp_df(result.x))
 
     # balancing checks:
@@ -371,7 +512,7 @@ class PPRCalculator:
 
         # consumpotion = production + egestion + respiration
         consumption = production + self.egestion + self.respiration
-        q_is_balanced =  all(np.isclose(consumption, self.q))
+        q_is_balanced =  all(np.isclose(consumption, self.q, atol=1e-6))
 
         model_is_balanced = p_is_balanced and q_is_balanced
 
@@ -446,7 +587,10 @@ class PPRCalculator:
             return _helper_new(sppr, diet_import_equations)
     # getters:
     def get_model(self):
-        return self._model
+        if hasattr(self, "_model"):
+            return self._model
+        else:
+            return None
     
     def get_groups_df(self):
         return self._groups_df.copy().sort_index(ascending=False)

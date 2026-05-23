@@ -191,6 +191,7 @@ class ModelData:
         self.groups_data.loc[import_seq, 'group_name'] = 'diet_import'
         self.groups_data.loc[import_seq, 'trophic_info'] = 'Import'
         self.groups_data.loc[import_seq, 'tl'] = 1.0
+        self.groups_data.loc[import_seq, 'respiration'] = 0.0
         diet_import.loc[import_seq] = 0
 
         # DC and Detritus fate:
