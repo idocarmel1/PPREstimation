@@ -199,6 +199,10 @@ class ModelData:
         DC.loc[import_seq] = 0  # add import data to DC
         DC[import_seq] = diet_import  # add import data to DC
         self.DC = DC.sort_index(ascending=False).sort_index(axis=1, ascending=False)
+        
+        det_fate.loc[import_seq] = 0  # add diet_import to det_fate
+        det_fate[import_seq] = 0  # add diet_import to det_fate
+        det_fate.loc[self.groups_data['trophic_info']=='Import', self.groups_data['trophic_info']=='DET'] = 1
         self.det_fate = det_fate.sort_index(ascending=False).sort_index(axis=1, ascending=False)
 
 
