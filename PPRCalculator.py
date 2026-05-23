@@ -140,14 +140,6 @@ class PPRCalculator:
             self.catch + self.net_migration + self.M0 + self.predation + self.growth
             )[self.get_DET_seq()]
         
-        # if self.is_underdetermined:
-        #     self.growth = (
-        #         self.q - (self.egestion + self.respiration + 
-        #         (self.catch + self.net_migration + self.M0 + self.predation))
-        #     )
-        #     self.p = self.catch + self.net_migration + self.M0 + self.predation + self.growth
-            
-        
         # fixes in groups_df:
         na_cols = [c for c in groups_df.columns if groups_df[c].isna().all()]
 
@@ -199,8 +191,17 @@ class PPRCalculator:
         # for DET, M0 is 0 (so ee=1), respiration is 0:
         is_DET = df.get("trophic_info") == "DET"
         df.loc[is_DET, 'M0'] = 0
-        df.loc[is_DET, 'respiration'] = 0
         df.loc[is_DET, 'ee'] = 1
+
+        basis_rows = (df.get("trophic_info") == "Import") | (df.get("trophic_info") == "DET") | (df.get("trophic_info") == "PP")
+        df.loc[basis_rows, 'respiration'] = 0
+        df.loc[basis_rows, 'egestion'] = 0
+        df.loc[(df.get("trophic_info") == "Import") | (df.get("trophic_info") == "DET"), 'M0'] = 0
+
+        if default_gs:
+            # sync respiration:
+            mask_sync = df["respiration"].isna() & df["p"].notna() & df["q"].notna() & df["egestion"].notna()
+            df.loc[mask_sync, "respiration"] = df['q'] - (df['p'] + df['egestion'])
 
         # Handle biomass accumulation and migration
         cols_to_zero = ["net_migration", "immigration", "emmigration"]
@@ -214,6 +215,9 @@ class PPRCalculator:
                     df.loc[~is_DET, col] = df.loc[~is_DET, col].fillna(0)
                 else:
                     df[col] = df[col].fillna(0)
+        
+        # TODO: make sure production equation holds:
+
         return df
 
     def _solve_lim_model(self, groups_df, force_EE_calculation=True, zero_biomass_accum=True, default_gs=True,
@@ -231,20 +235,13 @@ class PPRCalculator:
 
         # 1. Defaults
         df = self._apply_ecopath_defaults(df, zero_biomass_accum=zero_biomass_accum, default_gs=default_gs)
-
-        # 2. Pre-process ratios
-        mask_egest = df["egestion"].isna() & df["q"].notna() & df["gs"].notna()
-        df.loc[mask_egest, "egestion"] = df["q"] * df["gs"]
-
-        if force_EE_calculation:
-            mask_m0 = df["ee"].notna() & df["p"].notna() & df["M0"].isna()
-            df.loc[mask_m0, "M0"] = df["p"] * (1 - df["ee"])
+        
+        # if zero_biomass_accum and default_gs
+        return _finalize_ratios(df)
 
         # 3. Setup Optimization
         valid_flows = ['p', 'q', 'respiration', 'egestion', 'M0', 'biomass_accum']
         solve_cols = [c for c in solve_cols if c in valid_flows]
-        # if 'biomass_accum' not in solve_cols:
-        #     solve_cols.append('biomass_accum')
         if zero_biomass_accum and ('biomass_accum' in solve_cols):
             if 'trophic_info' in df.columns and not (df['trophic_info'] == 'DET').any():
                 solve_cols.remove('biomass_accum')
@@ -252,6 +249,8 @@ class PPRCalculator:
             solve_cols.remove('egestion')
         if ('M0' in solve_cols) and df["M0"].notna().all():
             solve_cols.remove('M0')
+        # if default_gs and 'egestion' in solve_cols:
+        #     solve_cols.remove('respiration')
         missing_mask = df[solve_cols].isna()
 
         # Force DET row to be Optimized
@@ -275,11 +274,8 @@ class PPRCalculator:
             missing_mask.loc[:, 'biomass_accum'] = True
 
         # --- PRE-CACHING STRATEGY FOR HIGH SPEED ---
-        # Cache basic structural masks and properties as native arrays
         trophic_info_arr = df['trophic_info'].values if 'trophic_info' in df.columns else np.array([])
         is_regular_arr = (trophic_info_arr == 'Regular')
-        is_det_arr = (trophic_info_arr == 'DET')
-        is_pp_arr = (trophic_info_arr == 'PP')
         is_import_arr = (trophic_info_arr == 'Import')
         
         # Pull background constant vectors once to avoid checking inside loops
@@ -302,6 +298,8 @@ class PPRCalculator:
                     vals = (df['q'] * 0.2).fillna(1.0)[nas].values
                 elif col == 'respiration':
                     vals = (df['q'] * 0.7).fillna(1.0)[nas].values
+                    # vals.loc[is_import_arr] = 1e-9
+                    # vals = vals[nas].values
                 elif col == 'M0':
                     vals = (df['p'] * 0.1).fillna(1.0)[nas].values
                 else:
@@ -315,7 +313,6 @@ class PPRCalculator:
                         for i, idx in enumerate(missing_indices):
                             if df.loc[idx, 'trophic_info'] == 'DET':
                                 # Calculate the mass balance residual: Q - (E + R + Catch + Net_Mig + M0 + Pred)
-                                # Using the base_arrays dictionary already cached in your code
                                 q_val = base_arrays['q'][df.index == idx][0]
                                 e_val = base_arrays['egestion'][df.index == idx][0]
                                 r_val = base_arrays['respiration'][df.index == idx][0]
@@ -365,9 +362,6 @@ class PPRCalculator:
         # Force the constraint filters to be True for these rows
         active_prod_rows = missing_mask[prod_cols].any(axis=1).values | imbalanced_production
         active_cons_rows = missing_mask[cons_cols].any(axis=1).values | imbalanced_consumption
-
-        # active_prod_rows = missing_mask[prod_cols].any(axis=1).values
-        # active_cons_rows = missing_mask[cons_cols].any(axis=1).values
         
         ee_active_rows = np.zeros(len(df), dtype=bool)
         for col in ['p', 'M0']:
@@ -422,22 +416,6 @@ class PPRCalculator:
                     )
                     eqs.extend(res_consumers)
 
-                # # A) Standard Consumers (Regular & Detritus): Q = P + R + E
-                # consumer_mask = (is_regular_arr | is_det_arr) & active_cons_rows
-                # if consumer_mask.any():
-                #     res_consumers = arrs['q'][consumer_mask] - (
-                #         arrs['p'][consumer_mask] + arrs['respiration'][consumer_mask] + arrs['egestion'][consumer_mask]
-                #     )
-                #     eqs.extend(res_consumers)
-                    
-                # # B) Framework Rule (PP & Import): Q = P
-                # basis_mask = (is_pp_arr | is_import_arr) & active_cons_rows
-                # if basis_mask.any():
-                #     res_basis = arrs['q'][basis_mask] - arrs['p'][basis_mask]
-                #     eqs.extend(res_basis)
-
-
-            
             # 2. Production Balance
             if prod_cols:
                 if active_prod_rows.any():
@@ -497,6 +475,7 @@ class PPRCalculator:
             return _finalize_ratios(get_temp_df(result.x))
         else:
             model = self.get_model()
+            # model = modeldata
             if model is not None:
                 print(f"Model {model.model_number} - LIM Failed: {result.message}")
             else:
