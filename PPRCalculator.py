@@ -646,7 +646,7 @@ class PPRCalculator:
         sppr = sppr.reindex(self.catch.index, fill_value=0)
         sppr = sppr.replace(np.inf, 0)
 
-        if only_inner and (self.get_Import_seq()[0] in sppr.columns):
+        if only_inner and (set(self.get_Import_seq()).issubset(set(sppr.columns))):
             sppr = sppr.drop(columns=self.get_Import_seq())
 
         if isinstance(sppr, pd.DataFrame):
