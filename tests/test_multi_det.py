@@ -51,16 +51,31 @@ class TestIcelandRegression:
         sppr, _, _ = self.pc.SPPR_new(TE_option='GE')
         assert not sppr.empty
 
+    def test_sppr_symbolic_runs(self):
+        sppr_sym, sppr_mat, _, _ = self.pc.SPPR_symbolic(TE_option='GE', diet_import_option='as_DC')
+        assert not sppr_mat.empty
+        assert np.isfinite(sppr_mat.values).all()
+
 
 class TestHumboldtLoads:
-    """Humboldt (multi-DET) must load without exception once guard is removed.
-    These tests FAIL until Task 1 removes the guard in PPRCalculator."""
+    """Humboldt (multi-DET) must load without exception once guard is removed."""
+
+    def setup_method(self):
+        self.pc = PPRCalculator(HUMBOLDT)
 
     def test_loads_after_guard_removed(self):
-        pc = PPRCalculator(HUMBOLDT)
-        assert len(pc.get_DET_seq()) > 1
+        assert len(self.pc.get_DET_seq()) > 1
 
     def test_sppr_1986_runs(self):
-        pc = PPRCalculator(HUMBOLDT)
-        s = pc.SPPR_1986()
+        s = self.pc.SPPR_1986()
         assert (s['sppr'] >= 0).all()
+
+    def test_sppr_new_runs(self):
+        sppr, _, _ = self.pc.SPPR_new(TE_option='GE')
+        assert not sppr.empty
+        assert np.isfinite(sppr.values[np.isfinite(sppr.values)]).all()
+
+    def test_sppr_symbolic_runs(self):
+        sppr_sym, sppr_mat, _, _ = self.pc.SPPR_symbolic(TE_option='GE', diet_import_option='as_DC')
+        assert not sppr_mat.empty
+        assert np.isfinite(sppr_mat.values[np.isfinite(sppr_mat.values)]).all()
