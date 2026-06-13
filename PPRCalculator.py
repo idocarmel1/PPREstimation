@@ -1437,20 +1437,12 @@ class PPRCalculator:
         sppr_mat = sm.lambdify([], sppr_mat, 'numpy')() # Converts SymPy matrix to NumPy
         cols = [f'DIET_{s}'.replace(' ', '_') for s in index] + target_free_seq
         sppr_mat = pd.DataFrame(sppr_mat, index=index, columns=cols)
-        if sppr_det_value is not None:
-            sppr_mat[DET_seq] *= float(sppr_det_value)
-        elif collapse_det and len(DET_seq) > 1 and TE_option in ('GE', 'With Egestion'):
-            flow_to_det = (self.M0 + self.egestion).fillna(0)
-            non_DET_sppr = sppr_mat.drop(columns=list(DET_seq), errors='ignore').sum(axis=1)
-            sppr_mat = self._collapse_det_scaling(
-                sppr_mat, DET_seq, non_DET_sppr,
-                self.M0, self.egestion, self.q,
-                flow_to_det, DC, TE_option
-            )
-        else:
+        if sppr_det_value is None:
             for det_j in DET_seq:
                 det_sym = sppr_vec.loc[det_j].values.ravel()[0]
                 sppr_mat[det_j] *= float(sol_dict2[det_sym].evalf(subs=subs_dict))
+        else:
+            sppr_mat[DET_seq] *= float(sppr_det_value)
         for s in index:
             s_symbol = diet_sppr_vec.loc[s].values[0]
             sppr_mat[f'DIET_{s}'.replace(' ', '_')] *= float(sol_dict3[s_symbol])
@@ -1462,11 +1454,11 @@ class PPRCalculator:
 
         return sppr_symbolic, sppr_mat, equations, variabls
 
-    def SPPR_symbolic(self, TE=None, TE_option='GE', diet_import_option='as_DC', DET_TE_vals=1, sppr_det_value=None, collapse_det=False):
+    def SPPR_symbolic(self, TE=None, TE_option='GE', diet_import_option='as_DC', DET_TE_vals=1, sppr_det_value=None):
         if diet_import_option == 'as_PP':
-            return self._SPPR_symbolic_helper_diet_import_as_PP(TE=TE, TE_option=TE_option, DET_TE_vals=DET_TE_vals, sppr_det_value=sppr_det_value, collapse_det=collapse_det)
+            return self._SPPR_symbolic_helper_diet_import_as_PP(TE=TE, TE_option=TE_option, DET_TE_vals=DET_TE_vals, sppr_det_value=sppr_det_value)
         elif diet_import_option == 'as_DC':
-            return self._SPPR_symbolic_helper_diet_import_as_DC(TE=TE, TE_option=TE_option, DET_TE_vals=DET_TE_vals, sppr_det_value=sppr_det_value, collapse_det=collapse_det)
+            return self._SPPR_symbolic_helper_diet_import_as_DC(TE=TE, TE_option=TE_option, DET_TE_vals=DET_TE_vals, sppr_det_value=sppr_det_value)
 
     def _sample_SPPR_new_forced_balance(self, TE=None, sppr_det=None):
         sppr, _, _ = self.SPPR_new(
