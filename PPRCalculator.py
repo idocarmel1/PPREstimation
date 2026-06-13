@@ -662,7 +662,14 @@ class PPRCalculator:
         if TE_option == 'TE':
             DC.loc[DET_seq, Regular_seq] = 0
         elif TE_option == 'GE':
-            DC.loc[self.get_DET_seq()[0], :] = ((self.M0) / flow2det).fillna(0)
+            det_fate = getattr(self, '_det_fate', None)
+            for det_j in DET_seq:
+                q_det_j = Z.loc[det_j, :].sum() if not DET_as_PP else flow2det / max(len(DET_seq), 1)
+                if det_fate is not None and det_j in det_fate.columns and q_det_j > 0:
+                    fracs = det_fate[det_j].reindex(self.M0.index).fillna(0)
+                    DC.loc[det_j, :] = ((self.M0 * fracs) / q_det_j).fillna(0)
+                else:
+                    DC.loc[det_j, :] = ((self.M0) / flow2det).fillna(0)
 
         # calculate TL:
         B = np.ones(DC.shape[0])
@@ -999,19 +1006,20 @@ class PPRCalculator:
         groups_data = self.get_groups_df()
         production = self.p.copy()
         PP_seq = list(self.get_Import_seq()) + list(self.get_PP_seq())
-        DET_seq = self.get_DET_seq()[0]  # assuming there is only one DET
+        DET_seqs = self.get_DET_seq()  # list, may have >1 elements
         Z = self.get_Z(DET_as_PP=False)
 
-        # combine part of DET that is PP into PP row:
+        # combine part of each DET that is PP into PP row:
         Z_without_DET = Z.copy()
-        percent_of_det_that_is_PP = Z_without_DET.loc[DET_seq, PP_seq] / Z_without_DET.loc[DET_seq, :].sum()  # 98%
-        percent_of_det_that_is_PP = percent_of_det_that_is_PP.fillna(0)
-        if only_pp_det:  # this is what is implemented in the article
-            for i in PP_seq:
-                Z_without_DET.loc[:, i] += percent_of_det_that_is_PP[i] * Z_without_DET.loc[:, DET_seq]
-        else:
-            Z_without_DET.loc[:, PP_seq] += Z_without_DET.loc[:, DET_seq]
-        Z_without_DET = Z_without_DET.drop(index=DET_seq, columns=DET_seq)
+        for det_j in DET_seqs:
+            det_row_total = Z_without_DET.loc[det_j, :].sum()
+            percent_of_det_that_is_PP = (Z_without_DET.loc[det_j, PP_seq] / det_row_total).fillna(0)
+            if only_pp_det:  # this is what is implemented in the article
+                for i in PP_seq:
+                    Z_without_DET.loc[:, i] += percent_of_det_that_is_PP[i] * Z_without_DET.loc[:, det_j]
+            else:
+                Z_without_DET.loc[:, PP_seq] += Z_without_DET.loc[:, det_j]
+        Z_without_DET = Z_without_DET.drop(index=DET_seqs, columns=DET_seqs)
 
         # production of living compartments:
         new_index = Z_without_DET.index
@@ -1037,8 +1045,10 @@ class PPRCalculator:
 
         # add back sppr_det that makes model balanced:
         SPPR = SPPR.reindex(self.catch.index, fill_value=0)
-        for i in PP_seq:
-            SPPR.loc[self.get_DET_seq(), i] = self.M0.loc[PP_seq][i] / (self.M0 + self.egestion).sum()
+        det_seqs = self.get_DET_seq()
+        if det_seqs:
+            for i in PP_seq:
+                SPPR.loc[det_seqs, i] = self.M0.loc[PP_seq][i] / (self.M0 + self.egestion).sum()
 
         return SPPR, A, L
         
@@ -1090,7 +1100,7 @@ class PPRCalculator:
         # find sppr_det if it is in the output:
         DET_seq = self.get_DET_seq()
         if TE_option == 'TE':
-            flow2det = self.get_Z(DET_as_PP=False).loc[self.get_DET_seq()[0], :].sum()
+            flow2det = (self.M0 + self.egestion).sum()
             sppr_det = (self.M0 + self.egestion)[list(self.get_PP_seq() + self.get_Import_seq())].sum() / flow2det
             SPPR[DET_seq] *= sppr_det
         elif TE_option == 'GE':
@@ -1098,7 +1108,7 @@ class PPRCalculator:
             sppr = SPPR.drop(columns=DET_seq).sum(axis=1) + (x * SPPR[DET_seq]).sum(axis=1)
             sppr = pd.DataFrame(sppr, index=self.get_DC().index)
             sppr = sppr.loc[:, :].sum(axis=1)
-            flow2det = self.get_Z(DET_as_PP=False).loc[self.get_DET_seq()[0], :].sum()
+            flow2det = (self.M0 + self.egestion).sum()
             m = (self.M0 / flow2det).fillna(0)
             e = (self.egestion / flow2det).fillna(0)
             sppr_det = float(sm.solve(x - (m @ sppr), x)[0])
@@ -1108,7 +1118,7 @@ class PPRCalculator:
             sppr = SPPR.drop(columns=DET_seq).sum(axis=1) + (x * SPPR[DET_seq]).sum(axis=1)
             sppr = pd.DataFrame(sppr, index=self.get_DC().index)
             sppr = sppr.loc[:, :].sum(axis=1)
-            flow2det = self.get_Z(DET_as_PP=False).loc[self.get_DET_seq()[0], :].sum()
+            flow2det = (self.M0 + self.egestion).sum()
             flow2det = (self.M0 + self.egestion).sum()
             m = (self.M0 / flow2det).fillna(0)
             e = (self.egestion / flow2det).fillna(0)
