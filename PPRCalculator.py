@@ -261,7 +261,15 @@ class PPRCalculator:
         df.loc[is_regular, 'gs'] = (df['egestion'] / df['q'])
         df['ge'] = (df['p'] / df['q'])
         df['flow_to_det'] = df['flow_to_det'].fillna(df['M0'] + df['egestion'])
-        df.loc[is_det, 'q'] = df['flow_to_det'].sum()
+        det_idx = df.index[is_det]
+        if det_fate is not None and len(det_idx) > 1:
+            for det_j in det_idx:
+                if det_j in det_fate.columns:
+                    df.loc[det_j, 'q'] = (df['flow_to_det'] * det_fate[det_j].reindex(df.index).fillna(0)).sum()
+                else:
+                    df.loc[det_j, 'q'] = df['flow_to_det'].sum()
+        else:
+            df.loc[is_det, 'q'] = df['flow_to_det'].sum()
         df.loc[is_det, 'p'] = df.loc[is_det, 'q']
         df.loc[is_det, 'biomass_accum'] = df.loc[is_det, 'p'] - (df.loc[is_det, 'predation'] + df.loc[is_det, 'net_migration'])
 
