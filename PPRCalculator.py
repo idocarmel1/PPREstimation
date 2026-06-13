@@ -72,10 +72,10 @@ class PPRCalculator:
         instance.seq2name = instance._model.seq2name.copy()
         instance.name2seq = instance._model.name2seq.copy()
 
-        # error and exit if needed:
+        # verify at least one DET group exists:
         DET_seq = instance.get_DET_seq()
-        if len(DET_seq) > 1:
-            raise Exception('more than 1 DET groups')
+        if len(DET_seq) == 0:
+            raise Exception('no DET group found')
 
         # define all properties:
         groups_df = instance.apply_ecopath_defaults(
