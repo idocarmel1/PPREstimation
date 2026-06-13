@@ -1,0 +1,4395 @@
+{
+    "group": [
+        {
+            "group_name": "Adult Atooth",
+            "group_seq": "9",
+            "habitat_area": "1",
+            "biomass_habitat_area": "4",
+            "b_hab_area_input": "true",
+            "biomass": "4",
+            "vbk": "0.3",
+            "pb": "0.22",
+            "pb_input": "true",
+            "ee": "0.792293549",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "3.03",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "8.816",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0.0023",
+            "gs": "0.2",
+            "shadow_price": "0",
+            "ge": "0.0726072639",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "26",
+                        "proportion": "0.03997235",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "25",
+                        "proportion": "0.0570064",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "24",
+                        "proportion": "0.03996767",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "22",
+                        "proportion": "0.046962",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "31",
+                        "proportion": "0.409045935",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "20",
+                        "proportion": "0.09001011",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "1"
+                    },
+                    {
+                        "prey_seq": "35",
+                        "proportion": "0.0300116912",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "27",
+                        "proportion": "0.01000112",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "16",
+                        "proportion": "0.2520283",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "17",
+                        "proportion": "0.009991921",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "30",
+                        "proportion": "0.0150025506",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "32",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "25",
+                        "variable": "QBInput"
+                    },
+                    {
+                        "pedigree_seq": "28",
+                        "variable": "TCatchInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Adult Herring",
+            "group_seq": "26",
+            "habitat_area": "1",
+            "biomass_habitat_area": "2.81",
+            "b_hab_area_input": "true",
+            "biomass": "2.81",
+            "vbk": "0",
+            "pb": "1.54",
+            "pb_input": "true",
+            "ee": "0.9617019",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "18",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "36.1365967",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "2.6006",
+            "gs": "0.2",
+            "shadow_price": "0",
+            "ge": "0.08555555",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "42",
+                        "proportion": "0.535",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "41",
+                        "proportion": "0.003",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "34",
+                        "proportion": "0.002",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "1"
+                    },
+                    {
+                        "prey_seq": "35",
+                        "proportion": "0.377",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "39",
+                        "proportion": "0.083",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "16",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "25",
+                        "variable": "QBInput"
+                    },
+                    {
+                        "pedigree_seq": "28",
+                        "variable": "TCatchInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Adult Salmon",
+            "group_seq": "10",
+            "habitat_area": "1",
+            "biomass_habitat_area": "3.41",
+            "b_hab_area_input": "true",
+            "biomass": "3.41",
+            "vbk": "0.3",
+            "pb": "1.31",
+            "pb_input": "true",
+            "ee": "0.995813251",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "13",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "30.9969025",
+            "immigration": "3",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "2.37279987",
+            "gs": "0.2",
+            "shadow_price": "0",
+            "ge": "0.100769229",
+            "ge_input": "false",
+            "diet_imp": "0.995",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "26",
+                        "proportion": "0.0009999999",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "25",
+                        "proportion": "0.0009999999",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "22",
+                        "proportion": "0.000499999966",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "0.3"
+                    },
+                    {
+                        "prey_seq": "31",
+                        "proportion": "0.0009999999",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "19",
+                        "proportion": "0.001",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "30",
+                        "proportion": "0.000499999966",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "32",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "31",
+                        "variable": "QBInput"
+                    },
+                    {
+                        "pedigree_seq": "28",
+                        "variable": "TCatchInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Avian Predators",
+            "group_seq": "13",
+            "habitat_area": "1",
+            "biomass_habitat_area": "0.002",
+            "b_hab_area_input": "true",
+            "biomass": "0.002",
+            "vbk": "0.3",
+            "pb": "0.05",
+            "pb_input": "true",
+            "ee": "0",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "36.5",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "0.0583000034",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.2",
+            "shadow_price": "0",
+            "ge": "0.001369863",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "10",
+                        "proportion": "0.48",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "22",
+                        "proportion": "0.0399999954",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0.33",
+                        "detritus_fate": "0.25"
+                    },
+                    {
+                        "prey_seq": "34",
+                        "proportion": "0.009999999",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "20",
+                        "proportion": "0.0399999954",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "35",
+                        "proportion": "0.009999999",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "14",
+                        "proportion": "0.05",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "39",
+                        "proportion": "0.0399999954",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "24",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "31",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Baleen Whales",
+            "group_seq": "18",
+            "habitat_area": "1",
+            "biomass_habitat_area": "0.149",
+            "b_hab_area_input": "true",
+            "biomass": "0.149",
+            "vbk": "0.3",
+            "pb": "0.05",
+            "pb_input": "true",
+            "ee": "0",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "10.9",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "1.29183",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.2",
+            "shadow_price": "0",
+            "ge": "0.004587156",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "26",
+                        "proportion": "0.2",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "31",
+                        "proportion": "0.22",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "34",
+                        "proportion": "0.003",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "46",
+                        "proportion": "0",
+                        "detritus_fate": "0.01"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.99"
+                    },
+                    {
+                        "prey_seq": "35",
+                        "proportion": "0.497",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "30",
+                        "proportion": "0.08",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "32",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "34",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Capelin",
+            "group_seq": "25",
+            "habitat_area": "1",
+            "biomass_habitat_area": "0.367",
+            "b_hab_area_input": "true",
+            "biomass": "0.367",
+            "vbk": "0",
+            "pb": "3.5",
+            "pb_input": "true",
+            "ee": "0.9992535",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "18",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "4.00030041",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.2",
+            "shadow_price": "0",
+            "ge": "0.194444448",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "42",
+                        "proportion": "0.546",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "0.5"
+                    },
+                    {
+                        "prey_seq": "41",
+                        "proportion": "0.004",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "34",
+                        "proportion": "0.003",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.3"
+                    },
+                    {
+                        "prey_seq": "35",
+                        "proportion": "0.413",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "39",
+                        "proportion": "0.034",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "19",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "24",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "25",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Deep demersals",
+            "group_seq": "15",
+            "habitat_area": "1",
+            "biomass_habitat_area": "0.96",
+            "b_hab_area_input": "true",
+            "biomass": "0.96",
+            "vbk": "0.3",
+            "pb": "0.93",
+            "pb_input": "true",
+            "ee": "0.983799636",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "3.21",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "1.57248",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0.0026",
+            "gs": "0.2",
+            "shadow_price": "0",
+            "ge": "0.2897196",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "25",
+                        "proportion": "0.005",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "15",
+                        "proportion": "0.17",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "24",
+                        "proportion": "0.15",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "38",
+                        "proportion": "0.1",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "33",
+                        "proportion": "0.105",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "22",
+                        "proportion": "0.01",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0.01",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "12",
+                        "proportion": "0.02",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "31",
+                        "proportion": "0.005",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "7",
+                        "proportion": "0.01",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "37",
+                        "proportion": "0.02",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "20",
+                        "proportion": "0.11",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0.1",
+                        "detritus_fate": "1"
+                    },
+                    {
+                        "prey_seq": "35",
+                        "proportion": "0.02",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "17",
+                        "proportion": "0.03",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "28",
+                        "proportion": "0.015",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "40",
+                        "proportion": "0.05",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "39",
+                        "proportion": "0.015",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "36",
+                        "proportion": "0.005",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "21",
+                        "proportion": "0.05",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "32",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "31",
+                        "variable": "QBInput"
+                    },
+                    {
+                        "pedigree_seq": "28",
+                        "variable": "TCatchInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Deep  Epibent",
+            "group_seq": "24",
+            "habitat_area": "1",
+            "biomass_habitat_area": "30",
+            "b_hab_area_input": "true",
+            "biomass": "30",
+            "vbk": "0.3",
+            "pb": "3",
+            "pb_input": "true",
+            "ee": "0.9607238",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "10",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "90",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0.143",
+            "gs": "0.4",
+            "shadow_price": "0",
+            "ge": "0.3",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "24",
+                        "proportion": "0.2500001",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "38",
+                        "proportion": "0.0499999821",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "33",
+                        "proportion": "0.3000001",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "42",
+                        "proportion": "0.0499999821",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "45",
+                        "proportion": "0.0499999821",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "37",
+                        "proportion": "0.0299999956",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0.200000018",
+                        "detritus_fate": "1"
+                    },
+                    {
+                        "prey_seq": "35",
+                        "proportion": "0.0499999821",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "21",
+                        "proportion": "0.0199999958",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "14",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "30",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "13",
+                        "variable": "QBInput"
+                    },
+                    {
+                        "pedigree_seq": "28",
+                        "variable": "TCatchInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Deep Lg Infauna",
+            "group_seq": "38",
+            "habitat_area": "1",
+            "biomass_habitat_area": "28.35",
+            "b_hab_area_input": "true",
+            "biomass": "28.35",
+            "vbk": "0",
+            "pb": "0.6",
+            "pb_input": "true",
+            "ee": "0.93090266",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "23",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "374.219971",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.4",
+            "shadow_price": "0",
+            "ge": "0.0260869581",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "42",
+                        "proportion": "0.1",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0.9",
+                        "detritus_fate": "1"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "19",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "24",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "13",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Deep sm infauna",
+            "group_seq": "33",
+            "habitat_area": "1",
+            "biomass_habitat_area": "49.4",
+            "b_hab_area_input": "true",
+            "biomass": "49.4",
+            "vbk": "0",
+            "pb": "3",
+            "pb_input": "true",
+            "ee": "0.916485667",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "23",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "533.52",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.4",
+            "shadow_price": "0",
+            "ge": "0.130434781",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "33",
+                        "proportion": "0.04",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "42",
+                        "proportion": "0.09",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0.78",
+                        "detritus_fate": "1"
+                    },
+                    {
+                        "prey_seq": "35",
+                        "proportion": "0.09",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "14",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "24",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "13",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Eulachon",
+            "group_seq": "22",
+            "habitat_area": "1",
+            "biomass_habitat_area": "1",
+            "b_hab_area_input": "true",
+            "biomass": "1",
+            "vbk": "0.3",
+            "pb": "2",
+            "pb_input": "true",
+            "ee": "0.9191244",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "18",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "12.4",
+            "immigration": "1.9",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "-1.9",
+            "gs": "0.2",
+            "shadow_price": "0",
+            "ge": "0.111111112",
+            "ge_input": "false",
+            "diet_imp": "0.5000001",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "42",
+                        "proportion": "0.002",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "0.4"
+                    },
+                    {
+                        "prey_seq": "34",
+                        "proportion": "0.002999999",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.2"
+                    },
+                    {
+                        "prey_seq": "35",
+                        "proportion": "0.4939999",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "39",
+                        "proportion": "0.001",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "24",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "25",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Halibut",
+            "group_seq": "4",
+            "habitat_area": "1",
+            "biomass_habitat_area": "0.677",
+            "b_hab_area_input": "true",
+            "biomass": "0.677",
+            "vbk": "0.3",
+            "pb": "0.32",
+            "pb_input": "true",
+            "ee": "0.8645674",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "1.73",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "0.720328",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0.0708",
+            "gs": "0.2",
+            "shadow_price": "0",
+            "ge": "0.1849711",
+            "ge_input": "false",
+            "diet_imp": "0.05200001",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "10",
+                        "proportion": "0.133000016",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "25",
+                        "proportion": "0.00100000016",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "15",
+                        "proportion": "0.0380000137",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "24",
+                        "proportion": "0.141000018",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "22",
+                        "proportion": "0.00200000126",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "12",
+                        "proportion": "0.0400000326",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "31",
+                        "proportion": "0.103000008",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "46",
+                        "proportion": "0.0200000014",
+                        "detritus_fate": "0.01"
+                    },
+                    {
+                        "prey_seq": "20",
+                        "proportion": "0.0130000012",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.99"
+                    },
+                    {
+                        "prey_seq": "11",
+                        "proportion": "0.012000001",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "16",
+                        "proportion": "0.374000043",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "19",
+                        "proportion": "0.0200000014",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "30",
+                        "proportion": "0.00100000016",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "28",
+                        "proportion": "0.0239999928",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "39",
+                        "proportion": "0.0239999928",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "21",
+                        "proportion": "0.00200000126",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "16",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "20",
+                        "variable": "QBInput"
+                    },
+                    {
+                        "pedigree_seq": "28",
+                        "variable": "TCatchInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Herbi-Zooplankt",
+            "group_seq": "42",
+            "habitat_area": "1",
+            "biomass_habitat_area": "30",
+            "b_hab_area_input": "true",
+            "biomass": "30",
+            "vbk": "0",
+            "pb": "24",
+            "pb_input": "true",
+            "ee": "0.976154566",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "50",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "180",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.4",
+            "shadow_price": "0",
+            "ge": "0.48",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "0.1"
+                    },
+                    {
+                        "prey_seq": "44",
+                        "proportion": "1",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.9"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "19",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "24",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "25",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "InshoreDetritus",
+            "group_seq": "47",
+            "habitat_area": "1",
+            "biomass_habitat_area": "19.52",
+            "b_hab_area_input": "true",
+            "biomass": "19.52",
+            "vbk": "-1",
+            "pb": "-9999",
+            "pb_input": "false",
+            "ee": "1",
+            "ee_input": "true",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "-9999",
+            "qb_input": "false",
+            "pp": "2",
+            "detritus_import": "4.8",
+            "respiration": "0",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0",
+            "shadow_price": "0",
+            "ge": "-9999",
+            "ge_input": "false",
+            "diet_imp": "0.00442390563",
+            "diet_descr": {
+                "diet": {
+                    "prey_seq": "48",
+                    "proportion": "0",
+                    "detritus_fate": "1"
+                }
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": null
+        },
+        {
+            "group_name": "Invert-eat Bird",
+            "group_seq": "29",
+            "habitat_area": "1",
+            "biomass_habitat_area": "0.005",
+            "b_hab_area_input": "true",
+            "biomass": "0.005",
+            "vbk": "0",
+            "pb": "0.2",
+            "pb_input": "true",
+            "ee": "0",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "450.5",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "1.801",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.2",
+            "shadow_price": "0",
+            "ge": "0.000443951169",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "0.4"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.4"
+                    },
+                    {
+                        "prey_seq": "39",
+                        "proportion": "0.9",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "36",
+                        "proportion": "0.1",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "24",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "25",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Jellies",
+            "group_seq": "32",
+            "habitat_area": "1",
+            "biomass_habitat_area": "6.39",
+            "b_hab_area_input": "true",
+            "biomass": "6.39",
+            "vbk": "0",
+            "pb": "5",
+            "pb_input": "true",
+            "ee": "0.006186001",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "29.41",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "80.8079453",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.4",
+            "shadow_price": "0",
+            "ge": "0.1700102",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "42",
+                        "proportion": "0.666",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "0.1"
+                    },
+                    {
+                        "prey_seq": "41",
+                        "proportion": "0.004",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "34",
+                        "proportion": "0.001",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "43",
+                        "proportion": "0.007",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "44",
+                        "proportion": "0.093",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.9"
+                    },
+                    {
+                        "prey_seq": "35",
+                        "proportion": "0.229",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "14",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "24",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "25",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Juv. Atooth.",
+            "group_seq": "12",
+            "habitat_area": "1",
+            "biomass_habitat_area": "0.855",
+            "b_hab_area_input": "true",
+            "biomass": "0.855",
+            "vbk": "0.3",
+            "pb": "0.22",
+            "pb_input": "true",
+            "ee": "0.955664456",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "3.03",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "1.88442",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0.002",
+            "gs": "0.2",
+            "shadow_price": "0",
+            "ge": "0.0726072639",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "26",
+                        "proportion": "0.05100001",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "25",
+                        "proportion": "0.04",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "24",
+                        "proportion": "0.25",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "22",
+                        "proportion": "0.147",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "31",
+                        "proportion": "0.262",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "34",
+                        "proportion": "0.001",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "1"
+                    },
+                    {
+                        "prey_seq": "35",
+                        "proportion": "0.149",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "27",
+                        "proportion": "0.01",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "16",
+                        "proportion": "0.037",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "30",
+                        "proportion": "0.04300001",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "21",
+                        "proportion": "0.01",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "32",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "25",
+                        "variable": "QBInput"
+                    },
+                    {
+                        "pedigree_seq": "21",
+                        "variable": "TCatchInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Juv.  Herring",
+            "group_seq": "31",
+            "habitat_area": "1",
+            "biomass_habitat_area": "13.406",
+            "b_hab_area_input": "true",
+            "biomass": "13.406",
+            "vbk": "0",
+            "pb": "0.729",
+            "pb_input": "true",
+            "ee": "0.9847016",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "18",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "183.273422",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0.1189",
+            "gs": "0.2",
+            "shadow_price": "0",
+            "ge": "0.0405",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "42",
+                        "proportion": "0.894",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "0.3"
+                    },
+                    {
+                        "prey_seq": "41",
+                        "proportion": "0.006",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "34",
+                        "proportion": "0.001",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.7"
+                    },
+                    {
+                        "prey_seq": "35",
+                        "proportion": "0.099",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "9",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "6",
+                        "variable": "QBInput"
+                    },
+                    {
+                        "pedigree_seq": "21",
+                        "variable": "TCatchInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Lingcod",
+            "group_seq": "7",
+            "habitat_area": "1",
+            "biomass_habitat_area": "0.077",
+            "b_hab_area_input": "true",
+            "biomass": "0.077",
+            "vbk": "0.3",
+            "pb": "0.58",
+            "pb_input": "true",
+            "ee": "0.815631449",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "3.3",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "0.15862",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0.0025",
+            "gs": "0.2",
+            "shadow_price": "0",
+            "ge": "0.175757572",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "26",
+                        "proportion": "0.125",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "10",
+                        "proportion": "0.136",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "22",
+                        "proportion": "0.048",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "42",
+                        "proportion": "0.038",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "0.4"
+                    },
+                    {
+                        "prey_seq": "31",
+                        "proportion": "0.186",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "7",
+                        "proportion": "0.005",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "20",
+                        "proportion": "0.234",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.6"
+                    },
+                    {
+                        "prey_seq": "35",
+                        "proportion": "0.077",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "16",
+                        "proportion": "0.051",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "17",
+                        "proportion": "0.03",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "19",
+                        "proportion": "0.032",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "3",
+                        "proportion": "0.038",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "32",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "31",
+                        "variable": "QBInput"
+                    },
+                    {
+                        "pedigree_seq": "28",
+                        "variable": "TCatchInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Macroalgae/gras",
+            "group_seq": "45",
+            "habitat_area": "1",
+            "biomass_habitat_area": "125.25",
+            "b_hab_area_input": "true",
+            "biomass": "125.25",
+            "vbk": "0",
+            "pb": "4",
+            "pb_input": "true",
+            "ee": "0.134750485",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "0",
+            "qb_input": "false",
+            "pp": "1",
+            "detritus_import": "0",
+            "respiration": "0",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0",
+            "shadow_price": "0",
+            "ge": "-9999",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "0.5"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.5"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": {
+                    "pedigree_seq": "24",
+                    "variable": "PBInput"
+                }
+            }
+        },
+        {
+            "group_name": "Meiofauna",
+            "group_seq": "37",
+            "habitat_area": "1",
+            "biomass_habitat_area": "-9999",
+            "b_hab_area_input": "false",
+            "biomass": "4.47487974",
+            "vbk": "0",
+            "pb": "4.5",
+            "pb_input": "true",
+            "ee": "0.95",
+            "ee_input": "true",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "22.5",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "40.2739143",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.4",
+            "shadow_price": "0.003",
+            "ge": "0.2",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0.45",
+                        "detritus_fate": "0.2"
+                    },
+                    {
+                        "prey_seq": "37",
+                        "proportion": "0.1",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0.45",
+                        "detritus_fate": "0.8"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "19",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "24",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "25",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Near Herbi-zoo",
+            "group_seq": "41",
+            "habitat_area": "1",
+            "biomass_habitat_area": "0.136",
+            "b_hab_area_input": "true",
+            "biomass": "0.136",
+            "vbk": "0",
+            "pb": "27",
+            "pb_input": "true",
+            "ee": "0.977738738",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "90",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "3.67200017",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.4",
+            "shadow_price": "0",
+            "ge": "0.3",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "0.7"
+                    },
+                    {
+                        "prey_seq": "43",
+                        "proportion": "1",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.3"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "19",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "24",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "25",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Near Omni-zoo",
+            "group_seq": "34",
+            "habitat_area": "1",
+            "biomass_habitat_area": "0.108",
+            "b_hab_area_input": "true",
+            "biomass": "0.108",
+            "vbk": "0",
+            "pb": "7.9",
+            "pb_input": "true",
+            "ee": "0.994113445",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "26.333",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "0.853178442",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.4",
+            "shadow_price": "0",
+            "ge": "0.3000038",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "42",
+                        "proportion": "0.248",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "0.7"
+                    },
+                    {
+                        "prey_seq": "41",
+                        "proportion": "0.002",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "43",
+                        "proportion": "0.75",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.3"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "19",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "24",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "20",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Near Phytoplktn",
+            "group_seq": "43",
+            "habitat_area": "1",
+            "biomass_habitat_area": "-9999",
+            "b_hab_area_input": "false",
+            "biomass": "5.326806",
+            "vbk": "0",
+            "pb": "190",
+            "pb_input": "true",
+            "ee": "0.95",
+            "ee_input": "true",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "0",
+            "qb_input": "false",
+            "pp": "1",
+            "detritus_import": "0",
+            "respiration": "0",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0",
+            "shadow_price": "0",
+            "ge": "-9999",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "0.7"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.3"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": {
+                    "pedigree_seq": "30",
+                    "variable": "PBInput"
+                }
+            }
+        },
+        {
+            "group_name": "Nekton falls",
+            "group_seq": "46",
+            "habitat_area": "1",
+            "biomass_habitat_area": "2",
+            "b_hab_area_input": "true",
+            "biomass": "2",
+            "vbk": "-1",
+            "pb": "-9999",
+            "pb_input": "false",
+            "ee": "1",
+            "ee_input": "true",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "-9999",
+            "qb_input": "false",
+            "pp": "2",
+            "detritus_import": "1.55",
+            "respiration": "0",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0",
+            "shadow_price": "0",
+            "ge": "-9999",
+            "ge_input": "false",
+            "diet_imp": "0.874755442",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "0.8"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.2"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": null
+        },
+        {
+            "group_name": "Nshore Demersal",
+            "group_seq": "20",
+            "habitat_area": "1",
+            "biomass_habitat_area": "4.2",
+            "b_hab_area_input": "true",
+            "biomass": "4.2",
+            "vbk": "0.3",
+            "pb": "1",
+            "pb_input": "true",
+            "ee": "0.776040852",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "4.24",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "10.0463991",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0.0701",
+            "gs": "0.2",
+            "shadow_price": "0",
+            "ge": "0.235849068",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "24",
+                        "proportion": "0.110000007",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "42",
+                        "proportion": "0.0200000014",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "1"
+                    },
+                    {
+                        "prey_seq": "31",
+                        "proportion": "0.00500000035",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "20",
+                        "proportion": "0.0400000028",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "30",
+                        "proportion": "0.00500000035",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "28",
+                        "proportion": "0.110000007",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "39",
+                        "proportion": "0.700000048",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "36",
+                        "proportion": "0.0100000007",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "32",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "31",
+                        "variable": "QBInput"
+                    },
+                    {
+                        "pedigree_seq": "28",
+                        "variable": "TCatchInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Offshore Phyto.",
+            "group_seq": "44",
+            "habitat_area": "1",
+            "biomass_habitat_area": "-9999",
+            "b_hab_area_input": "false",
+            "biomass": "10.6723375",
+            "vbk": "0",
+            "pb": "190",
+            "pb_input": "true",
+            "ee": "0.95",
+            "ee_input": "true",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "0",
+            "qb_input": "false",
+            "pp": "1",
+            "detritus_import": "0",
+            "respiration": "0",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0",
+            "shadow_price": "0",
+            "ge": "-9999",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "0.1"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.9"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": {
+                    "pedigree_seq": "30",
+                    "variable": "PBInput"
+                }
+            }
+        },
+        {
+            "group_name": "Offshr Detritus",
+            "group_seq": "48",
+            "habitat_area": "1",
+            "biomass_habitat_area": "114.48",
+            "b_hab_area_input": "true",
+            "biomass": "114.48",
+            "vbk": "-1",
+            "pb": "-9999",
+            "pb_input": "false",
+            "ee": "1.00442243",
+            "ee_input": "true",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "-9999",
+            "qb_input": "false",
+            "pp": "2",
+            "detritus_import": "4.8",
+            "respiration": "0",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "1082.32068",
+            "gs": "0",
+            "shadow_price": "0",
+            "ge": "-9999",
+            "ge_input": "false",
+            "diet_imp": "0.001803821",
+            "diet_descr": null,
+            "taxon_descr": null,
+            "pedigree_assignment_descr": null
+        },
+        {
+            "group_name": "Omni-zooplankto",
+            "group_seq": "35",
+            "habitat_area": "1",
+            "biomass_habitat_area": "24.635",
+            "b_hab_area_input": "true",
+            "biomass": "24.635",
+            "vbk": "0",
+            "pb": "11.06",
+            "pb_input": "true",
+            "ee": "0.999120831",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "22.13",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "54.6404266",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.4",
+            "shadow_price": "0",
+            "ge": "0.4997741",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "42",
+                        "proportion": "0.248",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "0.1"
+                    },
+                    {
+                        "prey_seq": "41",
+                        "proportion": "0.002",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "44",
+                        "proportion": "0.75",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.9"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "19",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "24",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "25",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Pac. Cod",
+            "group_seq": "11",
+            "habitat_area": "1",
+            "biomass_habitat_area": "0.3",
+            "b_hab_area_input": "true",
+            "biomass": "0.3",
+            "vbk": "0.3",
+            "pb": "1.2",
+            "pb_input": "true",
+            "ee": "0.9359321",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "4",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "0.6",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0.0672",
+            "gs": "0.2",
+            "shadow_price": "0.0001",
+            "ge": "0.3",
+            "ge_input": "false",
+            "diet_imp": "0.0999837741",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "26",
+                        "proportion": "0.00199848181",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "25",
+                        "proportion": "0.00200048159",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "15",
+                        "proportion": "0.07901904",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "24",
+                        "proportion": "0.358086258",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "33",
+                        "proportion": "0.0279787332",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "22",
+                        "proportion": "0.00900217",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "12",
+                        "proportion": "0.05001205",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "31",
+                        "proportion": "0.007993927",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "46",
+                        "proportion": "0.0249980818",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "20",
+                        "proportion": "0.08001928",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "1"
+                    },
+                    {
+                        "prey_seq": "27",
+                        "proportion": "0.002997723",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "16",
+                        "proportion": "0.07299598",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "30",
+                        "proportion": "0.00199848181",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "28",
+                        "proportion": "0.02800674",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "39",
+                        "proportion": "0.09992407",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "36",
+                        "proportion": "0.0279787332",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "21",
+                        "proportion": "0.02500602",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "32",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "31",
+                        "variable": "QBInput"
+                    },
+                    {
+                        "pedigree_seq": "28",
+                        "variable": "TCatchInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Pinnipeds",
+            "group_seq": "6",
+            "habitat_area": "1",
+            "biomass_habitat_area": "0.072",
+            "b_hab_area_input": "true",
+            "biomass": "0.072",
+            "vbk": "0.3",
+            "pb": "0.06",
+            "pb_input": "true",
+            "ee": "0.993819535",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "25.55",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "1.4673599",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0.002",
+            "gs": "0.2",
+            "shadow_price": "0.0026",
+            "ge": "0.00234833662",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "26",
+                        "proportion": "0.12",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "10",
+                        "proportion": "0.14",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "25",
+                        "proportion": "0.055",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "22",
+                        "proportion": "0.053",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "0.3"
+                    },
+                    {
+                        "prey_seq": "31",
+                        "proportion": "0.092",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "7",
+                        "proportion": "0.001",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "46",
+                        "proportion": "0",
+                        "detritus_fate": "0.01"
+                    },
+                    {
+                        "prey_seq": "20",
+                        "proportion": "0.23",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.69"
+                    },
+                    {
+                        "prey_seq": "11",
+                        "proportion": "0.01",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "16",
+                        "proportion": "0.119",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "17",
+                        "proportion": "0.03",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "8",
+                        "proportion": "0.01",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "19",
+                        "proportion": "0.01",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "30",
+                        "proportion": "0.01",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "21",
+                        "proportion": "0.12",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "33",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "34",
+                        "variable": "QBInput"
+                    },
+                    {
+                        "pedigree_seq": "21",
+                        "variable": "TCatchInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Pollock 0",
+            "group_seq": "27",
+            "habitat_area": "1",
+            "biomass_habitat_area": "0.11",
+            "b_hab_area_input": "true",
+            "biomass": "0.11",
+            "vbk": "0",
+            "pb": "2.34",
+            "pb_input": "true",
+            "ee": "0.9447461",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "16.18",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "1.16644",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.2",
+            "shadow_price": "0",
+            "ge": "0.144622982",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "42",
+                        "proportion": "0.719",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "0.5"
+                    },
+                    {
+                        "prey_seq": "41",
+                        "proportion": "0.005",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "34",
+                        "proportion": "0.002",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.5"
+                    },
+                    {
+                        "prey_seq": "35",
+                        "proportion": "0.274",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "33",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "34",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Pollock 1+",
+            "group_seq": "16",
+            "habitat_area": "1",
+            "biomass_habitat_area": "7.48",
+            "b_hab_area_input": "true",
+            "biomass": "7.48",
+            "vbk": "0.3",
+            "pb": "0.709",
+            "pb_input": "true",
+            "ee": "0.998465538",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "2.559",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "10.0097351",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0.1813",
+            "gs": "0.2",
+            "shadow_price": "0",
+            "ge": "0.277061343",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "25",
+                        "proportion": "0.00901828147",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "24",
+                        "proportion": "0.27500844",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "22",
+                        "proportion": "0.04308734",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "42",
+                        "proportion": "0.07415031",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "31",
+                        "proportion": "0.0600617528",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "34",
+                        "proportion": "0.00200406276",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "1"
+                    },
+                    {
+                        "prey_seq": "35",
+                        "proportion": "0.351361215",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "27",
+                        "proportion": "0.00200205832",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "16",
+                        "proportion": "0.0200406164",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "19",
+                        "proportion": "0.005000153",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "30",
+                        "proportion": "0.00600617565",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "28",
+                        "proportion": "0.103209153",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "21",
+                        "proportion": "0.04905042",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "32",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "34",
+                        "variable": "QBInput"
+                    },
+                    {
+                        "pedigree_seq": "28",
+                        "variable": "TCatchInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Porpoise",
+            "group_seq": "5",
+            "habitat_area": "1",
+            "biomass_habitat_area": "0.015",
+            "b_hab_area_input": "true",
+            "biomass": "0.015",
+            "vbk": "0.3",
+            "pb": "0.24",
+            "pb_input": "true",
+            "ee": "0.9890696",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "29.2",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "0.3468",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.2",
+            "shadow_price": "0.002",
+            "ge": "0.008219178",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "26",
+                        "proportion": "0.25",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "22",
+                        "proportion": "0.06",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "0.3"
+                    },
+                    {
+                        "prey_seq": "31",
+                        "proportion": "0.04",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "46",
+                        "proportion": "0",
+                        "detritus_fate": "0.01"
+                    },
+                    {
+                        "prey_seq": "20",
+                        "proportion": "0.05",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.69"
+                    },
+                    {
+                        "prey_seq": "11",
+                        "proportion": "0.14",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "8",
+                        "proportion": "0.1",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "30",
+                        "proportion": "0.01",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "3",
+                        "proportion": "0.05",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "21",
+                        "proportion": "0.3",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "32",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "31",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Resident Orca",
+            "group_seq": "2",
+            "habitat_area": "1",
+            "biomass_habitat_area": "0.015",
+            "b_hab_area_input": "true",
+            "biomass": "0.015",
+            "vbk": "0.3",
+            "pb": "0.05",
+            "pb_input": "true",
+            "ee": "0",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "8.667",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "0.10325399",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.2",
+            "shadow_price": "0.0003",
+            "ge": "0.00576900924",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "26",
+                        "proportion": "0.235",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "10",
+                        "proportion": "0.74",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "4",
+                        "proportion": "0.005",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "46",
+                        "proportion": "0",
+                        "detritus_fate": "0.01"
+                    },
+                    {
+                        "prey_seq": "20",
+                        "proportion": "0.005",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.5"
+                    },
+                    {
+                        "prey_seq": "11",
+                        "proportion": "0.005",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "16",
+                        "proportion": "0.005",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "8",
+                        "proportion": "0.005",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "32",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "31",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Rockfish",
+            "group_seq": "17",
+            "habitat_area": "1",
+            "biomass_habitat_area": "1.016",
+            "b_hab_area_input": "true",
+            "biomass": "1.016",
+            "vbk": "0.3",
+            "pb": "0.17",
+            "pb_input": "true",
+            "ee": "0.968574643",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "3.44",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "2.62331223",
+            "immigration": "0.14",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "-0.1276",
+            "gs": "0.2",
+            "shadow_price": "0",
+            "ge": "0.0494186059",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "25",
+                        "proportion": "0.001",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "15",
+                        "proportion": "0.031",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "24",
+                        "proportion": "0.288",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "33",
+                        "proportion": "0.003",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "42",
+                        "proportion": "0.024",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "0.2"
+                    },
+                    {
+                        "prey_seq": "31",
+                        "proportion": "0.031",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "34",
+                        "proportion": "0.003",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "20",
+                        "proportion": "0.002",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.8"
+                    },
+                    {
+                        "prey_seq": "35",
+                        "proportion": "0.4",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "27",
+                        "proportion": "0.001",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "30",
+                        "proportion": "0.011",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "39",
+                        "proportion": "0.047",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "21",
+                        "proportion": "0.158",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "32",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "31",
+                        "variable": "QBInput"
+                    },
+                    {
+                        "pedigree_seq": "28",
+                        "variable": "TCatchInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Sablefish",
+            "group_seq": "8",
+            "habitat_area": "1",
+            "biomass_habitat_area": "0.293",
+            "b_hab_area_input": "true",
+            "biomass": "0.293",
+            "vbk": "0.3",
+            "pb": "0.566",
+            "pb_input": "true",
+            "ee": "0.7742742",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "6.42",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "1.33901012",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0.0192",
+            "gs": "0.2",
+            "shadow_price": "0.0001",
+            "ge": "0.08816199",
+            "ge_input": "false",
+            "diet_imp": "0.2",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "26",
+                        "proportion": "0.022",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "25",
+                        "proportion": "0.001",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "15",
+                        "proportion": "0.048",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "24",
+                        "proportion": "0.051",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "33",
+                        "proportion": "0.004",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "22",
+                        "proportion": "0.107",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "32",
+                        "proportion": "0.054",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "31",
+                        "proportion": "0.056",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "46",
+                        "proportion": "0.091",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "1"
+                    },
+                    {
+                        "prey_seq": "35",
+                        "proportion": "0.067",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "11",
+                        "proportion": "0.007",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "27",
+                        "proportion": "0.003",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "16",
+                        "proportion": "0.208",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "30",
+                        "proportion": "0.001",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "21",
+                        "proportion": "0.08",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "32",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "31",
+                        "variable": "QBInput"
+                    },
+                    {
+                        "pedigree_seq": "28",
+                        "variable": "TCatchInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Salmon Fry 0-12",
+            "group_seq": "19",
+            "habitat_area": "1",
+            "biomass_habitat_area": "0.072",
+            "b_hab_area_input": "true",
+            "biomass": "0.072",
+            "vbk": "0.3",
+            "pb": "3.912",
+            "pb_input": "true",
+            "ee": "0.9686042",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "62.8",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "3.33561587",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.2",
+            "shadow_price": "0",
+            "ge": "0.0622929931",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "25",
+                        "proportion": "0.01",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "22",
+                        "proportion": "0.3",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "42",
+                        "proportion": "0.289",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "0.3"
+                    },
+                    {
+                        "prey_seq": "32",
+                        "proportion": "0.011",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "31",
+                        "proportion": "0.057",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "41",
+                        "proportion": "0.002",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "34",
+                        "proportion": "0.001",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.7"
+                    },
+                    {
+                        "prey_seq": "35",
+                        "proportion": "0.163",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "30",
+                        "proportion": "0.01",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "39",
+                        "proportion": "0.157",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "33",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "25",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Sandlance",
+            "group_seq": "30",
+            "habitat_area": "1",
+            "biomass_habitat_area": "0.595",
+            "b_hab_area_input": "true",
+            "biomass": "0.595",
+            "vbk": "0",
+            "pb": "2",
+            "pb_input": "true",
+            "ee": "0.945939362",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "18",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "7.37800074",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.2",
+            "shadow_price": "0",
+            "ge": "0.111111112",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "42",
+                        "proportion": "0.722",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "0.5"
+                    },
+                    {
+                        "prey_seq": "41",
+                        "proportion": "0.005",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "34",
+                        "proportion": "0.001",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.5"
+                    },
+                    {
+                        "prey_seq": "35",
+                        "proportion": "0.209",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "39",
+                        "proportion": "0.063",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "24",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "25",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Seabirds",
+            "group_seq": "14",
+            "habitat_area": "1",
+            "biomass_habitat_area": "0.022",
+            "b_hab_area_input": "true",
+            "biomass": "0.022",
+            "vbk": "0.3",
+            "pb": "0.17",
+            "pb_input": "true",
+            "ee": "0.975935936",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "150.6",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "2.64682031",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.2",
+            "shadow_price": "0.0006",
+            "ge": "0.001128818",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "25",
+                        "proportion": "0.01",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "22",
+                        "proportion": "0.047",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "42",
+                        "proportion": "0.00100000016",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0.103",
+                        "detritus_fate": "0.4"
+                    },
+                    {
+                        "prey_seq": "31",
+                        "proportion": "0.367000043",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "34",
+                        "proportion": "0.0100000007",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "20",
+                        "proportion": "0.127",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.4"
+                    },
+                    {
+                        "prey_seq": "35",
+                        "proportion": "0.0620000027",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "16",
+                        "proportion": "0.06",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "19",
+                        "proportion": "0.025",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "30",
+                        "proportion": "0.11",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "40",
+                        "proportion": "0.0180000011",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "39",
+                        "proportion": "0.0530000031",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "21",
+                        "proportion": "0.007000003",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "32",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "31",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Sea otters",
+            "group_seq": "23",
+            "habitat_area": "1",
+            "biomass_habitat_area": "0.045",
+            "b_hab_area_input": "true",
+            "biomass": "0.045",
+            "vbk": "0.3",
+            "pb": "0.13",
+            "pb_input": "true",
+            "ee": "0.00515812",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "117",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "4.20615",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.2",
+            "shadow_price": "0",
+            "ge": "0.001111111",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "24",
+                        "proportion": "0.04",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "38",
+                        "proportion": "0.1",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "0.5"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.5"
+                    },
+                    {
+                        "prey_seq": "28",
+                        "proportion": "0.16",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "40",
+                        "proportion": "0.7",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "26",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "32",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "34",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Shal Lg Epibent",
+            "group_seq": "28",
+            "habitat_area": "1",
+            "biomass_habitat_area": "3.1",
+            "b_hab_area_input": "true",
+            "biomass": "3.1",
+            "vbk": "0",
+            "pb": "2.1",
+            "pb_input": "true",
+            "ee": "0.750350356",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "10",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "18.29",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.2",
+            "shadow_price": "0",
+            "ge": "0.21",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0",
+                        "detritus_fate": "0.8"
+                    },
+                    {
+                        "prey_seq": "45",
+                        "proportion": "0.01",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "46",
+                        "proportion": "0.01",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.2"
+                    },
+                    {
+                        "prey_seq": "39",
+                        "proportion": "0.79",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "36",
+                        "proportion": "0.19",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "19",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "32",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "13",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Shal lg infauna",
+            "group_seq": "40",
+            "habitat_area": "1",
+            "biomass_habitat_area": "12.5",
+            "b_hab_area_input": "true",
+            "biomass": "12.5",
+            "vbk": "0",
+            "pb": "0.6",
+            "pb_input": "true",
+            "ee": "0.5202957",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "23",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "165",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0.003",
+            "gs": "0.4",
+            "shadow_price": "0",
+            "ge": "0.0260869581",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0.5",
+                        "detritus_fate": "1"
+                    },
+                    {
+                        "prey_seq": "43",
+                        "proportion": "0.5",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "24",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "25",
+                        "variable": "QBInput"
+                    },
+                    {
+                        "pedigree_seq": "28",
+                        "variable": "TCatchInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Shal Sm Epibent",
+            "group_seq": "39",
+            "habitat_area": "1",
+            "biomass_habitat_area": "26.1",
+            "b_hab_area_input": "true",
+            "biomass": "26.1",
+            "vbk": "0",
+            "pb": "2.3",
+            "pb_input": "true",
+            "ee": "0.976559937",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "10",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "96.57",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.4",
+            "shadow_price": "0.003",
+            "ge": "0.229999989",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0.397",
+                        "detritus_fate": "0.7"
+                    },
+                    {
+                        "prey_seq": "45",
+                        "proportion": "0.2",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "43",
+                        "proportion": "0.35",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "46",
+                        "proportion": "0.003",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.3"
+                    },
+                    {
+                        "prey_seq": "39",
+                        "proportion": "0.05",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "19",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "24",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "25",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Shal sm Infauna",
+            "group_seq": "36",
+            "habitat_area": "1",
+            "biomass_habitat_area": "51.5",
+            "b_hab_area_input": "true",
+            "biomass": "51.5",
+            "vbk": "0",
+            "pb": "3.8",
+            "pb_input": "true",
+            "ee": "0.940533042",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "23",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "515",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.4",
+            "shadow_price": "0",
+            "ge": "0.165217385",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "47",
+                        "proportion": "0.25",
+                        "detritus_fate": "1"
+                    },
+                    {
+                        "prey_seq": "43",
+                        "proportion": "0.6",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "36",
+                        "proportion": "0.15",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "19",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "24",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "13",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Sharks",
+            "group_seq": "3",
+            "habitat_area": "1",
+            "biomass_habitat_area": "0.6623",
+            "b_hab_area_input": "true",
+            "biomass": "0.6623",
+            "vbk": "0.3",
+            "pb": "0.1",
+            "pb_input": "true",
+            "ee": "0.7527428",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "6.995",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "3.64000058",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0.0044",
+            "gs": "0.2",
+            "shadow_price": "0",
+            "ge": "0.0142959263",
+            "ge_input": "false",
+            "diet_imp": "0.0450000055",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "9",
+                        "proportion": "0.150000021",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "26",
+                        "proportion": "0.02999999",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "10",
+                        "proportion": "0.323000044",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "25",
+                        "proportion": "0.00500000035",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "15",
+                        "proportion": "0.00299999886",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "24",
+                        "proportion": "0.0900000259",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "4",
+                        "proportion": "0.0249999911",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "32",
+                        "proportion": "0.0100000007",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "12",
+                        "proportion": "0.00200000033",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "31",
+                        "proportion": "0.0249999911",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "46",
+                        "proportion": "0.0800000057",
+                        "detritus_fate": "0.01"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.99"
+                    },
+                    {
+                        "prey_seq": "35",
+                        "proportion": "0.07000003",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "11",
+                        "proportion": "0.0350000039",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "16",
+                        "proportion": "0.0499999821",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "17",
+                        "proportion": "0.00400000066",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "8",
+                        "proportion": "0.0100000007",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "39",
+                        "proportion": "0.0200000014",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "3",
+                        "proportion": "0.00299999886",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "21",
+                        "proportion": "0.0200000014",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "9",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "31",
+                        "variable": "QBInput"
+                    },
+                    {
+                        "pedigree_seq": "28",
+                        "variable": "TCatchInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Squid",
+            "group_seq": "21",
+            "habitat_area": "1",
+            "biomass_habitat_area": "3",
+            "b_hab_area_input": "true",
+            "biomass": "3",
+            "vbk": "0.3",
+            "pb": "3",
+            "pb_input": "true",
+            "ee": "0.939658463",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "15",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "27",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.2",
+            "shadow_price": "0",
+            "ge": "0.2",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "25",
+                        "proportion": "0.001",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "24",
+                        "proportion": "0.004",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "22",
+                        "proportion": "0.001",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "42",
+                        "proportion": "0.015",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "31",
+                        "proportion": "0.001",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "41",
+                        "proportion": "0.001",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "34",
+                        "proportion": "0.003",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "1"
+                    },
+                    {
+                        "prey_seq": "35",
+                        "proportion": "0.966",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "27",
+                        "proportion": "0.001",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "39",
+                        "proportion": "0.003",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "36",
+                        "proportion": "0.001",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "21",
+                        "proportion": "0.003",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "12",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "13",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        },
+        {
+            "group_name": "Transient Orca",
+            "group_seq": "1",
+            "habitat_area": "1",
+            "biomass_habitat_area": "0.001",
+            "b_hab_area_input": "true",
+            "biomass": "0.001",
+            "vbk": "0.3",
+            "pb": "0.05",
+            "pb_input": "true",
+            "ee": "0",
+            "ee_input": "false",
+            "biomass_accum": "0",
+            "biomass_accum_rate": "0",
+            "qb": "6.035",
+            "qb_input": "true",
+            "pp": "0",
+            "detritus_import": "0",
+            "respiration": "0.004778",
+            "immigration": "0",
+            "emigration": "0",
+            "emigration_rate": "0",
+            "other_mort": "-9999",
+            "export": "0",
+            "gs": "0.2",
+            "shadow_price": "0.0003",
+            "ge": "0.008285005",
+            "ge_input": "false",
+            "diet_imp": "0",
+            "diet_descr": {
+                "diet": [
+                    {
+                        "prey_seq": "10",
+                        "proportion": "0.0150000006",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "4",
+                        "proportion": "0.00500000035",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "46",
+                        "proportion": "0",
+                        "detritus_fate": "0.01"
+                    },
+                    {
+                        "prey_seq": "48",
+                        "proportion": "0",
+                        "detritus_fate": "0.5"
+                    },
+                    {
+                        "prey_seq": "6",
+                        "proportion": "0.380000025",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "5",
+                        "proportion": "0.590000033",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "8",
+                        "proportion": "0.00500000035",
+                        "detritus_fate": "0"
+                    },
+                    {
+                        "prey_seq": "23",
+                        "proportion": "0.00500000035",
+                        "detritus_fate": "0"
+                    }
+                ]
+            },
+            "taxon_descr": null,
+            "pedigree_assignment_descr": {
+                "pedigree_assignment": [
+                    {
+                        "pedigree_seq": "23",
+                        "variable": "DietComp"
+                    },
+                    {
+                        "pedigree_seq": "32",
+                        "variable": "PBInput"
+                    },
+                    {
+                        "pedigree_seq": "31",
+                        "variable": "QBInput"
+                    }
+                ]
+            }
+        }
+    ]
+}

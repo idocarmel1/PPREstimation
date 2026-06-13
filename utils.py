@@ -2,20 +2,6 @@ import numpy as np
 import sympy as sm
 import pandas as pd
 
-# Import ModelData components
-from ModelData import (
-    ModelData, 
-    SpeciesGroup, 
-    species_groups, 
-    model_diet_datas,
-    get_seq2name as _get_seq2name,
-    get_DC as _get_DC
-)
-
-
-# SpeciesGroup, ModelData and related functions are imported from ModelData.py
-
-
 def mat_from_np(x, resolution=None):
     """Convert numpy array to sympy Matrix with optional rational resolution."""
     x = np.array(x)
@@ -66,6 +52,76 @@ def move_scattered_identity(df):
     # Apply to both DataFrames
     return df.reindex(index=new_row_order, columns=new_col_order), new_row_order, new_col_order
 
+def _find_all_cycles(matrix):
+    n = len(matrix)
+    cycles = []
+
+    def dfs(start_node, current_path):
+        current_node = current_path[-1]
+        for neighbor in range(n):
+            if matrix[current_node][neighbor] > 0:
+                if neighbor == start_node:
+                    cycles.append(list(current_path))
+                elif neighbor not in current_path and neighbor > start_node:
+                    dfs(start_node, current_path + [neighbor])
+
+    for i in range(n):
+        dfs(i, [i])
+    return cycles
+
+
+def _get_circuit_probability(cycle, matrix):
+    prob = 1.0
+    for i in range(len(cycle)):
+        u = cycle[i]
+        v = cycle[(i + 1) % len(cycle)]
+        total_output = np.sum(matrix[u, :])
+        if total_output > 0:
+            prob *= matrix[u][v] / total_output
+        else:
+            return 0.0
+    return prob
+
+
+def _remove_cycles_nexus(original_matrix):
+    """Ulanowicz nexus-based cycle removal (Phases 1+2)."""
+    residual = np.copy(original_matrix).astype(float).T
+    cycled_flow_matrix = np.zeros_like(residual)
+
+    while True:
+        all_cycles = _find_all_cycles(residual)
+        if not all_cycles:
+            break
+
+        cycle_data = []
+        for cycle in all_cycles:
+            flows = [residual[cycle[i]][cycle[(i+1)%len(cycle)]] for i in range(len(cycle))]
+            min_flow = min(flows)
+            critical_arc_idx = flows.index(min_flow)
+            u, v = cycle[critical_arc_idx], cycle[(critical_arc_idx+1)%len(cycle)]
+            cycle_data.append({
+                'nodes': cycle,
+                'min_flow': min_flow,
+                'crit_arc': (u, v),
+                'prob': _get_circuit_probability(cycle, residual)
+            })
+
+        global_min_flow = min(c['min_flow'] for c in cycle_data)
+        nexus_cycles = [c for c in cycle_data if c['min_flow'] == global_min_flow]
+        total_prob = sum(c['prob'] for c in nexus_cycles)
+
+        for cycle_info in nexus_cycles:
+            fraction = (cycle_info['prob'] / total_prob) if total_prob > 0 else (1 / len(nexus_cycles))
+            assigned_flow = global_min_flow * fraction
+            nodes = cycle_info['nodes']
+            for i in range(len(nodes)):
+                u, v = nodes[i], nodes[(i+1)%len(nodes)]
+                residual[u][v] -= assigned_flow
+                cycled_flow_matrix[u][v] += assigned_flow
+
+    return residual.T, cycled_flow_matrix.T
+
+
 def remove_cycles(Z_input, new=False):
     if new:
         return remove_cycles_new(Z_input)
@@ -86,8 +142,7 @@ def remove_cycles_new(Z_input):
     else:
         Z = np.array(Z_input, dtype=float, copy=True)
 
-    from remove_cycles_fix import remove_cycles as rc
-    Z, _ = rc(Z)
+    Z, _ = _remove_cycles_nexus(Z)
 
     # 3. Re-wrap in DataFrame if necessary
     if is_pandas:
@@ -173,101 +228,3 @@ def remove_cycles_old(Z_input):
     return Z
 
 
-def get_model_groups_data(model_number):
-    def to_df_row(c: SpeciesGroup):
-        dct = c.__dict__.copy()
-        dct.pop("taxons_included")
-        return pd.DataFrame([dct])
-
-    df_rows = [to_df_row(species_groups[i]) for i in range(len(species_groups)) if species_groups[i].model_number == model_number]
-    df = pd.concat(df_rows, ignore_index=True)
-    df = df.replace("-9999", np.nan).replace(-9999, np.nan)
-
-    df = df.rename(columns={  # change names
-        'export': 'catch',
-        'prop_unassimilated_food': 'gs',
-        'gross_efficiency': 'ge'
-        })
-    
-    df['p'] = df['pb'] * df['biomass']  # production
-    df['q'] = df['qb'] * df['biomass']  # consumption
-    df['M0'] = df['p'] * (1-df['ee'])  # other mortality
-    df['net_migration'] = df['emigration'] - df['immigration']  # net migration
-    
-      # production*EE = catch + predation + biomass_accum + net_migration:
-    df['predation'] = df['p'] * df['ee'] - (df['catch'] + df['biomass_accum'] + df['net_migration'])
-    df['egestion'] = df['q'] * df['gs']  # gs
-
-    df['flow_to_det'] = df['egestion'] + df['M0']
-
-    cols_to_return = ['group_name', 'trophic_info', 'tl', 'ge', 'ee', 'catch', 
-        'biomass', 'pb', 'qb', 'p', 'q', 'predation', 'M0', 'gs', 'egestion', 'respiration', 'biomass_accum', 'emigration', 'immigration', 'net_migration',
-         'flow_to_det', 'detritus_import',        
-        ]
-
-    return df.set_index('group_seq')[cols_to_return]
-
-
-def SPPR_2015(model_number):
-
-    # general data:
-    seq2name = _get_seq2name(model_number, model_diet_datas)
-    groups_data = get_model_groups_data(model_number).fillna(0)
-
-    # DC and detritus_fate matrices:
-    DC, det_fate = _get_DC(model_number, model_diet_datas)
-
-    Z = DC.mul(groups_data['q'], axis='index')
-    DET_seq = list(groups_data[groups_data['trophic_info'] == 'DET'].index.values)
-    if len(DET_seq) == 1:
-        Z.loc[DET_seq[0], :] = groups_data['flow_to_det']
-    elif len(DET_seq) == 2:  # det_date acts as a switch between DET groups
-        Z.loc[DET_seq[0], :] = groups_data['flow_to_det'] * (DC * (1-det_fate)).sum(axis=1)
-        Z.loc[DET_seq[1], :] = groups_data['flow_to_det'] * (DC * (det_fate)).sum(axis=1)
-    else:
-        raise Exception('too many detritus groups(?)')
-
-    production = groups_data['p'].copy()
-
-    # combine PP to single row:
-    PP_seq_list = sorted(groups_data.index[groups_data['trophic_info'] == 'PP'].values)
-    PP_seq = PP_seq_list[-1]
-    seq_to_drop = PP_seq_list[:-1]
-    if len(PP_seq_list) > 1:
-
-        production.loc[PP_seq] += production.loc[seq_to_drop].sum()
-        production = production.drop(index=seq_to_drop)
-
-        Z.loc[:, PP_seq] += Z.loc[:, seq_to_drop].sum(axis=1)
-        Z = Z.drop(index=seq_to_drop, columns=seq_to_drop)
-
-    # combine part of DET that is PP into PP row:
-    DET_seq = groups_data[groups_data['trophic_info'] == 'DET'].index.values[0]  # assuming there is only one DET
-    Z_without_DET = Z.copy()
-    percent_of_det_that_is_PP = Z_without_DET.loc[DET_seq, PP_seq] / Z_without_DET.loc[DET_seq, :].sum()  # 98%
-    Z_without_DET.loc[:, PP_seq] += percent_of_det_that_is_PP * Z_without_DET.loc[:, DET_seq]
-    Z_without_DET = Z_without_DET.drop(index=DET_seq, columns=DET_seq)
-
-    # production of living compartments:
-    new_index = Z_without_DET.index
-    P = production[new_index].copy()
-    ee = groups_data.loc[new_index, "ee"]
-    non_PP = groups_data['trophic_info'] == 'Regular'
-    P[non_PP] = P[non_PP].mul(ee[non_PP])   # P*EE = (export + predation + growth + net_migration), without M0
-    # EE = (export + predation + growth + net_migration) / (export + predation + growth + net_migration + M0)
-    P = P.sort_index(ascending=False)
-
-    # production-normalized transaction matrix:
-    A = Z_without_DET.T.sort_index(ascending=False).sort_index(axis=1, ascending=False) / P
-
-    # production requirement matrix:
-    seq_to_drop = P.index[P == 0]
-    A = A.drop(columns=seq_to_drop, index=seq_to_drop)
-    L = pd.DataFrame(np.linalg.inv((np.identity(A.shape[0]) - A)), index=A.index, columns=A.columns)
-
-    SPPR = L.loc[PP_seq, :]
-
-    return SPPR, seq2name, DC, Z, P, A, L, groups_data, PP_seq, DET_seq, new_index
-
-
-# Data loading is now handled in ModelData.py
