@@ -1063,7 +1063,7 @@ class PPRCalculator:
             GE = self.get_TE(TE_option=TE_option, DET_values=DET_TE_vals, as_matrix=True)
 
         # calculate A matrix and turn to symbolic matrix:
-        A = (DC / GE).fillna(0).values
+        A = (DC / GE).fillna(0).values.copy()
         A[GE.values == 0] = 0
         for i in range(len(DC)):# Replace producer rows with identity rows
             if DC.values[i, :].sum() == 0:
@@ -1113,15 +1113,17 @@ class PPRCalculator:
             elif TE_option == 'GE':
                 m = (self.M0 / flow2det).fillna(0)
                 x = sm.symbols('x')
-                sppr = non_DET_sppr + x * SPPR[det_j]
-                sppr_det = float(sm.solve(x - (m @ sppr), x)[0])
+                a = float(m @ non_DET_sppr)
+                b = float(m @ SPPR[det_j])
+                sppr_det = float(sm.solve(x - a - x * b, x)[0])
                 SPPR[DET_seq] *= sppr_det
             elif TE_option == 'With Egestion':
                 m = (self.M0 / flow2det).fillna(0)
                 e = (self.egestion / flow2det).fillna(0)
                 x = sm.symbols('x')
-                sppr = non_DET_sppr + x * SPPR[det_j]
-                sppr_det = float(sm.solve(x - (m @ sppr + (DC @ sppr) @ e), x)[0])
+                a = float(m @ non_DET_sppr) + float((DC @ non_DET_sppr) @ e)
+                b = float(m @ SPPR[det_j]) + float((DC @ SPPR[det_j]) @ e)
+                sppr_det = float(sm.solve(x - a - x * b, x)[0])
                 SPPR[DET_seq] *= sppr_det
             else:
                 raise Exception("TE_option should be in ['GE', 'TE', 'With Egestion', 'global']")
