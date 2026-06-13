@@ -1,0 +1,652 @@
+Review and implementation notes for multi-detritus SPPR_new collapse_det, B_open, burial, and detritus openness
+====================================================================================================
+
+Context
+-------
+
+The current SPPR_new implementation builds an SPPR matrix using DC / TE, then applies an extra detritus-scaling correction. For multiple detritus groups, the current logic solves a coupled linear system:
+
+    x = c + B x
+
+or equivalently:
+
+    (I - B) x = c
+
+where:
+
+    x[l]      = scaling factor for detritus group l
+    c[l]      = contribution to detritus group l from non-detritus sources
+    B[l, j]   = contribution to detritus group l that recursively depends on detritus basis j
+
+For a finite nonnegative ecological solution, B should be nonnegative and subcritical:
+
+    spectral_radius(B) < 1
+
+If spectral_radius(B) >= 1, the formal solve can produce negative values. Those negative values should not be interpreted ecologically. They indicate that the model, as currently attributed, has a closed or over-amplifying detrital recycling loop.
+
+The code currently adds a collapse_det fallback that pools the detritus scaling when the multi-detritus system is unstable. This is a reasonable fallback, but it should be framed and implemented carefully.
+
+
+1. Assessment of the current collapse_det idea
+---------------------------------------------
+
+The collapse_det idea is defensible as a fallback.
+
+It does not really solve the original multi-detritus attribution problem. Instead, it says:
+
+    The model does not support stable attribution among separate detritus pools,
+    so reduce detritus attribution to a pooled detritus source.
+
+This is ecologically reasonable for SPPR/PPR if it is reported clearly. It is much better than returning negative SPPR values or clipping them to zero.
+
+The current helper _collapse_det_scaling does roughly this:
+
+    q_combined = sum(q[d] for d in DET_seq)
+    m_combined = M0 / q_combined
+
+    if TE_option == "With Egestion":
+        e_combined = egestion / q_combined
+        m_eff = m_combined + DC.T @ e_combined
+    else:
+        m_eff = m_combined
+
+    SPPR_combined_raw = sum(SPPR[det_j] for det_j in DET_seq)
+
+    a = m_eff dot non_DET_sppr
+    b = m_eff dot SPPR_combined_raw
+
+    x_det = a / (1 - b)
+
+    for det_j in DET_seq:
+        SPPR[det_j] *= x_det
+
+This replaces the multi-detritus system:
+
+    x = c + B x
+
+with a one-dimensional pooled system:
+
+    x_det = a + b x_det
+
+so:
+
+    x_det = a / (1 - b)
+
+The condition b < 1 is the one-dimensional version of the spectral-radius condition. If b >= 1, even the pooled detritus fallback is unstable, and the code should raise a clear error.
+
+Important interpretation:
+
+    The current implementation does not literally collapse the network to one detritus group.
+    It keeps multiple DET columns, but gives all DET columns the same pooled scaling factor.
+
+That is okay, but I would name it something like:
+
+    det_resolution = "pooled_scaling"
+
+rather than saying it truly rebuilt the food web with one detritus group. A true structural collapse would rebuild DC with one aggregated DET group, recompute A, and return one DET column.
+
+
+2. Recommended API: use a mode, not a Boolean
+---------------------------------------------
+
+Instead of:
+
+    collapse_det=False
+
+I recommend:
+
+    det_collapse_mode="never" | "auto" | "always"
+
+Suggested meaning:
+
+    "never"
+        Preserve multi-detritus attribution. If spectral_radius(B) >= 1, raise an error.
+
+    "auto"
+        Use multi-detritus attribution if stable. Collapse to pooled detritus scaling only when needed.
+
+    "always"
+        Always use pooled detritus scaling whenever there is more than one detritus group.
+
+This avoids ambiguity and makes the behavior explicit.
+
+Backward compatibility:
+
+    collapse_det=False  -> det_collapse_mode="never"
+    collapse_det=True   -> det_collapse_mode="auto" or "always"
+
+I would choose True -> "auto" if preserving the user's original intent is important.
+
+
+3. Check spectral_radius(B) directly
+------------------------------------
+
+The current code checks something like:
+
+    IminusB = np.eye(k) - B
+    if collapse_det and np.min(np.linalg.eigvals(IminusB).real) <= 0:
+        collapse
+
+For nonnegative B, this often catches the same problem, but it is indirect. I recommend checking B directly:
+
+    eigvals = np.linalg.eigvals(B)
+    rho = float(np.max(np.abs(eigvals)))
+
+    if rho >= 1.0 - tol:
+        # unstable or nearly unstable
+
+Recommended tolerance:
+
+    tol = 1e-10  # strict
+
+or, if the model is noisy:
+
+    tol = 1e-8
+
+Also consider condition number:
+
+    cond = np.linalg.cond(np.eye(k) - B)
+
+Even if rho is slightly below 1, the solution can be numerically huge and ecologically unhelpful when I - B is nearly singular.
+
+Suggested auto decision:
+
+    rho = max(abs(eigvals(B)))
+    cond = cond(I - B)
+
+    should_collapse = (
+        det_collapse_mode == "always"
+        or (
+            det_collapse_mode == "auto"
+            and (rho >= 1.0 - tol or cond > cond_threshold)
+        )
+    )
+
+where:
+
+    cond_threshold = 1e10
+
+Pseudo-code:
+
+    IminusB = np.eye(k) - B
+    rho = float(np.max(np.abs(np.linalg.eigvals(B))))
+    cond = float(np.linalg.cond(IminusB))
+
+    if det_collapse_mode == "always":
+        use_collapse = True
+    elif det_collapse_mode == "auto":
+        use_collapse = (rho >= 1.0 - tol) or (cond > cond_threshold)
+    elif det_collapse_mode == "never":
+        use_collapse = False
+    else:
+        raise ValueError("det_collapse_mode must be 'never', 'auto', or 'always'")
+
+    if use_collapse:
+        SPPR = self._collapse_det_scaling(...)
+    else:
+        if rho >= 1.0 - tol:
+            raise ValueError("No stable nonnegative multi-detritus SPPR solution")
+        x_vec = np.linalg.solve(IminusB, c_vec)
+        if np.any(x_vec < -1e-10):
+            raise ValueError("Negative detritus scaling in multi-detritus SPPR solution")
+        for i, det_j in enumerate(DET_seq):
+            SPPR[det_j] *= x_vec[i]
+
+
+4. Make SPPR_symbolic behavior match SPPR_new
+---------------------------------------------
+
+In the current code, the symbolic helpers appear to collapse whenever collapse_det=True and there are multiple detritus groups for GE or With Egestion. That means a stable multi-detritus toy model could be collapsed unnecessarily.
+
+I recommend using the same mode and the same stability logic in SPPR_symbolic as in SPPR_new.
+
+This may require factoring out the B/c construction into a helper that both SPPR_new and SPPR_symbolic can call.
+
+Suggested helper design:
+
+    def _build_det_scaling_system(self, SPPR, DET_seq, non_DET_sppr, DC, TE_option):
+        # returns B, c_vec, maybe row weights and diagnostics
+
+Then:
+
+    def _solve_or_collapse_det_scaling(..., det_collapse_mode="auto"):
+        B, c_vec = _build_det_scaling_system(...)
+        rho = spectral_radius(B)
+        cond = cond(I - B)
+        decide whether to solve or collapse
+        return SPPR, diagnostics
+
+This avoids duplicated logic between GE and With Egestion branches and between numeric/symbolic paths.
+
+
+5. Store diagnostics
+--------------------
+
+For a paper or reproducible analysis, it is important to know whether a model used full multi-detritus attribution or the pooled fallback.
+
+I recommend storing something like this on the calculator instance:
+
+    self.detritus_resolution_info = {
+        "method": "multi_detritus" or "pooled_detritus_scaling",
+        "reason": None or "spectral_radius_ge_1" or "ill_conditioned",
+        "rho_B": rho,
+        "cond_IminusB": cond,
+        "det_seq": list(DET_seq),
+        "det_names": [self.seq2name[d] for d in DET_seq],
+        "collapse_scalar": sppr_det if collapsed else None,
+        "collapse_b": b if collapsed else None,
+        "collapse_a": a if collapsed else None,
+    }
+
+Then downstream code and paper methods can report:
+
+    For models where the multi-detritus recycling matrix had spectral radius >= 1,
+    detritus pools were pooled for SPPR attribution.
+
+This is more transparent than silently changing behavior.
+
+
+6. Important fix: missing det_fate columns should not receive all detritus
+-------------------------------------------------------------------------
+
+In multiple-detritus models, some parts of the code still behave like this:
+
+    if det_j in det_fate.columns:
+        q_det_j = sum(flow_to_det * det_fate[det_j])
+    else:
+        q_det_j = flow_to_det.sum()
+
+That fallback is okay for a one-detritus model, but it is not okay for a multi-detritus model.
+
+In a multi-detritus model, if no group sends detritus to det_j, then det_j should receive zero generic detritus unless it has an explicit import/source.
+
+I recommend:
+
+    if det_fate is not None and len(det_idx) > 1:
+        for det_j in det_idx:
+            if det_j in det_fate.columns:
+                q_det_j = sum(flow_to_det * fate_to_det_j)
+            else:
+                q_det_j = 0.0
+
+If special detritus pools exist, they should be generated explicitly, not by this fallback.
+
+This applies to:
+
+    apply_ecopath_defaults
+    apply_lim finalization
+    get_Z(DET_as_PP=False)
+    get_TL(... TE_option='GE') if it uses similar fallback logic
+
+
+7. Include detritus fate sums in pooled scaling
+-----------------------------------------------
+
+The current pooled fallback uses:
+
+    m_combined = M0 / q_combined
+
+This assumes all M0 enters the modeled detritus system after pooling.
+
+For a multi-detritus model, some detritus fate rows may sum to less than 1. The missing fraction can mean burial, mineralization, export, or untracked loss. If so, only the fraction that actually enters modeled detritus should contribute to the recycled detritus SPPR calculation.
+
+Recommended calculation:
+
+    if det_fate is not None:
+        fate_to_modeled_det = det_fate.reindex(index=M0.index, columns=DET_seq).fillna(0).sum(axis=1)
+    else:
+        fate_to_modeled_det = pd.Series(1.0, index=M0.index)
+
+    # Optional validation
+    if any(fate_to_modeled_det > 1 + tol):
+        warn or raise, because detritus fate fractions exceed 1
+
+    fate_to_modeled_det = fate_to_modeled_det.clip(lower=0.0, upper=1.0)
+
+    m_combined = (M0 * fate_to_modeled_det / q_combined).fillna(0)
+
+For With Egestion:
+
+    e_combined = (egestion * fate_to_modeled_det / q_combined).fillna(0)
+    m_eff = m_combined + DC.T @ e_combined
+
+For GE:
+
+    m_eff = m_combined
+
+This is more ecologically meaningful because material whose detritus fate leaves the modeled detritus system does not contribute to recycled detritus SPPR.
+
+
+8. Thoughts on B_open, burial, mineralization, export, and detritus openness
+----------------------------------------------------------------------------
+
+The collapse_det fallback is useful, but it is not the only possible ecological solution.
+
+Another option is to explicitly model detritus as an open, lossy subsystem. Detritus is rarely a perfectly closed recyclable pool. Some fraction of detritus usually leaves the modeled recycling loop through:
+
+    burial
+    sediment storage
+    mineralization / remineralization
+    microbial respiration outside modeled consumers
+    export out of the modeled spatial domain
+    transition into refractory/unavailable organic matter
+    old background detritus stock drawdown
+    external detritus import
+
+The current unstable system is:
+
+    x = c + B x
+
+A lossy/open version is:
+
+    x = c_open + B_open x
+
+and the requirement is:
+
+    spectral_radius(B_open) < 1
+
+If B_open is nonnegative and spectral_radius(B_open) < 1, then:
+
+    x = inverse(I - B_open) c_open
+
+has a nonnegative finite interpretation, because:
+
+    inverse(I - B_open) = I + B_open + B_open^2 + B_open^3 + ...
+
+Every term is nonnegative. Ecologically, the series means first pass, second recycling pass, third recycling pass, etc. The condition spectral_radius(B_open) < 1 means the recycling loop decays rather than amplifies forever.
+
+There are two related but different ways to interpret openness.
+
+
+8A. Openness as recycling damping: reduce B only
+------------------------------------------------
+
+Let lambda_l be the fraction of detritus pool l that leaves the closed recycling loop through burial, mineralization, export, or refractory storage.
+
+Then:
+
+    availability_l = 1 - lambda_l
+
+A simple damped recycling model is:
+
+    B_open = diag(availability) @ B
+    c_open = c
+
+or in row form:
+
+    x_l = c_l + availability_l * sum_j B[l, j] x_j
+
+This says:
+
+    The first-order current production contribution to detritus pool l is still c_l,
+    but repeated detrital feedback through pool l is damped by loss.
+
+This can be useful if the main problem is over-recursion in detrital loops, but you do not want to dilute the current internal source term.
+
+Pseudo-code:
+
+    availability = pd.Series(1.0, index=DET_seq)
+    # e.g. availability[det_l] = 1 - burial_fraction[det_l]
+
+    B_open = np.diag(availability.values) @ B
+    c_open = c_vec.copy()
+
+    rho = spectral_radius(B_open)
+    if rho >= 1:
+        raise ValueError("Even open detritus model is unstable")
+
+    x_vec = np.linalg.solve(np.eye(k) - B_open, c_open)
+
+This is the closest version to the earlier idea:
+
+    B_open = (1 - lambda) * B
+
+For detritus-specific lambda, use row scaling:
+
+    B_open = diag(1 - lambda_l) @ B
+
+
+8B. Openness as dilution by old/untraced detritus: scale both c and B
+---------------------------------------------------------------------
+
+Another interpretation is that the detritus pool contains a mix of current modeled detritus plus old/untraced/external detritus with SPPR equal to zero or unknown.
+
+In that case, the internal traced fraction of detritus pool l is:
+
+    theta_l = internal_modeled_detritus_input_l / total_detritus_input_l
+
+where:
+
+    total_detritus_input_l = internal_modeled_detritus_input_l + external_or_old_detritus_l
+
+Then:
+
+    c_open = diag(theta) @ c
+    B_open = diag(theta) @ B
+
+or row-wise:
+
+    x_l = theta_l * c_l + theta_l * sum_j B[l, j] x_j + external_sppr_l
+
+If external/old detritus is treated as outside the current modeled production system, use:
+
+    external_sppr_l = 0
+
+Then:
+
+    x_l = theta_l * (c_l + sum_j B[l, j] x_j)
+
+This is an explicit ecological interpretation:
+
+    Only part of the consumed detritus pool is produced by current modeled ecosystem flows.
+    The rest is old, refractory, imported, or otherwise untraced material.
+
+This is often very appropriate for benthic detritus reservoirs.
+
+Pseudo-code:
+
+    internal_input = detritus_inflows_from_current_model[DET_seq]
+    external_input = detritus_external_import_or_stock_drawdown[DET_seq]
+    total_input = internal_input + external_input
+
+    theta = internal_input / total_input
+    theta = theta.fillna(0).clip(0, 1)
+
+    B_open = np.diag(theta.values) @ B
+    c_open = theta.values * c_vec
+
+    # optional nonzero external SPPR source
+    c_open += external_sppr.values * (external_input / total_input).values
+
+    x_vec = np.linalg.solve(np.eye(k) - B_open, c_open)
+
+This method can prevent negative values without losing all multi-detritus resolution, provided the external/loss terms are ecologically justified.
+
+
+8C. Which openness model is preferable?
+---------------------------------------
+
+It depends on the interpretation.
+
+If the detritus pool is mainly current-year internally produced material, but some material is buried/exported before it can recycle indefinitely:
+
+    Use damping of B only:
+
+        B_open = diag(1 - burial_fraction) @ B
+        c_open = c
+
+If the detritus pool is a standing stock that consumers draw from, and a significant part is old/untraced/imported background material:
+
+    Use dilution/source openness:
+
+        B_open = diag(theta) @ B
+        c_open = diag(theta) @ c
+
+For real Ecopath-style detritus groups, the second interpretation is often more realistic for benthic detritus. Benthic detritus can behave like a large reservoir, not only newly generated current-year detritus.
+
+For pelagic detritus, the first interpretation may sometimes be more plausible, because the pool is more directly tied to current production and recycling.
+
+A practical implementation could allow both:
+
+    det_open_mode = "none" | "recycling_loss" | "source_dilution"
+
+with optional per-detritus parameters:
+
+    det_burial_fraction[det_j]
+    det_mineralization_fraction[det_j]
+    det_export_fraction[det_j]
+    det_external_input[det_j]
+    det_external_sppr[det_j]
+
+
+9. Relationship between collapse_det and B_open
+-----------------------------------------------
+
+collapse_det and B_open solve different problems.
+
+collapse_det:
+
+    Reduces attribution resolution.
+    Keeps the model closed but pools all detritus into one scalar feedback.
+    Useful as a robust fallback when multi-detritus attribution is unstable.
+
+B_open / burial / dilution:
+
+    Keeps multi-detritus resolution.
+    Adds ecological openness/loss/import terms to make recycling subcritical.
+    More mechanistic, but requires assumptions or data.
+
+Suggested hierarchy:
+
+    1. Try multi-detritus with B_open if explicit openness parameters are provided.
+    2. If no openness parameters are provided, try raw multi-detritus.
+    3. If raw multi-detritus has spectral_radius(B) >= 1:
+           if det_collapse_mode == "auto": use pooled detritus scaling.
+           if det_collapse_mode == "never": raise diagnostic error.
+    4. If even pooled scaling has b >= 1, raise diagnostic error.
+
+This gives both ecological rigor and practical robustness.
+
+
+10. Recommended implementation plan
+-----------------------------------
+
+Step 1: Add helper for spectral radius.
+
+    @staticmethod
+    def _spectral_radius(M):
+        if M.size == 0:
+            return 0.0
+        return float(np.max(np.abs(np.linalg.eigvals(M))))
+
+Step 2: Replace collapse_det Boolean with det_collapse_mode.
+
+    def SPPR_new(..., det_collapse_mode="never", det_open_params=None):
+        ...
+
+Step 3: Factor B/c construction into helper.
+
+    def _build_det_scaling_system(self, SPPR, DET_seq, non_DET_sppr, DC, TE_option):
+        ...
+        return B, c_vec, diagnostics
+
+Step 4: Add optional openness transformation.
+
+    def _apply_detritus_openness(self, B, c_vec, DET_seq, det_open_params):
+        # det_open_params can include mode and per-detritus fractions
+        return B_open, c_open, openness_diagnostics
+
+For recycling_loss:
+
+    B_open = diag(1 - loss_fraction) @ B
+    c_open = c_vec
+
+For source_dilution:
+
+    B_open = diag(theta) @ B
+    c_open = theta * c_vec + external_sppr * (1 - theta)
+
+Step 5: Add solve/collapse helper.
+
+    def _solve_or_collapse_det_scaling(...):
+        B, c_vec = _build_det_scaling_system(...)
+        B_open, c_open = _apply_detritus_openness(...)
+        rho = spectral_radius(B_open)
+        cond = cond(I - B_open)
+        decide solve/collapse/error
+        store diagnostics
+        return SPPR
+
+Step 6: Update SPPR_symbolic to call the same detritus solve/collapse logic as SPPR_new wherever possible.
+
+Step 7: Fix multi-detritus q fallback to zero for missing det_fate columns.
+
+Step 8: Add unit tests.
+
+Recommended tests:
+
+    Test A: one-detritus toy model should match old behavior.
+
+    Test B: stable two-detritus toy model should solve without collapse in auto mode.
+
+    Test C: unstable two-detritus model should raise in never mode.
+
+    Test D: unstable two-detritus model should collapse in auto mode.
+
+    Test E: B_open with enough burial/loss should keep multi-detritus resolution and avoid collapse.
+
+    Test F: source_dilution with external_input should reduce spectral_radius and yield nonnegative x.
+
+    Test G: missing det_fate column in multi-detritus case should not receive whole system detritus flow.
+
+
+11. Suggested method text for the paper
+---------------------------------------
+
+A concise methods description could be:
+
+    For models with multiple detritus groups, detrital SPPR attribution requires solving
+    a coupled nonnegative recycling system x = c + B x. A finite nonnegative solution
+    exists only when the detrital recycling matrix is subcritical, i.e.
+    spectral_radius(B) < 1. When this condition was satisfied, detritus-specific
+    SPPR values were solved directly. When the condition failed, the model did not
+    support stable attribution among separate detritus pools. In those cases, detritus
+    pools were pooled for SPPR attribution, yielding a single detritus feedback scalar
+    applied to the detritus basis columns. This avoids ecologically meaningless negative
+    SPPR values while preserving total detrital contribution to PPR.
+
+If B_open is implemented:
+
+    When explicit detritus loss or external detritus terms were available, detritus was
+    modeled as an open subsystem. Burial, mineralization, export, refractory storage,
+    or old/untraced detritus inputs were represented by an open recycling matrix
+    B_open. The detritus attribution system was then solved as x = c_open + B_open x.
+    This formulation has a finite nonnegative interpretation when
+    spectral_radius(B_open) < 1.
+
+
+12. Bottom line
+---------------
+
+I would keep collapse_det, but treat it as a fallback and make it more explicit.
+
+Best practical version:
+
+    det_collapse_mode="auto"
+    check spectral_radius(B) directly
+    store diagnostics
+    collapse only when needed
+    use fate_to_modeled_det in pooled scaling
+    fix missing det_fate fallback
+
+Best ecological version:
+
+    add optional B_open / detritus openness parameters
+    prefer multi-detritus with openness when possible
+    use collapse_det only when no ecological openness data are available or when openness still fails
+
+Do not clip negative SPPR values to zero. Negative values should trigger either:
+
+    a diagnostic error,
+    a pooled-detritus fallback,
+    or an explicit open-detritus model.
