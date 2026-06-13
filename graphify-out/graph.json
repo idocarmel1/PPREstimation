@@ -772,7 +772,7 @@
       "label": "._SPPR_symbolic_helper_diet_import_as_PP()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1186",
+      "source_location": "L1188",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
       "community": 0,
@@ -782,7 +782,7 @@
       "label": "._SPPR_symbolic_helper_diet_import_as_DC()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1280",
+      "source_location": "L1282",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
       "community": 0,
@@ -792,7 +792,7 @@
       "label": ".SPPR_symbolic()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1397",
+      "source_location": "L1399",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_sppr_symbolic",
       "community": 0,
@@ -802,7 +802,7 @@
       "label": "._sample_SPPR_new_forced_balance()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1403",
+      "source_location": "L1405",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_sample_sppr_new_forced_balance",
       "community": 0,
@@ -812,7 +812,7 @@
       "label": ".monte_carlo_SPPR()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1423",
+      "source_location": "L1425",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_monte_carlo_sppr",
       "community": 0,
@@ -822,7 +822,7 @@
       "label": ".monte_carlo_SPPR_2()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1514",
+      "source_location": "L1516",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_monte_carlo_sppr_2",
       "community": 0,
@@ -832,7 +832,7 @@
       "label": ".rename_results()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1599",
+      "source_location": "L1601",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_rename_results",
       "community": 0,
@@ -922,9 +922,9 @@
       "label": "Args:             n_samples (int, optional): number of sppr samples. Defaults t",
       "file_type": "rationale",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1425",
+      "source_location": "L1427",
       "_origin": "ast",
-      "id": "pprcalculator_rationale_1425",
+      "id": "pprcalculator_rationale_1427",
       "community": 0,
       "norm_label": "args:             n_samples (int, optional): number of sppr samples. defaults t"
     },
@@ -932,9 +932,9 @@
       "label": "Args:             n_samples (int, optional): number of sppr samples. Defaults t",
       "file_type": "rationale",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1516",
+      "source_location": "L1518",
       "_origin": "ast",
-      "id": "pprcalculator_rationale_1516",
+      "id": "pprcalculator_rationale_1518",
       "community": 0,
       "norm_label": "args:             n_samples (int, optional): number of sppr samples. defaults t"
     },
@@ -2080,9 +2080,9 @@
       "source_file": "tests/test_integration.py",
       "source_location": "L19",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_test_integration",
-      "target": "modeldata_speciesgrouplegacy",
-      "confidence_score": 1.0
+      "target": "modeldata_speciesgrouplegacy"
     },
     {
       "relation": "rationale_for",
@@ -2121,9 +2121,9 @@
       "source_file": "tests/test_integration.py",
       "source_location": "L19",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_test_integration",
-      "target": "modeldata_speciesgroup",
-      "confidence_score": 1.0
+      "target": "modeldata_speciesgroup"
     },
     {
       "relation": "imports",
@@ -2338,9 +2338,9 @@
       "source_file": "scripts/debug_processing.py",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_debug_processing",
-      "target": "modeldata_modeldata",
-      "confidence_score": 1.0
+      "target": "modeldata_modeldata"
     },
     {
       "relation": "imports",
@@ -2349,9 +2349,9 @@
       "source_file": "tests/test_integration.py",
       "source_location": "L19",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_test_integration",
-      "target": "modeldata_modeldata",
-      "confidence_score": 1.0
+      "target": "modeldata_modeldata"
     },
     {
       "relation": "imports",
@@ -2721,9 +2721,9 @@
       "source_file": "scripts/debug_processing.py",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_debug_processing",
-      "target": "pprcalculator",
-      "confidence_score": 1.0
+      "target": "pprcalculator"
     },
     {
       "relation": "imports_from",
@@ -2732,9 +2732,9 @@
       "source_file": "tests/test_integration.py",
       "source_location": "L189",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_test_integration",
-      "target": "pprcalculator",
-      "confidence_score": 1.0
+      "target": "pprcalculator"
     },
     {
       "relation": "imports_from",
@@ -3146,9 +3146,9 @@
       "source_file": "scripts/debug_processing.py",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_debug_processing",
-      "target": "pprcalculator_pprcalculator",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator"
     },
     {
       "relation": "imports",
@@ -3157,9 +3157,9 @@
       "source_file": "tests/test_integration.py",
       "source_location": "L64",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_test_integration",
-      "target": "pprcalculator_pprcalculator",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator"
     },
     {
       "relation": "imports",
@@ -4233,21 +4233,21 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1425",
+      "source_location": "L1427",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "pprcalculator_rationale_1425",
-      "target": "pprcalculator_pprcalculator_monte_carlo_sppr"
+      "source": "pprcalculator_rationale_1427",
+      "target": "pprcalculator_pprcalculator_monte_carlo_sppr",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1516",
+      "source_location": "L1518",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "pprcalculator_rationale_1516",
-      "target": "pprcalculator_pprcalculator_monte_carlo_sppr_2"
+      "source": "pprcalculator_rationale_1518",
+      "target": "pprcalculator_pprcalculator_monte_carlo_sppr_2",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -4276,9 +4276,9 @@
       "source_file": "scripts/debug_processing.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "scripts_debug_processing_rationale_1",
-      "target": "scripts_debug_processing",
-      "confidence_score": 1.0
+      "target": "scripts_debug_processing"
     },
     {
       "relation": "rationale_for",
@@ -4286,9 +4286,9 @@
       "source_file": "tests/test_integration.py",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "tests_test_integration_rationale_1",
-      "target": "tests_test_integration",
-      "confidence_score": 1.0
+      "target": "tests_test_integration"
     },
     {
       "relation": "contains",
@@ -4466,9 +4466,9 @@
       "source_file": "utils.py",
       "source_location": "L55",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "utils",
-      "target": "utils_find_all_cycles",
-      "confidence_score": 1.0
+      "target": "utils_find_all_cycles"
     },
     {
       "relation": "contains",
@@ -4476,9 +4476,9 @@
       "source_file": "utils.py",
       "source_location": "L73",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "utils",
-      "target": "utils_get_circuit_probability",
-      "confidence_score": 1.0
+      "target": "utils_get_circuit_probability"
     },
     {
       "relation": "contains",
@@ -4526,9 +4526,9 @@
       "source_file": "utils.py",
       "source_location": "L86",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "utils",
-      "target": "utils_remove_cycles_nexus",
-      "confidence_score": 1.0
+      "target": "utils_remove_cycles_nexus"
     },
     {
       "relation": "contains",
@@ -4546,9 +4546,9 @@
       "source_file": "utils.py",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "utils_rationale_6",
-      "target": "utils_mat_from_np",
-      "confidence_score": 1.0
+      "target": "utils_mat_from_np"
     },
     {
       "relation": "calls",
@@ -4578,9 +4578,9 @@
       "source_file": "utils.py",
       "source_location": "L27",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "utils_rationale_27",
-      "target": "utils_move_scattered_identity",
-      "confidence_score": 1.0
+      "target": "utils_move_scattered_identity"
     },
     {
       "relation": "calls",
@@ -4589,9 +4589,9 @@
       "source_file": "utils.py",
       "source_location": "L92",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "utils_remove_cycles_nexus",
-      "target": "utils_find_all_cycles",
-      "confidence_score": 1.0
+      "target": "utils_find_all_cycles"
     },
     {
       "relation": "calls",
@@ -4600,9 +4600,9 @@
       "source_file": "utils.py",
       "source_location": "L106",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "utils_remove_cycles_nexus",
-      "target": "utils_get_circuit_probability",
-      "confidence_score": 1.0
+      "target": "utils_get_circuit_probability"
     },
     {
       "relation": "rationale_for",
@@ -4610,9 +4610,9 @@
       "source_file": "utils.py",
       "source_location": "L87",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "utils_rationale_87",
-      "target": "utils_remove_cycles_nexus",
-      "confidence_score": 1.0
+      "target": "utils_remove_cycles_nexus"
     },
     {
       "relation": "calls",
@@ -4621,9 +4621,9 @@
       "source_file": "utils.py",
       "source_location": "L145",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "utils_remove_cycles_new",
-      "target": "utils_remove_cycles_nexus",
-      "confidence_score": 1.0
+      "target": "utils_remove_cycles_nexus"
     },
     {
       "relation": "calls",
@@ -4653,9 +4653,9 @@
       "source_file": "utils.py",
       "source_location": "L156",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "utils_rationale_156",
-      "target": "utils_remove_cycles_old",
-      "confidence_score": 1.0
+      "target": "utils_remove_cycles_old"
     },
     {
       "relation": "contains",
@@ -4893,9 +4893,9 @@
       "source_file": "docs/superpowers/specs/2026-06-13-file-reorganization-design.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "specs_2026_06_13_file_reorganization_design",
-      "target": "specs_2026_06_13_file_reorganization_design_file_reorganization_option_a_light_touch",
-      "confidence_score": 1.0
+      "target": "specs_2026_06_13_file_reorganization_design_file_reorganization_option_a_light_touch"
     },
     {
       "relation": "contains",
@@ -4903,9 +4903,9 @@
       "source_file": "docs/superpowers/specs/2026-06-13-file-reorganization-design.md",
       "source_location": "L23",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "specs_2026_06_13_file_reorganization_design_file_reorganization_option_a_light_touch",
-      "target": "specs_2026_06_13_file_reorganization_design_files_that_stay_at_root",
-      "confidence_score": 1.0
+      "target": "specs_2026_06_13_file_reorganization_design_files_that_stay_at_root"
     },
     {
       "relation": "contains",
@@ -4913,9 +4913,9 @@
       "source_file": "docs/superpowers/specs/2026-06-13-file-reorganization-design.md",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "specs_2026_06_13_file_reorganization_design_file_reorganization_option_a_light_touch",
-      "target": "specs_2026_06_13_file_reorganization_design_goal",
-      "confidence_score": 1.0
+      "target": "specs_2026_06_13_file_reorganization_design_goal"
     },
     {
       "relation": "contains",
@@ -4923,9 +4923,9 @@
       "source_file": "docs/superpowers/specs/2026-06-13-file-reorganization-design.md",
       "source_location": "L27",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "specs_2026_06_13_file_reorganization_design_file_reorganization_option_a_light_touch",
-      "target": "specs_2026_06_13_file_reorganization_design_import_safety",
-      "confidence_score": 1.0
+      "target": "specs_2026_06_13_file_reorganization_design_import_safety"
     },
     {
       "relation": "contains",
@@ -4933,9 +4933,9 @@
       "source_file": "docs/superpowers/specs/2026-06-13-file-reorganization-design.md",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "specs_2026_06_13_file_reorganization_design_file_reorganization_option_a_light_touch",
-      "target": "specs_2026_06_13_file_reorganization_design_moves",
-      "confidence_score": 1.0
+      "target": "specs_2026_06_13_file_reorganization_design_moves"
     },
     {
       "relation": "contains",
@@ -4943,9 +4943,9 @@
       "source_file": "docs/superpowers/specs/2026-06-13-file-reorganization-design.md",
       "source_location": "L33",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "specs_2026_06_13_file_reorganization_design_file_reorganization_option_a_light_touch",
-      "target": "specs_2026_06_13_file_reorganization_design_verification",
-      "confidence_score": 1.0
+      "target": "specs_2026_06_13_file_reorganization_design_verification"
     },
     {
       "relation": "contains",
@@ -4953,9 +4953,9 @@
       "source_file": "docs/superpowers/specs/2026-06-13-file-reorganization-design.md",
       "source_location": "L37",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "specs_2026_06_13_file_reorganization_design_file_reorganization_option_a_light_touch",
-      "target": "specs_2026_06_13_file_reorganization_design_what_this_does_not_touch",
-      "confidence_score": 1.0
+      "target": "specs_2026_06_13_file_reorganization_design_what_this_does_not_touch"
     }
   ],
   "hyperedges": [
@@ -4982,5 +4982,5 @@
       "source_file": "graphify-out/converted/PPRs_59b295f7.md"
     }
   ],
-  "built_at_commit": "a765ddb747500dad99514cbc34326f528068edb7"
+  "built_at_commit": "89010424b4a0a6754470fc4024966659b5b8897f"
 }

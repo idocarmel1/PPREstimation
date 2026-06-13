@@ -1051,8 +1051,46 @@ class PPRCalculator:
                 SPPR.loc[det_seqs, i] = self.M0.loc[PP_seq][i] / (self.M0 + self.egestion).sum()
 
         return SPPR, A, L
-        
-    def SPPR_new(self, TE=None, TE_option='GE', DET_TE_vals=1):
+
+    @staticmethod
+    def _collapse_det_scaling(SPPR, DET_seq, non_DET_sppr, M0, egestion, q,
+                              flow_to_det, DC, TE_option):
+        """Fallback DET scaling when the coupled (I-B) system diverges (spectral radius >= 1).
+
+        Treats all DET groups as a single combined pool: individual basis vectors are
+        summed, a single scale factor is solved from the 1-D self-consistency equation,
+        and every DET column is multiplied by that factor.  The combined denominator
+        q_combined >> any individual q_j, which typically brings b well below 1.
+        """
+        q_combined = float(sum(float(q[d]) for d in DET_seq if float(q[d]) > 0))
+        if q_combined <= 0:
+            q_combined = float(flow_to_det.sum())
+
+        m_combined = (M0 / q_combined).fillna(0)
+
+        if TE_option == 'With Egestion':
+            e_combined = (egestion / q_combined).fillna(0)
+            m_eff = m_combined + DC.T @ e_combined
+        else:  # GE
+            m_eff = m_combined
+
+        SPPR_combined_raw = SPPR[list(DET_seq)].sum(axis=1)
+
+        a = float(m_eff @ non_DET_sppr)
+        b = float(m_eff @ SPPR_combined_raw)
+
+        if b >= 1.0:
+            raise ValueError(
+                f"collapse_det fallback also diverges (b={b:.4f} >= 1). "
+                "Detrital cycling is too strong for SPPR_new."
+            )
+
+        sppr_det = a / (1.0 - b)
+        for det_j in DET_seq:
+            SPPR[det_j] *= sppr_det
+        return SPPR
+
+    def SPPR_new(self, TE=None, TE_option='GE', DET_TE_vals=1, collapse_det=False):
         # get DC:
         DC = self.get_DC(DET_as_PP=True, normalize=False)
         
@@ -1158,9 +1196,15 @@ class PPRCalculator:
                     c_vec[li] = float(m_l @ non_DET_sppr)
                     for ji, det_j in enumerate(DET_seq):
                         B[li, ji] = float(m_l @ SPPR[det_j])
-                x_vec = np.linalg.solve(np.eye(k) - B, c_vec)
-                for i, det_j in enumerate(DET_seq):
-                    SPPR[det_j] *= x_vec[i]
+                IminusB = np.eye(k) - B
+                if collapse_det and np.min(np.linalg.eigvals(IminusB).real) <= 0:
+                    SPPR = self._collapse_det_scaling(SPPR, DET_seq, non_DET_sppr,
+                                                      self.M0, self.egestion, self.q,
+                                                      flow_to_det, DC, TE_option)
+                else:
+                    x_vec = np.linalg.solve(IminusB, c_vec)
+                    for i, det_j in enumerate(DET_seq):
+                        SPPR[det_j] *= x_vec[i]
             elif TE_option == 'With Egestion':
                 B = np.zeros((k, k))
                 c_vec = np.zeros(k)
@@ -1177,9 +1221,15 @@ class PPRCalculator:
                     c_vec[li] = float(m_eff_l @ non_DET_sppr)
                     for ji, det_j in enumerate(DET_seq):
                         B[li, ji] = float(m_eff_l @ SPPR[det_j])
-                x_vec = np.linalg.solve(np.eye(k) - B, c_vec)
-                for i, det_j in enumerate(DET_seq):
-                    SPPR[det_j] *= x_vec[i]
+                IminusB = np.eye(k) - B
+                if collapse_det and np.min(np.linalg.eigvals(IminusB).real) <= 0:
+                    SPPR = self._collapse_det_scaling(SPPR, DET_seq, non_DET_sppr,
+                                                      self.M0, self.egestion, self.q,
+                                                      flow_to_det, DC, TE_option)
+                else:
+                    x_vec = np.linalg.solve(IminusB, c_vec)
+                    for i, det_j in enumerate(DET_seq):
+                        SPPR[det_j] *= x_vec[i]
             else:
                 raise Exception("TE_option should be in ['GE', 'TE', 'With Egestion', 'global']")
 
