@@ -301,10 +301,19 @@ class PPRCalculator:
             # Flow to Detritus
             df_final['flow_to_det'] = df_final['M0'] + df_final['egestion']
 
-            # rebalance DET row:
-            df_final.loc[self.get_DET_seq(), 'q'] = df_final['flow_to_det'].sum()
-            df_final.loc[self.get_DET_seq(), 'p'] = df_final.loc[self.get_DET_seq(), 'q']
-            df_final.loc[self.get_DET_seq(), 'biomass_accum'] = df_final.loc[self.get_DET_seq(), 'p'] - (df.loc[self.get_DET_seq(), 'predation'] + df.loc[self.get_DET_seq(), 'net_migration'])
+            # rebalance DET rows:
+            det_seqs = self.get_DET_seq()
+            det_fate = getattr(self, '_det_fate', None)
+            if det_fate is not None and len(det_seqs) > 1:
+                for det_j in det_seqs:
+                    if det_j in det_fate.columns:
+                        df_final.loc[det_j, 'q'] = (df_final['flow_to_det'] * det_fate[det_j].reindex(df_final.index).fillna(0)).sum()
+                    else:
+                        df_final.loc[det_j, 'q'] = df_final['flow_to_det'].sum()
+            else:
+                df_final.loc[det_seqs, 'q'] = df_final['flow_to_det'].sum()
+            df_final.loc[det_seqs, 'p'] = df_final.loc[det_seqs, 'q']
+            df_final.loc[det_seqs, 'biomass_accum'] = df_final.loc[det_seqs, 'p'] - (df.loc[det_seqs, 'predation'] + df.loc[det_seqs, 'net_migration'])
             
             return df_final
 
@@ -561,12 +570,25 @@ class PPRCalculator:
         return DC.sort_index(ascending=False).sort_index(ascending=False, axis=1)
     
     def get_Z(self, DET_as_PP=False):
-        """get Z matrix. if DET_as_PP is False (default), DET row is flow_to_det. otherwise it is set to 0"""
+        """get Z matrix. if DET_as_PP is False (default), DET rows are flow_to_det split by det_fate. otherwise set to 0"""
         Z = self._DC.mul(self._groups_df['q'].fillna(0), axis='index')
+        DET_seq = self.get_DET_seq()
         if not DET_as_PP:
-            Z.loc[self.get_DET_seq()[0], :] = (self.M0 + self.egestion).fillna(0)
+            flow_to_det = (self.M0 + self.egestion).fillna(0)
+            det_fate = getattr(self, '_det_fate', None)
+            if det_fate is not None and len(DET_seq) > 1:
+                for det_j in DET_seq:
+                    if det_j in det_fate.columns:
+                        fracs = det_fate[det_j].reindex(flow_to_det.index).fillna(0)
+                        Z.loc[det_j, :] = flow_to_det * fracs
+                    else:
+                        Z.loc[det_j, :] = flow_to_det
+            else:
+                for det_j in DET_seq:
+                    Z.loc[det_j, :] = flow_to_det
         else:
-            Z.loc[self.get_DET_seq()[0], :] = 0
+            for det_j in DET_seq:
+                Z.loc[det_j, :] = 0
         return Z.sort_index(ascending=False).sort_index(ascending=False, axis=1)
     
     def get_DET_seq(self):
