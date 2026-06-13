@@ -1099,33 +1099,87 @@ class PPRCalculator:
 
         # find sppr_det if it is in the output:
         DET_seq = self.get_DET_seq()
-        if TE_option == 'TE':
-            flow2det = (self.M0 + self.egestion).sum()
-            sppr_det = (self.M0 + self.egestion)[list(self.get_PP_seq() + self.get_Import_seq())].sum() / flow2det
-            SPPR[DET_seq] *= sppr_det
-        elif TE_option == 'GE':
-            x = sm.symbols('x')
-            sppr = SPPR.drop(columns=DET_seq).sum(axis=1) + (x * SPPR[DET_seq]).sum(axis=1)
-            sppr = pd.DataFrame(sppr, index=self.get_DC().index)
-            sppr = sppr.loc[:, :].sum(axis=1)
-            flow2det = (self.M0 + self.egestion).sum()
-            m = (self.M0 / flow2det).fillna(0)
-            e = (self.egestion / flow2det).fillna(0)
-            sppr_det = float(sm.solve(x - (m @ sppr), x)[0])
-            SPPR[DET_seq] *= sppr_det
-        elif TE_option == 'With Egestion':
-            x = sm.symbols('x')
-            sppr = SPPR.drop(columns=DET_seq).sum(axis=1) + (x * SPPR[DET_seq]).sum(axis=1)
-            sppr = pd.DataFrame(sppr, index=self.get_DC().index)
-            sppr = sppr.loc[:, :].sum(axis=1)
-            flow2det = (self.M0 + self.egestion).sum()
-            flow2det = (self.M0 + self.egestion).sum()
-            m = (self.M0 / flow2det).fillna(0)
-            e = (self.egestion / flow2det).fillna(0)
-            sppr_det = float(sm.solve(x - (m @ sppr + (DC @ sppr) @ e), x)[0])
-            SPPR[DET_seq] *= sppr_det
+        det_fate = getattr(self, '_det_fate', None)
+        flow_to_det = (self.M0 + self.egestion).fillna(0)
+        non_DET_sppr = SPPR.drop(columns=DET_seq).sum(axis=1)
+
+        if len(DET_seq) == 1:
+            det_j = DET_seq[0]
+            flow2det = self.q[det_j] if self.q[det_j] > 0 else flow_to_det.sum()
+            if TE_option == 'TE':
+                PP_Import_seq = list(self.get_PP_seq() + self.get_Import_seq())
+                sppr_det = flow_to_det[PP_Import_seq].sum() / flow2det
+                SPPR[DET_seq] *= sppr_det
+            elif TE_option == 'GE':
+                m = (self.M0 / flow2det).fillna(0)
+                x = sm.symbols('x')
+                sppr = non_DET_sppr + x * SPPR[det_j]
+                sppr_det = float(sm.solve(x - (m @ sppr), x)[0])
+                SPPR[DET_seq] *= sppr_det
+            elif TE_option == 'With Egestion':
+                m = (self.M0 / flow2det).fillna(0)
+                e = (self.egestion / flow2det).fillna(0)
+                x = sm.symbols('x')
+                sppr = non_DET_sppr + x * SPPR[det_j]
+                sppr_det = float(sm.solve(x - (m @ sppr + (DC @ sppr) @ e), x)[0])
+                SPPR[DET_seq] *= sppr_det
+            else:
+                raise Exception("TE_option should be in ['GE', 'TE', 'With Egestion', 'global']")
         else:
-            raise Exception("TE_option should be in ['GE', 'TE', 'With Egestion', 'global']")
+            # Multiple DET groups: solve coupled linear system (I - B) x = c
+            # x_l = sppr_det for DET group l
+            # B[l,j] = m_l @ SPPR[:,DET_j],  c[l] = m_l @ non_DET_sppr
+            k = len(DET_seq)
+            PP_Import_seq = list(self.get_PP_seq() + self.get_Import_seq())
+
+            def _get_m_l(det_l):
+                q_l = self.q[det_l] if self.q[det_l] > 0 else 1.0
+                if det_fate is not None and det_l in det_fate.columns:
+                    fracs = det_fate[det_l].reindex(self.M0.index).fillna(0)
+                    return (self.M0 * fracs / q_l).fillna(0)
+                return (self.M0 / q_l).fillna(0)
+
+            if TE_option == 'TE':
+                for det_l in DET_seq:
+                    q_l = self.q[det_l] if self.q[det_l] > 0 else 1.0
+                    if det_fate is not None and det_l in det_fate.columns:
+                        fracs = det_fate[det_l].reindex(flow_to_det.index).fillna(0)
+                        inflow_from_PP_Import = (flow_to_det[PP_Import_seq] * fracs[PP_Import_seq]).sum()
+                    else:
+                        inflow_from_PP_Import = flow_to_det[PP_Import_seq].sum()
+                    SPPR[det_l] *= inflow_from_PP_Import / q_l
+            elif TE_option == 'GE':
+                B = np.zeros((k, k))
+                c_vec = np.zeros(k)
+                for li, det_l in enumerate(DET_seq):
+                    m_l = _get_m_l(det_l)
+                    c_vec[li] = float(m_l @ non_DET_sppr)
+                    for ji, det_j in enumerate(DET_seq):
+                        B[li, ji] = float(m_l @ SPPR[det_j])
+                x_vec = np.linalg.solve(np.eye(k) - B, c_vec)
+                for i, det_j in enumerate(DET_seq):
+                    SPPR[det_j] *= x_vec[i]
+            elif TE_option == 'With Egestion':
+                B = np.zeros((k, k))
+                c_vec = np.zeros(k)
+                for li, det_l in enumerate(DET_seq):
+                    q_l = self.q[det_l] if self.q[det_l] > 0 else 1.0
+                    if det_fate is not None and det_l in det_fate.columns:
+                        fracs = det_fate[det_l].reindex(self.M0.index).fillna(0)
+                        m_l = (self.M0 * fracs / q_l).fillna(0)
+                        e_l = (self.egestion * fracs / q_l).fillna(0)
+                    else:
+                        m_l = (self.M0 / q_l).fillna(0)
+                        e_l = (self.egestion / q_l).fillna(0)
+                    m_eff_l = m_l + DC.T @ e_l
+                    c_vec[li] = float(m_eff_l @ non_DET_sppr)
+                    for ji, det_j in enumerate(DET_seq):
+                        B[li, ji] = float(m_eff_l @ SPPR[det_j])
+                x_vec = np.linalg.solve(np.eye(k) - B, c_vec)
+                for i, det_j in enumerate(DET_seq):
+                    SPPR[det_j] *= x_vec[i]
+            else:
+                raise Exception("TE_option should be in ['GE', 'TE', 'With Egestion', 'global']")
 
         return SPPR, A, L
     
@@ -1143,24 +1197,33 @@ class PPRCalculator:
         if TE_option == 'TE':
             DC.loc[DET_seq, Regular_seq] = 0
         elif TE_option == 'GE':
-            DC.loc[self.get_DET_seq()[0], :] = ((self.M0) / flow2det).fillna(0)
+            det_fate_mat = getattr(self, '_det_fate', None)
+            for det_j in DET_seq:
+                q_j = self.q[det_j] if self.q[det_j] > 0 else flow2det / max(len(DET_seq), 1)
+                if det_fate_mat is not None and det_j in det_fate_mat.columns and q_j > 0:
+                    fracs = det_fate_mat[det_j].reindex(self.M0.index).fillna(0)
+                    DC.loc[det_j, :] = ((self.M0 * fracs) / q_j).fillna(0)
+                else:
+                    DC.loc[det_j, :] = ((self.M0) / flow2det).fillna(0)
         elif TE_option == 'With Egestion':
-            DC.loc[self.get_DET_seq()[0], :] = 0
             m = (self.M0 / flow2det).fillna(0)
             e = (self.egestion / flow2det).fillna(0)
-            DC.loc[self.get_DET_seq()[0], :] = (m + e @ DC)
+            for det_j in DET_seq:
+                DC.loc[det_j, :] = 0
+            for det_j in DET_seq:
+                DC.loc[det_j, :] = (m + e @ DC)
         else:
             raise Exception("diet_import_option should be in one of ['GE', 'TE', 'With Egestion', 'global']")
-            
+
         if TE is not None:
             GE = TE.copy()
 
         # calculate A matrix and turn to symbolic matrix:
-        A = (DC / GE).fillna(0).values
+        A = (DC / GE).fillna(0).values.copy()
         A[GE.values == 0] = 0
         for i in range(len(DC)):  # Replace producer rows with identity rows
             if DC.values[i, :].sum() == 0:
-                A[i, :] = sm.zeros(1, len(DC))
+                A[i, :] = 0
                 A[i, i] = 1
         A = pd.DataFrame(A, index=DC.index, columns=DC.columns)
 
@@ -1185,8 +1248,8 @@ class PPRCalculator:
         sppr = sppr_vec.replace(sol_dict1)
 
         # solve DET equation:
-        equation_DET = equation_DET.applymap(lambda x: x.subs(sol_dict1) if hasattr(x, 'evalf') else x)
-        sol = sm.linsolve([equation_DET.squeeze()], symbols_by_trophic_info['DET'])
+        equation_DET = equation_DET.apply(lambda col: col.map(lambda x: x.subs(sol_dict1) if hasattr(x, 'subs') else x))
+        sol = sm.linsolve(list(equation_DET.values.ravel()), symbols_by_trophic_info['DET'])
         sol_tuple2 = list(sol)[0]
         sol_dict2 = dict(zip(symbols_by_trophic_info['DET'], sol_tuple2))
         sppr_det_symbol = sppr_vec.loc[DET_seq].values[0, 0]
@@ -1197,13 +1260,15 @@ class PPRCalculator:
         target_free_symbols = symbols_by_trophic_info['DET'] + symbols_by_trophic_info['Import'] + symbols_by_trophic_info['PP']
         sppr = sppr_vec.replace(sol_dict1)
         subs_dict = {v: 1 for v in sppr_vec.squeeze().loc[target_free_seq]}
-        sppr_symbolic = sppr.applymap(lambda x: x.evalf(subs=subs_dict) if hasattr(x, 'evalf') else x)
+        sppr_symbolic = sppr.apply(lambda col: col.map(lambda x: x.evalf(subs=subs_dict) if hasattr(x, 'evalf') else x))
 
         sppr_mat, _ = sm.linear_eq_to_matrix(sol_tuple1, target_free_symbols)
         sppr_mat = sm.lambdify([], sppr_mat, 'numpy')() # Converts SymPy matrix to NumPy
         sppr_mat = pd.DataFrame(sppr_mat, index=index, columns=target_free_seq)
         if sppr_det_value is None:
-            sppr_mat[DET_seq] *= float(sppr_det.evalf(subs=subs_dict))
+            for det_j in DET_seq:
+                det_sym = sppr_vec.loc[det_j].values.ravel()[0]
+                sppr_mat[det_j] *= float(sol_dict2[det_sym].evalf(subs=subs_dict))
         else:
             sppr_mat[DET_seq] *= float(sppr_det_value)
 
@@ -1225,24 +1290,33 @@ class PPRCalculator:
         if TE_option == 'TE':
             DC.loc[DET_seq, Regular_seq] = 0
         elif TE_option == 'GE':
-            DC.loc[self.get_DET_seq()[0], :] = ((self.M0) / flow2det).fillna(0)
+            det_fate_mat = getattr(self, '_det_fate', None)
+            for det_j in DET_seq:
+                q_j = self.q[det_j] if self.q[det_j] > 0 else flow2det / max(len(DET_seq), 1)
+                if det_fate_mat is not None and det_j in det_fate_mat.columns and q_j > 0:
+                    fracs = det_fate_mat[det_j].reindex(self.M0.index).fillna(0)
+                    DC.loc[det_j, :] = ((self.M0 * fracs) / q_j).fillna(0)
+                else:
+                    DC.loc[det_j, :] = ((self.M0) / flow2det).fillna(0)
         elif TE_option == 'With Egestion':
-            DC.loc[self.get_DET_seq()[0], :] = 0
             m = (self.M0 / flow2det).fillna(0)
             e = (self.egestion / flow2det).fillna(0)
-            DC.loc[self.get_DET_seq()[0], :] = (m + e @ DC)
+            for det_j in DET_seq:
+                DC.loc[det_j, :] = 0
+            for det_j in DET_seq:
+                DC.loc[det_j, :] = (m + e @ DC)
         else:
             raise Exception("diet_import_option should be in one of ['GE', 'TE', 'With Egestion', 'global']")
-            
+
         if TE is not None:
             GE = TE.copy()
 
         # calculate A matrix and turn to symbolic matrix:
-        A = (DC / GE).fillna(0).values
+        A = (DC / GE).fillna(0).values.copy()
         A[GE.values == 0] = 0
         for i in range(len(DC)):  # Replace producer rows with identity rows
             if DC.values[i, :].sum() == 0:
-                A[i, :] = sm.zeros(1, len(DC))
+                A[i, :] = 0
                 A[i, i] = 1
         A = pd.DataFrame(A, index=DC.index, columns=DC.columns)
 
@@ -1270,8 +1344,8 @@ class PPRCalculator:
         sppr = sppr_vec.replace(sol_dict1)
 
         # solve DET equation:
-        equation_DET = equation_DET.apply(lambda x: x.subs(sol_dict1) if hasattr(x, 'evalf') else x)
-        sol = sm.linsolve([equation_DET.squeeze()], symbols_by_trophic_info['DET'])
+        equation_DET = equation_DET.apply(lambda x: x.subs(sol_dict1) if hasattr(x, 'subs') else x)
+        sol = sm.linsolve(list(np.ravel(equation_DET.values)), symbols_by_trophic_info['DET'])
         sol_tuple2 = list(sol)[0]
         sol_dict2 = dict(zip(symbols_by_trophic_info['DET'], sol_tuple2))
         sppr_det_symbol = sppr_vec.loc[DET_seq].values[0, 0]
@@ -1280,8 +1354,8 @@ class PPRCalculator:
         # solve diet import equation:
         sppr = sppr_vec.replace(sol_dict1)
         subs_dict_PP = {v: 1 for v in sppr_vec.squeeze().loc[PP_seq]}
-        subs_dict = subs_dict_PP | {sppr_det_symbol: sppr_det.subs(subs_dict_PP)}
-        sppr = sppr.applymap(lambda x: x.evalf(subs=subs_dict) if hasattr(x, 'evalf') else x)
+        subs_dict = subs_dict_PP | {ds: sol_dict2[ds].subs(subs_dict_PP) for ds in symbols_by_trophic_info['DET']}
+        sppr = sppr.apply(lambda col: col.map(lambda x: x.evalf(subs=subs_dict) if hasattr(x, 'evalf') else x))
         equations_di = (DC.loc[index, index] @ sppr).squeeze() + (DC.loc[index, Import_seq] * diet_sppr_vec).squeeze() - diet_sppr_vec.squeeze()
 
         equations_di = equations_di.squeeze().tolist()
@@ -1295,7 +1369,7 @@ class PPRCalculator:
         target_free_seq = PP_seq
         sppr = sppr_vec.replace(sol_dict1)
         subs_dict = {v: 1 for v in sppr_vec.squeeze().loc[PP_seq]} | sol_dict3
-        sppr_symbolic = sppr.applymap(lambda x: x.evalf(subs=subs_dict) if hasattr(x, 'evalf') else x)
+        sppr_symbolic = sppr.apply(lambda col: col.map(lambda x: x.evalf(subs=subs_dict) if hasattr(x, 'evalf') else x))
 
         target_free_symbols = diet_sppr_symbols + symbols_by_trophic_info['DET'] + symbols_by_trophic_info['PP']
         target_free_seq = DET_seq + PP_seq
@@ -1304,7 +1378,9 @@ class PPRCalculator:
         cols = [f'DIET_{s}'.replace(' ', '_') for s in index] + target_free_seq
         sppr_mat = pd.DataFrame(sppr_mat, index=index, columns=cols)
         if sppr_det_value is None:
-            sppr_mat[DET_seq] *= float(sppr_det.evalf(subs=subs_dict))
+            for det_j in DET_seq:
+                det_sym = sppr_vec.loc[det_j].values.ravel()[0]
+                sppr_mat[det_j] *= float(sol_dict2[det_sym].evalf(subs=subs_dict))
         else:
             sppr_mat[DET_seq] *= float(sppr_det_value)
         for s in index:
