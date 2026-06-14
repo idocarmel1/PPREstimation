@@ -1126,22 +1126,38 @@ class PPRCalculator:
 
     @staticmethod
     def _collapse_det_scaling(SPPR, DET_seq, non_DET_sppr, M0, egestion, q,
-                              flow_to_det, DC, TE_option):
-        """Fallback DET scaling when the coupled (I-B) system diverges (spectral radius >= 1).
+                              flow_to_det, DC, TE_option, det_fate=None,
+                              theta=None, ext=None, det_open_mode='none'):
+        """Fallback DET scaling: treat all DET groups as one pooled pool, solve the 1-D
+        self-consistency x = a + b*x, and multiply every DET column by that scalar.
 
         Treats all DET groups as a single combined pool: individual basis vectors are
         summed, a single scale factor is solved from the 1-D self-consistency equation,
         and every DET column is multiplied by that factor.  The combined denominator
         q_combined >> any individual q_j, which typically brings b well below 1.
-        """
+
+        Point 7: weight M0/egestion by `fate_to_modeled_det` = sum over modeled DET columns
+        of det_fate, so the numerator only counts material that actually enters the modeled
+        detritus system (consistent with q_combined, which is already fate-weighted).
+        With det_fate rows summing to 1 this weight is 1 (no-op on the real models).
+
+        Openness (point 8) is applied to the pooled scalar using the mean theta / ext across
+        DET groups: 'recycling_loss' damps b; 'source_dilution' damps b and dilutes a toward
+        the external SPPR. Returns (SPPR, sppr_det, a, b)."""
         q_combined = float(sum(float(q[d]) for d in DET_seq if float(q[d]) > 0))
         if q_combined <= 0:
             q_combined = float(flow_to_det.sum())
 
-        m_combined = (M0 / q_combined).fillna(0)
+        if det_fate is not None:
+            fate_to_modeled = (det_fate.reindex(index=M0.index, columns=list(DET_seq))
+                               .fillna(0).sum(axis=1).clip(lower=0.0, upper=1.0))
+        else:
+            fate_to_modeled = pd.Series(1.0, index=M0.index)
+
+        m_combined = (M0 * fate_to_modeled / q_combined).fillna(0)
 
         if TE_option == 'With Egestion':
-            e_combined = (egestion / q_combined).fillna(0)
+            e_combined = (egestion * fate_to_modeled / q_combined).fillna(0)
             m_eff = m_combined + DC.T @ e_combined
         else:  # GE
             m_eff = m_combined
@@ -1150,6 +1166,15 @@ class PPRCalculator:
 
         a = float(m_eff @ non_DET_sppr)
         b = float(m_eff @ SPPR_combined_raw)
+
+        if det_open_mode != 'none' and theta is not None:
+            th = float(np.mean(theta))
+            if det_open_mode == 'recycling_loss':
+                b = th * b
+            elif det_open_mode == 'source_dilution':
+                ex = float(np.mean(ext)) if ext is not None else 0.0
+                a = th * a + ex * (1.0 - th)
+                b = th * b
 
         if b >= 1.0:
             raise ValueError(
@@ -1160,7 +1185,7 @@ class PPRCalculator:
         sppr_det = a / (1.0 - b)
         for det_j in DET_seq:
             SPPR[det_j] *= sppr_det
-        return SPPR
+        return SPPR, sppr_det, a, b
 
     def SPPR_new(self, TE=None, TE_option='GE', DET_TE_vals=1, collapse_det=False):
         # get DC:
@@ -1398,7 +1423,7 @@ class PPRCalculator:
                 sppr_mat, DET_seq, non_DET_sppr,
                 self.M0, self.egestion, self.q,
                 flow_to_det, DC, TE_option
-            )
+            )[0]
         else:
             for det_j in DET_seq:
                 det_sym = sppr_vec.loc[det_j].values.ravel()[0]
