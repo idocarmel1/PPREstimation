@@ -1090,9 +1090,15 @@ class PPRCalculator:
                 m_eff_l = m_l + DC.T @ e_l
             else:  # GE
                 m_eff_l = m_l
-            c[li] = float(m_eff_l @ non_DET_sppr)
+            # Align operands to M0.index by label (0-filling groups absent from the basis).
+            # No-op for SPPR_new / as_PP (basis already spans all groups); for the as_DC
+            # symbolic basis it drops the Import rows cleanly instead of raising on misalignment.
+            m_eff_l = m_eff_l.reindex(self.M0.index).fillna(0)
+            nds = non_DET_sppr.reindex(self.M0.index).fillna(0)
+            c[li] = float(m_eff_l @ nds)
             for ji, det_j in enumerate(DET_seq):
-                B[li, ji] = float(m_eff_l @ sppr_basis[det_j])
+                basis_j = sppr_basis[det_j].reindex(self.M0.index).fillna(0)
+                B[li, ji] = float(m_eff_l @ basis_j)
         return B, c
 
     @staticmethod
