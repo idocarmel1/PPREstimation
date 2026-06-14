@@ -1,7 +1,8 @@
 __pycache__/
 .idea/
-TL_fix/
 venv/
 real_models/data/*.csv
-EcopathSC/
-archive/
+# Non-code docs: keep them out of the knowledge graph so their markdown headings
+# don't become nodes (the graph should index code symbols, not doc tables-of-contents).
+USER_GUIDE.md
+CLAUDE.md
