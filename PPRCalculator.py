@@ -1269,7 +1269,14 @@ class PPRCalculator:
             }
         return SPPR
 
-    def SPPR_new(self, TE=None, TE_option='GE', DET_TE_vals=1, collapse_det=False):
+    def SPPR_new(self, TE=None, TE_option='GE', DET_TE_vals=1, collapse_det=None,
+                 det_collapse_mode='never', det_open_mode='none',
+                 det_theta=1.0, det_external_sppr=0.0):
+        # Back-compat shim: the old boolean collapse_det maps onto the new enum.
+        # collapse_det=False -> 'never' (always solve), True -> 'auto' (pool iff unstable),
+        # None -> leave det_collapse_mode as given (defaults to 'never' == old default).
+        if collapse_det is not None:
+            det_collapse_mode = 'auto' if collapse_det else 'never'
         # get DC:
         DC = self.get_DC(DET_as_PP=True, normalize=False)
         
@@ -1320,97 +1327,34 @@ class PPRCalculator:
         flow_to_det = (self.M0 + self.egestion).fillna(0)
         non_DET_sppr = SPPR.drop(columns=DET_seq).sum(axis=1)
 
-        if len(DET_seq) == 1:
-            det_j = DET_seq[0]
-            flow2det = self.q[det_j] if self.q[det_j] > 0 else flow_to_det.sum()
-            if TE_option == 'TE':
-                PP_Import_seq = list(self.get_PP_seq() + self.get_Import_seq())
-                sppr_det = flow_to_det[PP_Import_seq].sum() / flow2det
-                SPPR[DET_seq] *= sppr_det
-            elif TE_option == 'GE':
-                m = (self.M0 / flow2det).fillna(0)
-                x = sm.symbols('x')
-                a = float(m @ non_DET_sppr)
-                b = float(m @ SPPR[det_j])
-                sppr_det = float(sm.solve(x - a - x * b, x)[0])
-                SPPR[DET_seq] *= sppr_det
-            elif TE_option == 'With Egestion':
-                m = (self.M0 / flow2det).fillna(0)
-                e = (self.egestion / flow2det).fillna(0)
-                x = sm.symbols('x')
-                a = float(m @ non_DET_sppr) + float((DC @ non_DET_sppr) @ e)
-                b = float(m @ SPPR[det_j]) + float((DC @ SPPR[det_j]) @ e)
-                sppr_det = float(sm.solve(x - a - x * b, x)[0])
-                SPPR[DET_seq] *= sppr_det
-            else:
-                raise Exception("TE_option should be in ['GE', 'TE', 'With Egestion', 'global']")
-        else:
-            # Multiple DET groups: solve coupled linear system (I - B) x = c
-            # x_l = sppr_det for DET group l
-            # B[l,j] = m_l @ SPPR[:,DET_j],  c[l] = m_l @ non_DET_sppr
-            k = len(DET_seq)
+        # Unified detritus resolution for single- and multi-DET models.
+        # GE / With Egestion build the coupled recycling system (I - B) x = c via the shared
+        # _build_det_BC helper and resolve it through _solve_det_scaling (which applies the
+        # openness transform, decides solve-vs-pool, and scales the DET columns in place).
+        # TE has no recycling matrix, so each DET column is scaled by its direct PP+Import
+        # inflow share, with availability theta applied as a plain multiplier.
+        if TE_option == 'TE':
             PP_Import_seq = list(self.get_PP_seq() + self.get_Import_seq())
-
-            def _get_m_l(det_l):
-                q_l = self.q[det_l] if self.q[det_l] > 0 else 1.0
+            theta = self._resolve_det_param(det_theta, DET_seq, 1.0)
+            for i, det_l in enumerate(DET_seq):
+                q_l = self.q[det_l] if self.q[det_l] > 0 else flow_to_det.sum()
                 if det_fate is not None and det_l in det_fate.columns:
-                    fracs = det_fate[det_l].reindex(self.M0.index).fillna(0)
-                    return (self.M0 * fracs / q_l).fillna(0)
-                return (self.M0 / q_l).fillna(0)
-
-            if TE_option == 'TE':
-                for det_l in DET_seq:
-                    q_l = self.q[det_l] if self.q[det_l] > 0 else 1.0
-                    if det_fate is not None and det_l in det_fate.columns:
-                        fracs = det_fate[det_l].reindex(flow_to_det.index).fillna(0)
-                        inflow_from_PP_Import = (flow_to_det[PP_Import_seq] * fracs[PP_Import_seq]).sum()
-                    else:
-                        inflow_from_PP_Import = flow_to_det[PP_Import_seq].sum()
-                    SPPR[det_l] *= inflow_from_PP_Import / q_l
-            elif TE_option == 'GE':
-                B = np.zeros((k, k))
-                c_vec = np.zeros(k)
-                for li, det_l in enumerate(DET_seq):
-                    m_l = _get_m_l(det_l)
-                    c_vec[li] = float(m_l @ non_DET_sppr)
-                    for ji, det_j in enumerate(DET_seq):
-                        B[li, ji] = float(m_l @ SPPR[det_j])
-                IminusB = np.eye(k) - B
-                if collapse_det and np.min(np.linalg.eigvals(IminusB).real) <= 0:
-                    SPPR = self._collapse_det_scaling(SPPR, DET_seq, non_DET_sppr,
-                                                      self.M0, self.egestion, self.q,
-                                                      flow_to_det, DC, TE_option)
+                    fr = det_fate[det_l].reindex(flow_to_det.index).fillna(0)
+                    inflow = (flow_to_det[PP_Import_seq] * fr[PP_Import_seq]).sum()
+                elif det_fate is not None and len(DET_seq) > 1:
+                    # Point 6: a present det_fate missing this DET column means nothing feeds it.
+                    inflow = 0.0
                 else:
-                    x_vec = np.linalg.solve(IminusB, c_vec)
-                    for i, det_j in enumerate(DET_seq):
-                        SPPR[det_j] *= x_vec[i]
-            elif TE_option == 'With Egestion':
-                B = np.zeros((k, k))
-                c_vec = np.zeros(k)
-                for li, det_l in enumerate(DET_seq):
-                    q_l = self.q[det_l] if self.q[det_l] > 0 else 1.0
-                    if det_fate is not None and det_l in det_fate.columns:
-                        fracs = det_fate[det_l].reindex(self.M0.index).fillna(0)
-                        m_l = (self.M0 * fracs / q_l).fillna(0)
-                        e_l = (self.egestion * fracs / q_l).fillna(0)
-                    else:
-                        m_l = (self.M0 / q_l).fillna(0)
-                        e_l = (self.egestion / q_l).fillna(0)
-                    m_eff_l = m_l + DC.T @ e_l
-                    c_vec[li] = float(m_eff_l @ non_DET_sppr)
-                    for ji, det_j in enumerate(DET_seq):
-                        B[li, ji] = float(m_eff_l @ SPPR[det_j])
-                IminusB = np.eye(k) - B
-                if collapse_det and np.min(np.linalg.eigvals(IminusB).real) <= 0:
-                    SPPR = self._collapse_det_scaling(SPPR, DET_seq, non_DET_sppr,
-                                                      self.M0, self.egestion, self.q,
-                                                      flow_to_det, DC, TE_option)
-                else:
-                    x_vec = np.linalg.solve(IminusB, c_vec)
-                    for i, det_j in enumerate(DET_seq):
-                        SPPR[det_j] *= x_vec[i]
-            else:
-                raise Exception("TE_option should be in ['GE', 'TE', 'With Egestion', 'global']")
+                    inflow = flow_to_det[PP_Import_seq].sum()
+                SPPR[det_l] *= (inflow / q_l) * theta[i]
+        elif TE_option in ('GE', 'With Egestion'):
+            B, c_vec = self._build_det_BC(SPPR, non_DET_sppr, DET_seq, DC, TE_option)
+            SPPR = self._solve_det_scaling(
+                B, c_vec, DET_seq, SPPR, non_DET_sppr, DC, TE_option,
+                det_collapse_mode=det_collapse_mode, det_open_mode=det_open_mode,
+                det_theta=det_theta, det_external_sppr=det_external_sppr)
+        else:
+            raise Exception("TE_option should be in ['GE', 'TE', 'With Egestion', 'global']")
 
         return SPPR, A, L
     
