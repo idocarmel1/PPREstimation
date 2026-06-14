@@ -42,7 +42,7 @@
       "label": "load_json_dict()",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L11",
+      "source_location": "L14",
       "_origin": "ast",
       "id": "modeldata_load_json_dict",
       "community": 5,
@@ -52,47 +52,57 @@
       "label": "SpeciesGroupLegacy",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L19",
+      "source_location": "L38",
       "_origin": "ast",
       "id": "modeldata_speciesgrouplegacy",
-      "community": 8,
+      "community": 5,
       "norm_label": "speciesgrouplegacy"
     },
     {
       "label": ".from_dict()",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L48",
+      "source_location": "L67",
       "_origin": "ast",
       "id": "modeldata_speciesgrouplegacy_from_dict",
-      "community": 8,
+      "community": 5,
       "norm_label": ".from_dict()"
     },
     {
       "label": ".__str__()",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L52",
+      "source_location": "L83",
       "_origin": "ast",
       "id": "modeldata_speciesgrouplegacy_str",
-      "community": 8,
+      "community": 5,
       "norm_label": ".__str__()"
     },
     {
       "label": ".to_df_row()",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L55",
+      "source_location": "L95",
       "_origin": "ast",
       "id": "modeldata_speciesgrouplegacy_to_df_row",
-      "community": 8,
+      "community": 5,
       "norm_label": ".to_df_row()"
+    },
+    {
+      "label": "DataFrame",
+      "file_type": "code",
+      "source_file": "ModelData.py",
+      "source_location": "L95",
+      "_origin": "ast",
+      "id": "modeldata_py_dataframe",
+      "community": 5,
+      "norm_label": "dataframe"
     },
     {
       "label": "SpeciesGroup",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L63",
+      "source_location": "L114",
       "_origin": "ast",
       "id": "modeldata_speciesgroup",
       "community": 5,
@@ -102,7 +112,7 @@
       "label": ".from_dict()",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L87",
+      "source_location": "L138",
       "_origin": "ast",
       "id": "modeldata_speciesgroup_from_dict",
       "community": 5,
@@ -112,7 +122,7 @@
       "label": ".to_df_row()",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L91",
+      "source_location": "L155",
       "_origin": "ast",
       "id": "modeldata_speciesgroup_to_df_row",
       "community": 5,
@@ -122,87 +132,97 @@
       "label": "read_json_SpeciesGroup_list()",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L96",
+      "source_location": "L169",
       "_origin": "ast",
       "id": "modeldata_read_json_speciesgroup_list",
       "community": 5,
       "norm_label": "read_json_speciesgroup_list()"
     },
     {
+      "label": "Any",
+      "file_type": "code",
+      "source_file": "ModelData.py",
+      "source_location": "L169",
+      "_origin": "ast",
+      "id": "any",
+      "community": 5,
+      "norm_label": "any"
+    },
+    {
       "label": "ModelData",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L105",
+      "source_location": "L194",
       "_origin": "ast",
       "id": "modeldata_modeldata",
-      "community": 5,
+      "community": 4,
       "norm_label": "modeldata"
     },
     {
       "label": ".__init__()",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L108",
+      "source_location": "L211",
       "_origin": "ast",
       "id": "modeldata_modeldata_init",
-      "community": 5,
+      "community": 4,
       "norm_label": ".__init__()"
     },
     {
       "label": "._init_from_json_filepath()",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L123",
+      "source_location": "L238",
       "_origin": "ast",
       "id": "modeldata_modeldata_init_from_json_filepath",
-      "community": 5,
+      "community": 4,
       "norm_label": "._init_from_json_filepath()"
     },
     {
       "label": "._init_from_model_number()",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L172",
+      "source_location": "L314",
       "_origin": "ast",
       "id": "modeldata_modeldata_init_from_model_number",
-      "community": 5,
+      "community": 4,
       "norm_label": "._init_from_model_number()"
     },
     {
       "label": "._parse_filename()",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L271",
+      "source_location": "L482",
       "_origin": "ast",
       "id": "modeldata_modeldata_parse_filename",
-      "community": 5,
+      "community": 4,
       "norm_label": "._parse_filename()"
     },
     {
       "label": ".load_json_dict_static()",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L298",
+      "source_location": "L523",
       "_origin": "ast",
       "id": "modeldata_modeldata_load_json_dict_static",
-      "community": 5,
+      "community": 4,
       "norm_label": ".load_json_dict_static()"
     },
     {
       "label": ".get_seq2name()",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L304",
+      "source_location": "L539",
       "_origin": "ast",
       "id": "modeldata_modeldata_get_seq2name",
-      "community": 5,
+      "community": 4,
       "norm_label": ".get_seq2name()"
     },
     {
       "label": ".get_DC()",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L320",
+      "source_location": "L572",
       "_origin": "ast",
       "id": "modeldata_modeldata_get_dc",
       "community": 5,
@@ -212,47 +232,57 @@
       "label": ".get_species_groups()",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L360",
+      "source_location": "L639",
       "_origin": "ast",
       "id": "modeldata_modeldata_get_species_groups",
-      "community": 5,
+      "community": 4,
       "norm_label": ".get_species_groups()"
     },
     {
       "label": ".get_groups_df()",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L402",
+      "source_location": "L707",
       "_origin": "ast",
       "id": "modeldata_modeldata_get_groups_df",
       "community": 5,
       "norm_label": ".get_groups_df()"
     },
     {
+      "label": "Series",
+      "file_type": "code",
+      "source_file": "ModelData.py",
+      "source_location": "L707",
+      "_origin": "ast",
+      "id": "modeldata_py_series",
+      "community": 5,
+      "norm_label": "series"
+    },
+    {
       "label": "get_seq2name()",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L436",
+      "source_location": "L765",
       "_origin": "ast",
       "id": "modeldata_get_seq2name",
-      "community": 5,
+      "community": 4,
       "norm_label": "get_seq2name()"
     },
     {
       "label": "get_DC()",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L453",
+      "source_location": "L799",
       "_origin": "ast",
       "id": "modeldata_get_dc",
-      "community": 5,
+      "community": 4,
       "norm_label": "get_dc()"
     },
     {
       "label": "get_model_metadata()",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L506",
+      "source_location": "L875",
       "_origin": "ast",
       "id": "modeldata_get_model_metadata",
       "community": 5,
@@ -262,7 +292,7 @@
       "label": "get_model_data()",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L510",
+      "source_location": "L892",
       "_origin": "ast",
       "id": "modeldata_get_model_data",
       "community": 5,
@@ -272,171 +302,231 @@
       "label": "get_model_diet_data()",
       "file_type": "code",
       "source_file": "ModelData.py",
-      "source_location": "L514",
+      "source_location": "L909",
       "_origin": "ast",
       "id": "modeldata_get_model_diet_data",
       "community": 5,
       "norm_label": "get_model_diet_data()"
     },
     {
-      "label": "Load a JSON file and return as dictionary.",
+      "label": "Load a JSON file (relative to this module's directory) and return it as a dict.",
       "file_type": "rationale",
       "source_file": "ModelData.py",
-      "source_location": "L12",
+      "source_location": "L15",
       "_origin": "ast",
-      "id": "modeldata_rationale_12",
+      "id": "modeldata_rationale_15",
       "community": 5,
-      "norm_label": "load a json file and return as dictionary."
+      "norm_label": "load a json file (relative to this module's directory) and return it as a dict."
     },
     {
-      "label": "Factory method to create an instance from a dictionary.",
+      "label": "Build a ``SpeciesGroupLegacy`` from a flat dict of field values.          Factor",
       "file_type": "rationale",
       "source_file": "ModelData.py",
-      "source_location": "L49",
+      "source_location": "L68",
       "_origin": "ast",
-      "id": "modeldata_rationale_49",
-      "community": 8,
-      "norm_label": "factory method to create an instance from a dictionary."
+      "id": "modeldata_rationale_68",
+      "community": 5,
+      "norm_label": "build a ``speciesgrouplegacy`` from a flat dict of field values.          factor"
     },
     {
-      "label": "Factory method to create an instance from a dictionary.",
+      "label": "Return a human-readable one-line summary of this legacy species group.",
       "file_type": "rationale",
       "source_file": "ModelData.py",
-      "source_location": "L88",
+      "source_location": "L84",
       "_origin": "ast",
-      "id": "modeldata_rationale_88",
+      "id": "modeldata_rationale_84",
       "community": 5,
-      "norm_label": "factory method to create an instance from a dictionary."
+      "norm_label": "return a human-readable one-line summary of this legacy species group."
     },
     {
-      "label": "Load JSON file and deserialize to list of SpeciesGroupLegacy objects.",
+      "label": "Convert this legacy group into a single-row DataFrame of its scalar fields.",
       "file_type": "rationale",
       "source_file": "ModelData.py",
-      "source_location": "L97",
+      "source_location": "L96",
       "_origin": "ast",
-      "id": "modeldata_rationale_97",
+      "id": "modeldata_rationale_96",
       "community": 5,
-      "norm_label": "load json file and deserialize to list of speciesgrouplegacy objects."
+      "norm_label": "convert this legacy group into a single-row dataframe of its scalar fields."
     },
     {
-      "label": "ModelData class supporting both old API (model_number) and new API (json_filepat",
+      "label": "Build a ``SpeciesGroup`` from a flat dict of field values.          Factory used",
       "file_type": "rationale",
       "source_file": "ModelData.py",
-      "source_location": "L106",
+      "source_location": "L139",
       "_origin": "ast",
-      "id": "modeldata_rationale_106",
+      "id": "modeldata_rationale_139",
       "community": 5,
-      "norm_label": "modeldata class supporting both old api (model_number) and new api (json_filepat"
+      "norm_label": "build a ``speciesgroup`` from a flat dict of field values.          factory used"
+    },
+    {
+      "label": "Convert this group into a single-row DataFrame of all its fields.          Unlik",
+      "file_type": "rationale",
+      "source_file": "ModelData.py",
+      "source_location": "L156",
+      "_origin": "ast",
+      "id": "modeldata_rationale_156",
+      "community": 5,
+      "norm_label": "convert this group into a single-row dataframe of all its fields.          unlik"
+    },
+    {
+      "label": "Load a JSON file and deserialize every object into a ``SpeciesGroupLegacy``.",
+      "file_type": "rationale",
+      "source_file": "ModelData.py",
+      "source_location": "L170",
+      "_origin": "ast",
+      "id": "modeldata_rationale_170",
+      "community": 5,
+      "norm_label": "load a json file and deserialize every object into a ``speciesgrouplegacy``."
+    },
+    {
+      "label": "Container for one Ecopath model's group table, diet composition and detritus fat",
+      "file_type": "rationale",
+      "source_file": "ModelData.py",
+      "source_location": "L195",
+      "_origin": "ast",
+      "id": "modeldata_rationale_195",
+      "community": 4,
+      "norm_label": "container for one ecopath model's group table, diet composition and detritus fat"
     },
     {
       "label": "Initialize ModelData from either a model_number (int) or json_filepath (str).",
       "file_type": "rationale",
       "source_file": "ModelData.py",
-      "source_location": "L109",
+      "source_location": "L212",
       "_origin": "ast",
-      "id": "modeldata_rationale_109",
-      "community": 5,
+      "id": "modeldata_rationale_212",
+      "community": 4,
       "norm_label": "initialize modeldata from either a model_number (int) or json_filepath (str)."
     },
     {
-      "label": "Initialize ModelData from a JSON filepath.                  Filename format: {",
+      "label": "Initialize ModelData from a per-model JSON file (new API).          Parses model",
       "file_type": "rationale",
       "source_file": "ModelData.py",
-      "source_location": "L124",
+      "source_location": "L239",
       "_origin": "ast",
-      "id": "modeldata_rationale_124",
-      "community": 5,
-      "norm_label": "initialize modeldata from a json filepath.                  filename format: {"
+      "id": "modeldata_rationale_239",
+      "community": 4,
+      "norm_label": "initialize modeldata from a per-model json file (new api).          parses model"
     },
     {
-      "label": "Initialize ModelData from a model number (legacy API).",
+      "label": "Initialize ModelData from a model number using the bundled legacy data.",
       "file_type": "rationale",
       "source_file": "ModelData.py",
-      "source_location": "L173",
+      "source_location": "L315",
       "_origin": "ast",
-      "id": "modeldata_rationale_173",
-      "community": 5,
-      "norm_label": "initialize modeldata from a model number (legacy api)."
+      "id": "modeldata_rationale_315",
+      "community": 4,
+      "norm_label": "initialize modeldata from a model number using the bundled legacy data."
     },
     {
-      "label": "Parse filename to extract model_number, model_name, and model_year.",
+      "label": "Parse a model filename stem into (model_number, model_name, model_year).",
       "file_type": "rationale",
       "source_file": "ModelData.py",
-      "source_location": "L272",
+      "source_location": "L483",
       "_origin": "ast",
-      "id": "modeldata_rationale_272",
-      "community": 5,
-      "norm_label": "parse filename to extract model_number, model_name, and model_year."
+      "id": "modeldata_rationale_483",
+      "community": 4,
+      "norm_label": "parse a model filename stem into (model_number, model_name, model_year)."
     },
     {
-      "label": "Load a JSON file and return as dictionary.",
+      "label": "Load a JSON file from an absolute/explicit path and return it as a dict.",
       "file_type": "rationale",
       "source_file": "ModelData.py",
-      "source_location": "L299",
+      "source_location": "L524",
       "_origin": "ast",
-      "id": "modeldata_rationale_299",
-      "community": 5,
-      "norm_label": "load a json file and return as dictionary."
+      "id": "modeldata_rationale_524",
+      "community": 4,
+      "norm_label": "load a json file from an absolute/explicit path and return it as a dict."
     },
     {
-      "label": "Get mapping from group sequence number to group name.",
+      "label": "Build a {group_seq: group_name} mapping from a model dict, plus a diet_import en",
       "file_type": "rationale",
       "source_file": "ModelData.py",
-      "source_location": "L305",
+      "source_location": "L540",
       "_origin": "ast",
-      "id": "modeldata_rationale_305",
-      "community": 5,
-      "norm_label": "get mapping from group sequence number to group name."
+      "id": "modeldata_rationale_540",
+      "community": 4,
+      "norm_label": "build a {group_seq: group_name} mapping from a model dict, plus a diet_import en"
     },
     {
-      "label": "Get diet composition (DC) and detritus fate matrices.",
+      "label": "Build the diet composition (DC) and detritus fate matrices from a model dict.",
       "file_type": "rationale",
       "source_file": "ModelData.py",
-      "source_location": "L321",
+      "source_location": "L573",
       "_origin": "ast",
-      "id": "modeldata_rationale_321",
+      "id": "modeldata_rationale_573",
       "community": 5,
-      "norm_label": "get diet composition (dc) and detritus fate matrices."
+      "norm_label": "build the diet composition (dc) and detritus fate matrices from a model dict."
     },
     {
-      "label": "Extract species groups from JSON model data.",
+      "label": "Parse and clean the raw group records of a model into ``SpeciesGroup`` objects.",
       "file_type": "rationale",
       "source_file": "ModelData.py",
-      "source_location": "L361",
+      "source_location": "L640",
       "_origin": "ast",
-      "id": "modeldata_rationale_361",
-      "community": 5,
-      "norm_label": "extract species groups from json model data."
+      "id": "modeldata_rationale_640",
+      "community": 4,
+      "norm_label": "parse and clean the raw group records of a model into ``speciesgroup`` objects."
     },
     {
-      "label": "Convert species groups to DataFrame.",
+      "label": "Assemble a per-group parameter table and diet_import series from SpeciesGroup ob",
       "file_type": "rationale",
       "source_file": "ModelData.py",
-      "source_location": "L403",
+      "source_location": "L708",
       "_origin": "ast",
-      "id": "modeldata_rationale_403",
+      "id": "modeldata_rationale_708",
       "community": 5,
-      "norm_label": "convert species groups to dataframe."
+      "norm_label": "assemble a per-group parameter table and diet_import series from speciesgroup ob"
     },
     {
-      "label": "Get mapping from group sequence number to group name (legacy function).",
+      "label": "Build a {group_seq: group_name} mapping for a model from the bundled legacy data",
       "file_type": "rationale",
       "source_file": "ModelData.py",
-      "source_location": "L437",
+      "source_location": "L766",
       "_origin": "ast",
-      "id": "modeldata_rationale_437",
-      "community": 5,
-      "norm_label": "get mapping from group sequence number to group name (legacy function)."
+      "id": "modeldata_rationale_766",
+      "community": 4,
+      "norm_label": "build a {group_seq: group_name} mapping for a model from the bundled legacy data"
     },
     {
-      "label": "Get diet composition (DC) and detritus fate matrices (legacy function).",
+      "label": "Build the diet composition (DC) and detritus fate matrices from the bundled lega",
       "file_type": "rationale",
       "source_file": "ModelData.py",
-      "source_location": "L454",
+      "source_location": "L800",
       "_origin": "ast",
-      "id": "modeldata_rationale_454",
+      "id": "modeldata_rationale_800",
+      "community": 4,
+      "norm_label": "build the diet composition (dc) and detritus fate matrices from the bundled lega"
+    },
+    {
+      "label": "Return the bundled metadata record for a model id.      Thin accessor over the m",
+      "file_type": "rationale",
+      "source_file": "ModelData.py",
+      "source_location": "L876",
+      "_origin": "ast",
+      "id": "modeldata_rationale_876",
       "community": 5,
-      "norm_label": "get diet composition (dc) and detritus fate matrices (legacy function)."
+      "norm_label": "return the bundled metadata record for a model id.      thin accessor over the m"
+    },
+    {
+      "label": "Return the bundled core data record for a model id.      Thin accessor over the",
+      "file_type": "rationale",
+      "source_file": "ModelData.py",
+      "source_location": "L893",
+      "_origin": "ast",
+      "id": "modeldata_rationale_893",
+      "community": 5,
+      "norm_label": "return the bundled core data record for a model id.      thin accessor over the"
+    },
+    {
+      "label": "Return the bundled diet data record for a model id.      Thin accessor over the",
+      "file_type": "rationale",
+      "source_file": "ModelData.py",
+      "source_location": "L910",
+      "_origin": "ast",
+      "id": "modeldata_rationale_910",
+      "community": 5,
+      "norm_label": "return the bundled diet data record for a model id.      thin accessor over the"
     },
     {
       "label": "PPRCalculator.py",
@@ -452,17 +542,17 @@
       "label": "PPRCalculator",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L14",
+      "source_location": "L17",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator",
-      "community": 0,
+      "community": 7,
       "norm_label": "pprcalculator"
     },
     {
       "label": ".__init__()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L17",
+      "source_location": "L20",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_init",
       "community": 3,
@@ -472,7 +562,7 @@
       "label": ".from_dict()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L34",
+      "source_location": "L59",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_from_dict",
       "community": 3,
@@ -482,7 +572,7 @@
       "label": ".from_modeldata()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L65",
+      "source_location": "L106",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_from_modeldata",
       "community": 3,
@@ -492,17 +582,17 @@
       "label": "ModelData",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L65",
+      "source_location": "L106",
       "_origin": "ast",
       "id": "pprcalculator_py_modeldata",
-      "community": 3,
+      "community": 4,
       "norm_label": "modeldata"
     },
     {
       "label": "._sort()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L111",
+      "source_location": "L171",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_sort",
       "community": 3,
@@ -512,17 +602,27 @@
       "label": "._fill_properties()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L122",
+      "source_location": "L189",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_fill_properties",
       "community": 3,
       "norm_label": "._fill_properties()"
     },
     {
+      "label": "DataFrame",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L189",
+      "_origin": "ast",
+      "id": "pprcalculator_py_dataframe",
+      "community": 1,
+      "norm_label": "dataframe"
+    },
+    {
       "label": ".apply_ecopath_defaults()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L159",
+      "source_location": "L235",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_apply_ecopath_defaults",
       "community": 3,
@@ -532,7 +632,7 @@
       "label": ".apply_lim()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L297",
+      "source_location": "L391",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_apply_lim",
       "community": 3,
@@ -542,17 +642,27 @@
       "label": ".is_model_balanced()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L479",
+      "source_location": "L590",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_is_model_balanced",
       "community": 3,
       "norm_label": ".is_model_balanced()"
     },
     {
+      "label": "Series",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L590",
+      "_origin": "ast",
+      "id": "pprcalculator_py_series",
+      "community": 0,
+      "norm_label": "series"
+    },
+    {
       "label": ".balance_model()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L497",
+      "source_location": "L614",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_balance_model",
       "community": 3,
@@ -562,7 +672,7 @@
       "label": ".is_sppr_balanced()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L523",
+      "source_location": "L655",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_is_sppr_balanced",
       "community": 1,
@@ -572,7 +682,7 @@
       "label": ".get_model()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L573",
+      "source_location": "L721",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_get_model",
       "community": 3,
@@ -582,157 +692,157 @@
       "label": ".get_groups_df()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L581",
+      "source_location": "L733",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_get_groups_df",
-      "community": 0,
+      "community": 8,
       "norm_label": ".get_groups_df()"
     },
     {
       "label": ".get_DC()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L585",
+      "source_location": "L741",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_get_dc",
-      "community": 0,
+      "community": 8,
       "norm_label": ".get_dc()"
     },
     {
       "label": ".get_Z()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L606",
+      "source_location": "L768",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_get_z",
-      "community": 0,
+      "community": 8,
       "norm_label": ".get_z()"
     },
     {
       "label": ".get_DET_seq()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L628",
+      "source_location": "L803",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_get_det_seq",
-      "community": 0,
+      "community": 8,
       "norm_label": ".get_det_seq()"
     },
     {
       "label": ".get_PP_seq()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L632",
+      "source_location": "L811",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_get_pp_seq",
-      "community": 0,
+      "community": 7,
       "norm_label": ".get_pp_seq()"
     },
     {
       "label": ".get_Regular_seq()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L636",
+      "source_location": "L819",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_get_regular_seq",
-      "community": 0,
+      "community": 9,
       "norm_label": ".get_regular_seq()"
     },
     {
       "label": ".get_Import_seq()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L640",
+      "source_location": "L827",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_get_import_seq",
-      "community": 0,
+      "community": 9,
       "norm_label": ".get_import_seq()"
     },
     {
       "label": ".get_TE()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L644",
+      "source_location": "L837",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_get_te",
-      "community": 0,
+      "community": 33,
       "norm_label": ".get_te()"
     },
     {
       "label": ".get_TL()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L685",
+      "source_location": "L892",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_get_tl",
-      "community": 0,
+      "community": 8,
       "norm_label": ".get_tl()"
     },
     {
       "label": ".get_PPR()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L728",
+      "source_location": "L942",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_get_ppr",
-      "community": 0,
+      "community": 1,
       "norm_label": ".get_ppr()"
     },
     {
       "label": ".get_NPP()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L745",
+      "source_location": "L971",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_get_npp",
-      "community": 0,
+      "community": 7,
       "norm_label": ".get_npp()"
     },
     {
       "label": ".get_PPR2NPP_ratio()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L753",
+      "source_location": "L991",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_get_ppr2npp_ratio",
-      "community": 0,
+      "community": 1,
       "norm_label": ".get_ppr2npp_ratio()"
     },
     {
       "label": ".SPPR_1986()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L760",
+      "source_location": "L1005",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_sppr_1986",
-      "community": 0,
+      "community": 1,
       "norm_label": ".sppr_1986()"
     },
     {
       "label": ".SPPR_1995()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L772",
+      "source_location": "L1023",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_sppr_1995",
-      "community": 0,
+      "community": 33,
       "norm_label": ".sppr_1995()"
     },
     {
       "label": ".SPPR_1995_TL_fix()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L784",
+      "source_location": "L1041",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_sppr_1995_tl_fix",
-      "community": 0,
+      "community": 33,
       "norm_label": ".sppr_1995_tl_fix()"
     },
     {
       "label": ".SPPR_EwE()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L796",
+      "source_location": "L1064",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_sppr_ewe",
       "community": 7,
@@ -742,7 +852,7 @@
       "label": ".SPPR_EwE_Ido()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1022",
+      "source_location": "L1307",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_sppr_ewe_ido",
       "community": 4,
@@ -752,27 +862,37 @@
       "label": ".SPPR_2015()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1080",
+      "source_location": "L1383",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_sppr_2015",
-      "community": 0,
+      "community": 8,
       "norm_label": ".sppr_2015()"
     },
     {
       "label": "._build_det_BC()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1137",
+      "source_location": "L1452",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_build_det_bc",
       "community": 0,
       "norm_label": "._build_det_bc()"
     },
     {
+      "label": "ndarray",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1452",
+      "_origin": "ast",
+      "id": "ndarray",
+      "community": 0,
+      "norm_label": "ndarray"
+    },
+    {
       "label": "._spectral_radius()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1186",
+      "source_location": "L1516",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_spectral_radius",
       "community": 0,
@@ -782,7 +902,7 @@
       "label": "._resolve_det_param()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1195",
+      "source_location": "L1534",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_resolve_det_param",
       "community": 0,
@@ -792,7 +912,7 @@
       "label": "._collapse_det_scaling()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1215",
+      "source_location": "L1563",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_collapse_det_scaling",
       "community": 0,
@@ -802,7 +922,7 @@
       "label": "._solve_det_scaling()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1277",
+      "source_location": "L1648",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_solve_det_scaling",
       "community": 0,
@@ -812,7 +932,7 @@
       "label": ".SPPR_new()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1359",
+      "source_location": "L1765",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_sppr_new",
       "community": 0,
@@ -822,259 +942,499 @@
       "label": "._SPPR_symbolic_helper_diet_import_as_PP()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1454",
+      "source_location": "L1899",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
-      "community": 0,
+      "community": 9,
       "norm_label": "._sppr_symbolic_helper_diet_import_as_pp()"
     },
     {
       "label": "._SPPR_symbolic_helper_diet_import_as_DC()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1567",
+      "source_location": "L2040",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
-      "community": 0,
+      "community": 9,
       "norm_label": "._sppr_symbolic_helper_diet_import_as_dc()"
     },
     {
       "label": ".SPPR_symbolic()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1705",
+      "source_location": "L2209",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_sppr_symbolic",
-      "community": 0,
+      "community": 9,
       "norm_label": ".sppr_symbolic()"
     },
     {
       "label": "._sample_SPPR_new_forced_balance()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1723",
+      "source_location": "L2255",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_sample_sppr_new_forced_balance",
-      "community": 0,
+      "community": 7,
       "norm_label": "._sample_sppr_new_forced_balance()"
     },
     {
       "label": ".monte_carlo_SPPR()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1747",
+      "source_location": "L2292",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_monte_carlo_sppr",
-      "community": 0,
+      "community": 9,
       "norm_label": ".monte_carlo_sppr()"
     },
     {
       "label": ".monte_carlo_SPPR_2()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1852",
+      "source_location": "L2430",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_monte_carlo_sppr_2",
-      "community": 0,
+      "community": 7,
       "norm_label": ".monte_carlo_sppr_2()"
     },
     {
       "label": ".rename_results()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1946",
+      "source_location": "L2552",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_rename_results",
-      "community": 0,
+      "community": 1,
       "norm_label": ".rename_results()"
     },
     {
-      "label": "Applies Ecopath defaults and ensures flows are synced with ratios.         Assu",
+      "label": "Primary constructor: build the calculator directly from a model identifier.",
       "file_type": "rationale",
       "source_file": "PPRCalculator.py",
-      "source_location": "L160",
+      "source_location": "L21",
       "_origin": "ast",
-      "id": "pprcalculator_rationale_160",
+      "id": "pprcalculator_rationale_21",
       "community": 3,
-      "norm_label": "applies ecopath defaults and ensures flows are synced with ratios.         assu"
+      "norm_label": "primary constructor: build the calculator directly from a model identifier."
     },
     {
-      "label": "Uses Linear Inverse Modeling (SLSQP) to fill in missing mass-balance          v",
+      "label": "Alternative constructor: rebuild an instance from a dict of pre-existing attribu",
       "file_type": "rationale",
       "source_file": "PPRCalculator.py",
-      "source_location": "L298",
+      "source_location": "L60",
       "_origin": "ast",
-      "id": "pprcalculator_rationale_298",
+      "id": "pprcalculator_rationale_60",
       "community": 3,
-      "norm_label": "uses linear inverse modeling (slsqp) to fill in missing mass-balance          v"
+      "norm_label": "alternative constructor: rebuild an instance from a dict of pre-existing attribu"
     },
     {
-      "label": "rebalance by changing growth, and net_migration (if change_production=False) or",
+      "label": "Core constructor used by __init__: build the calculator from a loaded ModelData.",
       "file_type": "rationale",
       "source_file": "PPRCalculator.py",
-      "source_location": "L498",
+      "source_location": "L107",
       "_origin": "ast",
-      "id": "pprcalculator_rationale_498",
+      "id": "pprcalculator_rationale_107",
       "community": 3,
-      "norm_label": "rebalance by changing growth, and net_migration (if change_production=false) or"
+      "norm_label": "core constructor used by __init__: build the calculator from a loaded modeldata."
     },
     {
-      "label": "Check an SPPR result is self-consistent: the primary-production inflow into the",
+      "label": "Normalize the ordering of every Series/DataFrame attribute on the instance.",
       "file_type": "rationale",
       "source_file": "PPRCalculator.py",
-      "source_location": "L524",
+      "source_location": "L172",
       "_origin": "ast",
-      "id": "pprcalculator_rationale_524",
+      "id": "pprcalculator_rationale_172",
+      "community": 3,
+      "norm_label": "normalize the ordering of every series/dataframe attribute on the instance."
+    },
+    {
+      "label": "Unpack the fully-filled groups table into the individual named vectors.",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L190",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_190",
+      "community": 3,
+      "norm_label": "unpack the fully-filled groups table into the individual named vectors."
+    },
+    {
+      "label": "Apply standard Ecopath defaults and sync the mass-balance flows with the ratios.",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L236",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_236",
+      "community": 3,
+      "norm_label": "apply standard ecopath defaults and sync the mass-balance flows with the ratios."
+    },
+    {
+      "label": "Fill missing mass-balance variables via a per-group Linear Inverse Model (SLSQP)",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L392",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_392",
+      "community": 3,
+      "norm_label": "fill missing mass-balance variables via a per-group linear inverse model (slsqp)"
+    },
+    {
+      "label": "Check the two Ecopath mass-balance identities hold (within tolerance).",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L591",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_591",
+      "community": 3,
+      "norm_label": "check the two ecopath mass-balance identities hold (within tolerance)."
+    },
+    {
+      "label": "Iteratively force the model onto exact mass balance and return a balanced copy.",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L615",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_615",
+      "community": 3,
+      "norm_label": "iteratively force the model onto exact mass balance and return a balanced copy."
+    },
+    {
+      "label": "Check an SPPR result is globally self-consistent (inflow == outflow).",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L656",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_656",
       "community": 1,
-      "norm_label": "check an sppr result is self-consistent: the primary-production inflow into the"
+      "norm_label": "check an sppr result is globally self-consistent (inflow == outflow)."
     },
     {
-      "label": "Args:             DET_as_PP (bool, optional): if True, DET row is set to 1. oth",
+      "label": "Return the underlying ModelData, or None for toy / from_dict instances.",
       "file_type": "rationale",
       "source_file": "PPRCalculator.py",
-      "source_location": "L586",
+      "source_location": "L722",
       "_origin": "ast",
-      "id": "pprcalculator_rationale_586",
-      "community": 0,
-      "norm_label": "args:             det_as_pp (bool, optional): if true, det row is set to 1. oth"
+      "id": "pprcalculator_rationale_722",
+      "community": 3,
+      "norm_label": "return the underlying modeldata, or none for toy / from_dict instances."
     },
     {
-      "label": "get Z matrix. if DET_as_PP is False (default), DET rows are flow_to_det split by",
+      "label": "Return a defensive (descending-seq sorted) copy of the per-group parameter table",
       "file_type": "rationale",
       "source_file": "PPRCalculator.py",
-      "source_location": "L607",
+      "source_location": "L734",
       "_origin": "ast",
-      "id": "pprcalculator_rationale_607",
-      "community": 0,
-      "norm_label": "get z matrix. if det_as_pp is false (default), det rows are flow_to_det split by"
+      "id": "pprcalculator_rationale_734",
+      "community": 8,
+      "norm_label": "return a defensive (descending-seq sorted) copy of the per-group parameter table"
     },
     {
-      "label": "Args:             TE_option (str): should be one of ['GE', 'TE', 'With Egestion",
+      "label": "Return the diet-composition (DC) matrix, optionally redefining detritus rows.",
       "file_type": "rationale",
       "source_file": "PPRCalculator.py",
-      "source_location": "L645",
+      "source_location": "L742",
       "_origin": "ast",
-      "id": "pprcalculator_rationale_645",
-      "community": 0,
-      "norm_label": "args:             te_option (str): should be one of ['ge', 'te', 'with egestion"
+      "id": "pprcalculator_rationale_742",
+      "community": 8,
+      "norm_label": "return the diet-composition (dc) matrix, optionally redefining detritus rows."
     },
     {
-      "label": "Compute the trophic level of every group via the standard linear-algebra",
+      "label": "Return the flow matrix Z = DC * q (consumption-weighted diet), with DET rows red",
       "file_type": "rationale",
       "source_file": "PPRCalculator.py",
-      "source_location": "L686",
+      "source_location": "L769",
       "_origin": "ast",
-      "id": "pprcalculator_rationale_686",
-      "community": 0,
-      "norm_label": "compute the trophic level of every group via the standard linear-algebra"
+      "id": "pprcalculator_rationale_769",
+      "community": 8,
+      "norm_label": "return the flow matrix z = dc * q (consumption-weighted diet), with det rows red"
     },
     {
-      "label": "Christensen & Pauly (1995)-style SPPR: per-group SPPR = TE^(1-TL) using each",
+      "label": "Return the sorted seq IDs of all detritus (DET) groups.          Returns:",
       "file_type": "rationale",
       "source_file": "PPRCalculator.py",
-      "source_location": "L773",
+      "source_location": "L804",
       "_origin": "ast",
-      "id": "pprcalculator_rationale_773",
-      "community": 0,
-      "norm_label": "christensen & pauly (1995)-style sppr: per-group sppr = te^(1-tl) using each"
+      "id": "pprcalculator_rationale_804",
+      "community": 8,
+      "norm_label": "return the sorted seq ids of all detritus (det) groups.          returns:"
     },
     {
-      "label": "Path-enumeration SPPR in the style of the Ecopath with Ecosim (EwE) flow-network",
+      "label": "Return the sorted seq IDs of all primary-producer (PP) groups.          Return",
       "file_type": "rationale",
       "source_file": "PPRCalculator.py",
-      "source_location": "L797",
+      "source_location": "L812",
       "_origin": "ast",
-      "id": "pprcalculator_rationale_797",
+      "id": "pprcalculator_rationale_812",
       "community": 7,
-      "norm_label": "path-enumeration sppr in the style of the ecopath with ecosim (ewe) flow-network"
+      "norm_label": "return the sorted seq ids of all primary-producer (pp) groups.          return"
     },
     {
-      "label": "Ido's matrix (nullspace) reformulation of the EwE path-summation SPPR: instead o",
+      "label": "Return the sorted seq IDs of all regular (consumer) groups.          Returns:",
       "file_type": "rationale",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1023",
+      "source_location": "L820",
       "_origin": "ast",
-      "id": "pprcalculator_rationale_1023",
+      "id": "pprcalculator_rationale_820",
+      "community": 9,
+      "norm_label": "return the sorted seq ids of all regular (consumer) groups.          returns:"
+    },
+    {
+      "label": "Return the sorted seq IDs of all imported-diet (Import) groups.          Impor",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L828",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_828",
+      "community": 9,
+      "norm_label": "return the sorted seq ids of all imported-diet (import) groups.          impor"
+    },
+    {
+      "label": "Build the per-group transfer-efficiency (TE) vector or matrix.          Args:",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L838",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_838",
+      "community": 33,
+      "norm_label": "build the per-group transfer-efficiency (te) vector or matrix.          args:"
+    },
+    {
+      "label": "Compute the trophic level of every group via the standard linear-algebra definit",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L893",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_893",
+      "community": 8,
+      "norm_label": "compute the trophic level of every group via the standard linear-algebra definit"
+    },
+    {
+      "label": "Convert a per-group SPPR into total primary production required (PPR) by the cat",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L943",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_943",
+      "community": 1,
+      "norm_label": "convert a per-group sppr into total primary production required (ppr) by the cat"
+    },
+    {
+      "label": "Return the net primary production (NPP) of the system.          NPP is the tot",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L972",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_972",
+      "community": 7,
+      "norm_label": "return the net primary production (npp) of the system.          npp is the tot"
+    },
+    {
+      "label": "Return the fraction of available NPP appropriated by the catch (PPR / NPP).",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L992",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_992",
+      "community": 1,
+      "norm_label": "return the fraction of available npp appropriated by the catch (ppr / npp)."
+    },
+    {
+      "label": "Pauly & Christensen (1986)-style SPPR using a single catch-weighted trophic leve",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1006",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_1006",
+      "community": 1,
+      "norm_label": "pauly & christensen (1986)-style sppr using a single catch-weighted trophic leve"
+    },
+    {
+      "label": "Christensen & Pauly (1995)-style per-group SPPR = TE^(1-TL).          Uses eac",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1024",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_1024",
+      "community": 33,
+      "norm_label": "christensen & pauly (1995)-style per-group sppr = te^(1-tl).          uses eac"
+    },
+    {
+      "label": "SPPR_1995 variant that linearly interpolates between bracketing integer trophic",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1042",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_1042",
+      "community": 33,
+      "norm_label": "sppr_1995 variant that linearly interpolates between bracketing integer trophic"
+    },
+    {
+      "label": "Path-enumeration SPPR in the style of Ecopath with Ecosim (EwE) flow-network ana",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1065",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_1065",
+      "community": 7,
+      "norm_label": "path-enumeration sppr in the style of ecopath with ecosim (ewe) flow-network ana"
+    },
+    {
+      "label": "Matrix (nullspace) reformulation of the EwE path-summation SPPR.          Inst",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1308",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_1308",
       "community": 4,
-      "norm_label": "ido's matrix (nullspace) reformulation of the ewe path-summation sppr: instead o"
+      "norm_label": "matrix (nullspace) reformulation of the ewe path-summation sppr.          inst"
     },
     {
-      "label": "Build the detritus recycling system (I - B) x = c for GE / With Egestion.",
+      "label": "2015-method SPPR: a matrix-inversion (Leontief-style) formulation.          De",
       "file_type": "rationale",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1138",
+      "source_location": "L1384",
       "_origin": "ast",
-      "id": "pprcalculator_rationale_1138",
-      "community": 0,
-      "norm_label": "build the detritus recycling system (i - b) x = c for ge / with egestion."
+      "id": "pprcalculator_rationale_1384",
+      "community": 8,
+      "norm_label": "2015-method sppr: a matrix-inversion (leontief-style) formulation.          de"
     },
     {
-      "label": "Largest absolute eigenvalue of M (0 for empty). Used to test whether the",
+      "label": "Build the detritus recycling system (I - B) x = c for the GE / With Egestion mod",
       "file_type": "rationale",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1187",
+      "source_location": "L1453",
       "_origin": "ast",
-      "id": "pprcalculator_rationale_1187",
+      "id": "pprcalculator_rationale_1453",
       "community": 0,
-      "norm_label": "largest absolute eigenvalue of m (0 for empty). used to test whether the"
+      "norm_label": "build the detritus recycling system (i - b) x = c for the ge / with egestion mod"
     },
     {
-      "label": "Resolve a per-DET parameter into an np.array aligned with DET_seq.          Ac",
+      "label": "Return the spectral radius (largest absolute eigenvalue) of M.          Used t",
       "file_type": "rationale",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1196",
+      "source_location": "L1517",
       "_origin": "ast",
-      "id": "pprcalculator_rationale_1196",
+      "id": "pprcalculator_rationale_1517",
       "community": 0,
-      "norm_label": "resolve a per-det parameter into an np.array aligned with det_seq.          ac"
+      "norm_label": "return the spectral radius (largest absolute eigenvalue) of m.          used t"
     },
     {
-      "label": "Fallback DET scaling: treat all DET groups as one pooled pool, solve the 1-D",
+      "label": "Resolve a per-DET parameter into a float array aligned with DET_seq.",
       "file_type": "rationale",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1218",
+      "source_location": "L1535",
       "_origin": "ast",
-      "id": "pprcalculator_rationale_1218",
+      "id": "pprcalculator_rationale_1535",
       "community": 0,
-      "norm_label": "fallback det scaling: treat all det groups as one pooled pool, solve the 1-d"
+      "norm_label": "resolve a per-det parameter into a float array aligned with det_seq."
     },
     {
-      "label": "Apply openness, decide solve-vs-pool by spectral radius / conditioning, scale th",
+      "label": "Fallback DET scaling: pool all detritus into one compartment and solve a 1-D pro",
       "file_type": "rationale",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1281",
+      "source_location": "L1566",
       "_origin": "ast",
-      "id": "pprcalculator_rationale_1281",
+      "id": "pprcalculator_rationale_1566",
       "community": 0,
-      "norm_label": "apply openness, decide solve-vs-pool by spectral radius / conditioning, scale th"
+      "norm_label": "fallback det scaling: pool all detritus into one compartment and solve a 1-d pro"
     },
     {
-      "label": "Monte-Carlo uncertainty propagation over transfer efficiency. Repeatedly resampl",
+      "label": "Resolve the detritus recycling system: apply openness, choose solve-vs-pool, sca",
       "file_type": "rationale",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1751",
+      "source_location": "L1652",
       "_origin": "ast",
-      "id": "pprcalculator_rationale_1751",
+      "id": "pprcalculator_rationale_1652",
       "community": 0,
-      "norm_label": "monte-carlo uncertainty propagation over transfer efficiency. repeatedly resampl"
+      "norm_label": "resolve the detritus recycling system: apply openness, choose solve-vs-pool, sca"
     },
     {
-      "label": "Variant of monte_carlo_SPPR supporting only kind='new'. Pre-allocates the sample",
+      "label": "Primary numeric SPPR solver via the nullspace of L = A - I.          Builds th",
       "file_type": "rationale",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1856",
+      "source_location": "L1768",
       "_origin": "ast",
-      "id": "pprcalculator_rationale_1856",
+      "id": "pprcalculator_rationale_1768",
       "community": 0,
-      "norm_label": "variant of monte_carlo_sppr supporting only kind='new'. pre-allocates the sample"
+      "norm_label": "primary numeric sppr solver via the nullspace of l = a - i.          builds th"
+    },
+    {
+      "label": "Symbolic SPPR helper, \"diet import as PP\" variant.          Imported diet is t",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1902",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_1902",
+      "community": 9,
+      "norm_label": "symbolic sppr helper, \"diet import as pp\" variant.          imported diet is t"
+    },
+    {
+      "label": "Symbolic SPPR helper, \"diet import as DC\" variant.          Imported diet is k",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2043",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_2043",
+      "community": 9,
+      "norm_label": "symbolic sppr helper, \"diet import as dc\" variant.          imported diet is k"
+    },
+    {
+      "label": "Symbolic SPPR solver: dispatch to the selected diet-import helper.          Ap",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2213",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_2213",
+      "community": 9,
+      "norm_label": "symbolic sppr solver: dispatch to the selected diet-import helper.          ap"
+    },
+    {
+      "label": "Run SPPR_new and force exact global balance by solving the single detritus SPPR.",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2256",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_2256",
+      "community": 7,
+      "norm_label": "run sppr_new and force exact global balance by solving the single detritus sppr."
+    },
+    {
+      "label": "Monte-Carlo uncertainty propagation over transfer efficiency.          Repeate",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2296",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_2296",
+      "community": 9,
+      "norm_label": "monte-carlo uncertainty propagation over transfer efficiency.          repeate"
+    },
+    {
+      "label": "Variant of monte_carlo_SPPR supporting only kind='new'.          Pre-allocates",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2434",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_2434",
+      "community": 7,
+      "norm_label": "variant of monte_carlo_sppr supporting only kind='new'.          pre-allocates"
+    },
+    {
+      "label": "Relabel the index (and columns) of one or more SPPR-style results.          Ty",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2553",
+      "_origin": "ast",
+      "id": "pprcalculator_rationale_2553",
+      "community": 1,
+      "norm_label": "relabel the index (and columns) of one or more sppr-style results.          ty"
     },
     {
       "label": "# TODO: change this function so I can decide which subset of parameters stays co",
       "file_type": "rationale",
       "source_file": "PPRCalculator.py",
-      "source_location": "L499",
+      "source_location": "L631",
       "_origin": "ast",
-      "id": "pprcalculator_rationale_499",
+      "id": "pprcalculator_rationale_631",
       "community": 4,
       "norm_label": "# todo: change this function so i can decide which subset of parameters stays co"
     },
@@ -1227,126 +1587,6 @@
       "id": "utils_rationale_156",
       "community": 4,
       "norm_label": "removes cycles from a flow matrix z using the ulanowicz method.     z[i, j] rep"
-    },
-    {
-      "label": "CHANGELOG_multi_det_openness.md",
-      "file_type": "document",
-      "source_file": "CHANGELOG_multi_det_openness.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "changelog_multi_det_openness",
-      "community": 6,
-      "norm_label": "changelog_multi_det_openness.md"
-    },
-    {
-      "label": "Multi-DET Openness, Collapse Modes & Diagnostics \u2014 Change Log",
-      "file_type": "document",
-      "source_file": "CHANGELOG_multi_det_openness.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "changelog_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_change_log",
-      "community": 6,
-      "norm_label": "multi-det openness, collapse modes & diagnostics \u2014 change log"
-    },
-    {
-      "label": "Review points addressed",
-      "file_type": "document",
-      "source_file": "CHANGELOG_multi_det_openness.md",
-      "source_location": "L12",
-      "_origin": "ast",
-      "id": "changelog_multi_det_openness_review_points_addressed",
-      "community": 6,
-      "norm_label": "review points addressed"
-    },
-    {
-      "label": "New public parameters (identical across `SPPR_new`, `SPPR_symbolic`, `monte_carlo_SPPR`, `monte_carlo_SPPR_2`)",
-      "file_type": "document",
-      "source_file": "CHANGELOG_multi_det_openness.md",
-      "source_location": "L26",
-      "_origin": "ast",
-      "id": "changelog_multi_det_openness_new_public_parameters_identical_across_sppr_new_sppr_symbolic_monte_carlo_sppr_monte_carlo_sppr_2",
-      "community": 6,
-      "norm_label": "new public parameters (identical across `sppr_new`, `sppr_symbolic`, `monte_carlo_sppr`, `monte_carlo_sppr_2`)"
-    },
-    {
-      "label": "Openness math (per-DET \u03b8, ext aligned to the DET columns)",
-      "file_type": "document",
-      "source_file": "CHANGELOG_multi_det_openness.md",
-      "source_location": "L39",
-      "_origin": "ast",
-      "id": "changelog_multi_det_openness_openness_math_per_det_\u03b8_ext_aligned_to_the_det_columns",
-      "community": 6,
-      "norm_label": "openness math (per-det \u03b8, ext aligned to the det columns)"
-    },
-    {
-      "label": "Files / methods touched (`PPRCalculator.py`)",
-      "file_type": "document",
-      "source_file": "CHANGELOG_multi_det_openness.md",
-      "source_location": "L55",
-      "_origin": "ast",
-      "id": "changelog_multi_det_openness_files_methods_touched_pprcalculator_py",
-      "community": 6,
-      "norm_label": "files / methods touched (`pprcalculator.py`)"
-    },
-    {
-      "label": "Tests executed",
-      "file_type": "document",
-      "source_file": "CHANGELOG_multi_det_openness.md",
-      "source_location": "L74",
-      "_origin": "ast",
-      "id": "changelog_multi_det_openness_tests_executed",
-      "community": 6,
-      "norm_label": "tests executed"
-    },
-    {
-      "label": "1. `SPPR_new` golden regression (default params == old)",
-      "file_type": "document",
-      "source_file": "CHANGELOG_multi_det_openness.md",
-      "source_location": "L79",
-      "_origin": "ast",
-      "id": "changelog_multi_det_openness_1_sppr_new_golden_regression_default_params_old",
-      "community": 6,
-      "norm_label": "1. `sppr_new` golden regression (default params == old)"
-    },
-    {
-      "label": "2. `SPPR_symbolic` golden regression (default params == old), all 12 combos",
-      "file_type": "document",
-      "source_file": "CHANGELOG_multi_det_openness.md",
-      "source_location": "L90",
-      "_origin": "ast",
-      "id": "changelog_multi_det_openness_2_sppr_symbolic_golden_regression_default_params_old_all_12_combos",
-      "community": 6,
-      "norm_label": "2. `sppr_symbolic` golden regression (default params == old), all 12 combos"
-    },
-    {
-      "label": "3. Feature behaviour tests (`scratch_feature_tests.py`) \u2014 11/11 passed",
-      "file_type": "document",
-      "source_file": "CHANGELOG_multi_det_openness.md",
-      "source_location": "L96",
-      "_origin": "ast",
-      "id": "changelog_multi_det_openness_3_feature_behaviour_tests_scratch_feature_tests_py_11_11_passed",
-      "community": 6,
-      "norm_label": "3. feature behaviour tests (`scratch_feature_tests.py`) \u2014 11/11 passed"
-    },
-    {
-      "label": "4. Monte-Carlo smoke (negatives rejected, never raised)",
-      "file_type": "document",
-      "source_file": "CHANGELOG_multi_det_openness.md",
-      "source_location": "L112",
-      "_origin": "ast",
-      "id": "changelog_multi_det_openness_4_monte_carlo_smoke_negatives_rejected_never_raised",
-      "community": 6,
-      "norm_label": "4. monte-carlo smoke (negatives rejected, never raised)"
-    },
-    {
-      "label": "5. Post-documentation re-verification",
-      "file_type": "document",
-      "source_file": "CHANGELOG_multi_det_openness.md",
-      "source_location": "L119",
-      "_origin": "ast",
-      "id": "changelog_multi_det_openness_5_post_documentation_re_verification",
-      "community": 6,
-      "norm_label": "5. post-documentation re-verification"
     },
     {
       "label": "CLAUDE.md",
@@ -1507,6 +1747,286 @@
       "id": "readme_dependencies",
       "community": 32,
       "norm_label": "dependencies"
+    },
+    {
+      "label": "USER_GUIDE.md",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "user_guide",
+      "community": 6,
+      "norm_label": "user_guide.md"
+    },
+    {
+      "label": "User Guide: `ModelData` and `PPRCalculator`",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "user_guide_user_guide_modeldata_and_pprcalculator",
+      "community": 6,
+      "norm_label": "user guide: `modeldata` and `pprcalculator`"
+    },
+    {
+      "label": "1. Background: what is PPR / SPPR?",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L15",
+      "_origin": "ast",
+      "id": "user_guide_1_background_what_is_ppr_sppr",
+      "community": 6,
+      "norm_label": "1. background: what is ppr / sppr?"
+    },
+    {
+      "label": "2. Key ecological quantities and group types",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L46",
+      "_origin": "ast",
+      "id": "user_guide_2_key_ecological_quantities_and_group_types",
+      "community": 6,
+      "norm_label": "2. key ecological quantities and group types"
+    },
+    {
+      "label": "3. `ModelData` \u2014 loading a model",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L84",
+      "_origin": "ast",
+      "id": "user_guide_3_modeldata_loading_a_model",
+      "community": 6,
+      "norm_label": "3. `modeldata` \u2014 loading a model"
+    },
+    {
+      "label": "3.1 Constructor",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L89",
+      "_origin": "ast",
+      "id": "user_guide_3_1_constructor",
+      "community": 6,
+      "norm_label": "3.1 constructor"
+    },
+    {
+      "label": "3.2 Attributes available after construction",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L114",
+      "_origin": "ast",
+      "id": "user_guide_3_2_attributes_available_after_construction",
+      "community": 6,
+      "norm_label": "3.2 attributes available after construction"
+    },
+    {
+      "label": "3.3 Useful methods",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L125",
+      "_origin": "ast",
+      "id": "user_guide_3_3_useful_methods",
+      "community": 6,
+      "norm_label": "3.3 useful methods"
+    },
+    {
+      "label": "4. `PPRCalculator` \u2014 building it",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L139",
+      "_origin": "ast",
+      "id": "user_guide_4_pprcalculator_building_it",
+      "community": 6,
+      "norm_label": "4. `pprcalculator` \u2014 building it"
+    },
+    {
+      "label": "4.1 Primary constructor",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L144",
+      "_origin": "ast",
+      "id": "user_guide_4_1_primary_constructor",
+      "community": 6,
+      "norm_label": "4.1 primary constructor"
+    },
+    {
+      "label": "4.2 Alternative constructors",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L169",
+      "_origin": "ast",
+      "id": "user_guide_4_2_alternative_constructors",
+      "community": 6,
+      "norm_label": "4.2 alternative constructors"
+    },
+    {
+      "label": "5. `PPRCalculator` \u2014 inspecting the model",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L201",
+      "_origin": "ast",
+      "id": "user_guide_5_pprcalculator_inspecting_the_model",
+      "community": 6,
+      "norm_label": "5. `pprcalculator` \u2014 inspecting the model"
+    },
+    {
+      "label": "5.1 `get_TE` and the `TE_option` choices",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L221",
+      "_origin": "ast",
+      "id": "user_guide_5_1_get_te_and_the_te_option_choices",
+      "community": 6,
+      "norm_label": "5.1 `get_te` and the `te_option` choices"
+    },
+    {
+      "label": "5.2 `get_TL` \u2014 trophic levels",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L241",
+      "_origin": "ast",
+      "id": "user_guide_5_2_get_tl_trophic_levels",
+      "community": 6,
+      "norm_label": "5.2 `get_tl` \u2014 trophic levels"
+    },
+    {
+      "label": "5.3 `get_PPR` \u2014 turning SPPR into total PPR",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L257",
+      "_origin": "ast",
+      "id": "user_guide_5_3_get_ppr_turning_sppr_into_total_ppr",
+      "community": 6,
+      "norm_label": "5.3 `get_ppr` \u2014 turning sppr into total ppr"
+    },
+    {
+      "label": "6. `PPRCalculator` \u2014 SPPR methods",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L271",
+      "_origin": "ast",
+      "id": "user_guide_6_pprcalculator_sppr_methods",
+      "community": 6,
+      "norm_label": "6. `pprcalculator` \u2014 sppr methods"
+    },
+    {
+      "label": "6.1 Quick reference",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L276",
+      "_origin": "ast",
+      "id": "user_guide_6_1_quick_reference",
+      "community": 6,
+      "norm_label": "6.1 quick reference"
+    },
+    {
+      "label": "6.2 The classic chain methods",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L291",
+      "_origin": "ast",
+      "id": "user_guide_6_2_the_classic_chain_methods",
+      "community": 6,
+      "norm_label": "6.2 the classic chain methods"
+    },
+    {
+      "label": "6.3 The network methods",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L322",
+      "_origin": "ast",
+      "id": "user_guide_6_3_the_network_methods",
+      "community": 6,
+      "norm_label": "6.3 the network methods"
+    },
+    {
+      "label": "6.4 `SPPR_new` \u2014 the primary solver",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L363",
+      "_origin": "ast",
+      "id": "user_guide_6_4_sppr_new_the_primary_solver",
+      "community": 6,
+      "norm_label": "6.4 `sppr_new` \u2014 the primary solver"
+    },
+    {
+      "label": "6.5 The detritus knobs (shared by `SPPR_new`, `SPPR_symbolic`, the symbolic helpers, and both Monte-Carlo methods)",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L399",
+      "_origin": "ast",
+      "id": "user_guide_6_5_the_detritus_knobs_shared_by_sppr_new_sppr_symbolic_the_symbolic_helpers_and_both_monte_carlo_methods",
+      "community": 6,
+      "norm_label": "6.5 the detritus knobs (shared by `sppr_new`, `sppr_symbolic`, the symbolic helpers, and both monte-carlo methods)"
+    },
+    {
+      "label": "6.6 What the coupled detritus solve actually computes (for the curious)",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L439",
+      "_origin": "ast",
+      "id": "user_guide_6_6_what_the_coupled_detritus_solve_actually_computes_for_the_curious",
+      "community": 6,
+      "norm_label": "6.6 what the coupled detritus solve actually computes (for the curious)"
+    },
+    {
+      "label": "6.7 `SPPR_symbolic` \u2014 keeping imported diet explicit",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L455",
+      "_origin": "ast",
+      "id": "user_guide_6_7_sppr_symbolic_keeping_imported_diet_explicit",
+      "community": 6,
+      "norm_label": "6.7 `sppr_symbolic` \u2014 keeping imported diet explicit"
+    },
+    {
+      "label": "6.8 Monte-Carlo uncertainty",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L489",
+      "_origin": "ast",
+      "id": "user_guide_6_8_monte_carlo_uncertainty",
+      "community": 6,
+      "norm_label": "6.8 monte-carlo uncertainty"
+    },
+    {
+      "label": "7. Validation helpers",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L525",
+      "_origin": "ast",
+      "id": "user_guide_7_validation_helpers",
+      "community": 6,
+      "norm_label": "7. validation helpers"
+    },
+    {
+      "label": "8. Utilities",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L546",
+      "_origin": "ast",
+      "id": "user_guide_8_utilities",
+      "community": 6,
+      "norm_label": "8. utilities"
+    },
+    {
+      "label": "9. End-to-end example",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L559",
+      "_origin": "ast",
+      "id": "user_guide_9_end_to_end_example",
+      "community": 6,
+      "norm_label": "9. end-to-end example"
+    },
+    {
+      "label": "10. Choosing a method (rules of thumb)",
+      "file_type": "document",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L596",
+      "_origin": "ast",
+      "id": "user_guide_10_choosing_a_method_rules_of_thumb",
+      "community": 6,
+      "norm_label": "10. choosing a method (rules of thumb)"
     },
     {
       "label": "2026-06-14-multi-det-openness.md",
@@ -2037,11 +2557,11 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "ModelData.py",
-      "source_location": "L12",
+      "source_location": "L15",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "modeldata_rationale_12",
-      "target": "modeldata_load_json_dict"
+      "source": "modeldata_rationale_15",
+      "target": "modeldata_load_json_dict",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -2077,11 +2597,86 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "ModelData.py",
-      "source_location": "L49",
+      "source_location": "L68",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "modeldata_rationale_49",
-      "target": "modeldata_speciesgrouplegacy_from_dict"
+      "source": "modeldata_rationale_68",
+      "target": "modeldata_speciesgrouplegacy_from_dict",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "ModelData.py",
+      "source_location": "L84",
+      "weight": 1.0,
+      "source": "modeldata_rationale_84",
+      "target": "modeldata_speciesgrouplegacy_str",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "ModelData.py",
+      "source_location": "L96",
+      "weight": 1.0,
+      "source": "modeldata_rationale_96",
+      "target": "modeldata_speciesgrouplegacy_to_df_row",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "ModelData.py",
+      "source_location": "L95",
+      "weight": 1.0,
+      "source": "modeldata_speciesgrouplegacy_to_df_row",
+      "target": "modeldata_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "ModelData.py",
+      "source_location": "L799",
+      "weight": 1.0,
+      "source": "modeldata_get_dc",
+      "target": "modeldata_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "ModelData.py",
+      "source_location": "L572",
+      "weight": 1.0,
+      "source": "modeldata_modeldata_get_dc",
+      "target": "modeldata_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "ModelData.py",
+      "source_location": "L707",
+      "weight": 1.0,
+      "source": "modeldata_modeldata_get_groups_df",
+      "target": "modeldata_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "ModelData.py",
+      "source_location": "L155",
+      "weight": 1.0,
+      "source": "modeldata_speciesgroup_to_df_row",
+      "target": "modeldata_py_dataframe",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -2151,11 +2746,11 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "ModelData.py",
-      "source_location": "L88",
+      "source_location": "L139",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "modeldata_rationale_88",
-      "target": "modeldata_speciesgroup_from_dict"
+      "source": "modeldata_rationale_139",
+      "target": "modeldata_speciesgroup_from_dict",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -2172,11 +2767,65 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "ModelData.py",
-      "source_location": "L97",
+      "source_location": "L156",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "modeldata_rationale_97",
-      "target": "modeldata_read_json_speciesgroup_list"
+      "source": "modeldata_rationale_156",
+      "target": "modeldata_speciesgroup_to_df_row",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "ModelData.py",
+      "source_location": "L170",
+      "weight": 1.0,
+      "source": "modeldata_rationale_170",
+      "target": "modeldata_read_json_speciesgroup_list",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "ModelData.py",
+      "source_location": "L169",
+      "weight": 1.0,
+      "source": "modeldata_read_json_speciesgroup_list",
+      "target": "any",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "ModelData.py",
+      "source_location": "L892",
+      "weight": 1.0,
+      "source": "modeldata_get_model_data",
+      "target": "any",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "ModelData.py",
+      "source_location": "L909",
+      "weight": 1.0,
+      "source": "modeldata_get_model_diet_data",
+      "target": "any",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "ModelData.py",
+      "source_location": "L875",
+      "weight": 1.0,
+      "source": "modeldata_get_model_metadata",
+      "target": "any",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -2272,11 +2921,21 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "ModelData.py",
-      "source_location": "L106",
+      "source_location": "L195",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "modeldata_rationale_106",
-      "target": "modeldata_modeldata"
+      "source": "modeldata_rationale_195",
+      "target": "modeldata_modeldata",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "uses",
+      "confidence": "INFERRED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L13",
+      "weight": 0.8,
+      "source": "ndarray",
+      "target": "modeldata_modeldata",
+      "confidence_score": 0.5
     },
     {
       "relation": "imports",
@@ -2303,11 +2962,31 @@
       "relation": "uses",
       "confidence": "INFERRED",
       "source_file": "PPRCalculator.py",
+      "source_location": "L13",
+      "weight": 0.8,
+      "source": "pprcalculator_py_dataframe",
+      "target": "modeldata_modeldata",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "uses",
+      "confidence": "INFERRED",
+      "source_file": "PPRCalculator.py",
       "source_location": "L9",
       "weight": 0.8,
       "confidence_score": 0.5,
       "source": "pprcalculator_py_modeldata",
       "target": "modeldata_modeldata"
+    },
+    {
+      "relation": "uses",
+      "confidence": "INFERRED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L13",
+      "weight": 0.8,
+      "source": "pprcalculator_py_series",
+      "target": "modeldata_modeldata",
+      "confidence_score": 0.5
     },
     {
       "relation": "imports",
@@ -2368,11 +3047,11 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "ModelData.py",
-      "source_location": "L109",
+      "source_location": "L212",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "modeldata_rationale_109",
-      "target": "modeldata_modeldata_init"
+      "source": "modeldata_rationale_212",
+      "target": "modeldata_modeldata_init",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -2444,11 +3123,11 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "ModelData.py",
-      "source_location": "L124",
+      "source_location": "L239",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "modeldata_rationale_124",
-      "target": "modeldata_modeldata_init_from_json_filepath"
+      "source": "modeldata_rationale_239",
+      "target": "modeldata_modeldata_init_from_json_filepath",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -2476,81 +3155,92 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "ModelData.py",
-      "source_location": "L173",
+      "source_location": "L315",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "modeldata_rationale_173",
-      "target": "modeldata_modeldata_init_from_model_number"
+      "source": "modeldata_rationale_315",
+      "target": "modeldata_modeldata_init_from_model_number",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "ModelData.py",
-      "source_location": "L272",
+      "source_location": "L483",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "modeldata_rationale_272",
-      "target": "modeldata_modeldata_parse_filename"
+      "source": "modeldata_rationale_483",
+      "target": "modeldata_modeldata_parse_filename",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "ModelData.py",
-      "source_location": "L299",
+      "source_location": "L524",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "modeldata_rationale_299",
-      "target": "modeldata_modeldata_load_json_dict_static"
+      "source": "modeldata_rationale_524",
+      "target": "modeldata_modeldata_load_json_dict_static",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "ModelData.py",
-      "source_location": "L305",
+      "source_location": "L540",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "modeldata_rationale_305",
-      "target": "modeldata_modeldata_get_seq2name"
+      "source": "modeldata_rationale_540",
+      "target": "modeldata_modeldata_get_seq2name",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "ModelData.py",
-      "source_location": "L321",
+      "source_location": "L573",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "modeldata_rationale_321",
-      "target": "modeldata_modeldata_get_dc"
+      "source": "modeldata_rationale_573",
+      "target": "modeldata_modeldata_get_dc",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "ModelData.py",
-      "source_location": "L361",
+      "source_location": "L640",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "modeldata_rationale_361",
-      "target": "modeldata_modeldata_get_species_groups"
+      "source": "modeldata_rationale_640",
+      "target": "modeldata_modeldata_get_species_groups",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "ModelData.py",
+      "source_location": "L707",
+      "weight": 1.0,
+      "source": "modeldata_modeldata_get_groups_df",
+      "target": "modeldata_py_series",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "ModelData.py",
-      "source_location": "L403",
+      "source_location": "L708",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "modeldata_rationale_403",
-      "target": "modeldata_modeldata_get_groups_df"
+      "source": "modeldata_rationale_708",
+      "target": "modeldata_modeldata_get_groups_df",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "ModelData.py",
-      "source_location": "L437",
+      "source_location": "L766",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "modeldata_rationale_437",
-      "target": "modeldata_get_seq2name"
+      "source": "modeldata_rationale_766",
+      "target": "modeldata_get_seq2name",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -2567,11 +3257,11 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "ModelData.py",
-      "source_location": "L454",
+      "source_location": "L800",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "modeldata_rationale_454",
-      "target": "modeldata_get_dc"
+      "source": "modeldata_rationale_800",
+      "target": "modeldata_get_dc",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -2583,6 +3273,36 @@
       "confidence_score": 1.0,
       "source": "utils",
       "target": "modeldata_get_dc"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "ModelData.py",
+      "source_location": "L876",
+      "weight": 1.0,
+      "source": "modeldata_rationale_876",
+      "target": "modeldata_get_model_metadata",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "ModelData.py",
+      "source_location": "L893",
+      "weight": 1.0,
+      "source": "modeldata_rationale_893",
+      "target": "modeldata_get_model_data",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "ModelData.py",
+      "source_location": "L910",
+      "weight": 1.0,
+      "source": "modeldata_rationale_910",
+      "target": "modeldata_get_model_diet_data",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -2664,9 +3384,9 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "PPRCalculator.py",
-      "source_location": "L499",
+      "source_location": "L631",
       "weight": 1.0,
-      "source": "pprcalculator_rationale_499",
+      "source": "pprcalculator_rationale_631",
       "target": "pprcalculator",
       "confidence_score": 1.0
     },
@@ -2728,9 +3448,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1137",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator",
-      "target": "pprcalculator_pprcalculator_build_det_bc",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_build_det_bc"
     },
     {
       "relation": "method",
@@ -2968,9 +3688,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1195",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator",
-      "target": "pprcalculator_pprcalculator_resolve_det_param",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_resolve_det_param"
     },
     {
       "relation": "method",
@@ -2988,9 +3708,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1277",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator",
-      "target": "pprcalculator_pprcalculator_solve_det_scaling",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_solve_det_scaling"
     },
     {
       "relation": "method",
@@ -3008,9 +3728,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1186",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator",
-      "target": "pprcalculator_pprcalculator_spectral_radius",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_spectral_radius"
     },
     {
       "relation": "method",
@@ -3135,6 +3855,16 @@
       "target": "pprcalculator_py_modeldata"
     },
     {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L21",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_21",
+      "target": "pprcalculator_pprcalculator_init",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
@@ -3188,6 +3918,16 @@
       "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_from_dict",
       "target": "pprcalculator_pprcalculator_sort"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L60",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_60",
+      "target": "pprcalculator_pprcalculator_from_dict",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -3267,6 +4007,37 @@
       "target": "pprcalculator_py_modeldata"
     },
     {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L107",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_107",
+      "target": "pprcalculator_pprcalculator_from_modeldata",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L721",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_get_model",
+      "target": "pprcalculator_py_modeldata",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L172",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_172",
+      "target": "pprcalculator_pprcalculator_sort",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
@@ -3300,12 +4071,330 @@
       "target": "pprcalculator_pprcalculator_is_model_balanced"
     },
     {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L189",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_fill_properties",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "PPRCalculator.py",
-      "source_location": "L160",
+      "source_location": "L190",
       "weight": 1.0,
-      "source": "pprcalculator_rationale_160",
+      "source": "pprcalculator_rationale_190",
+      "target": "pprcalculator_pprcalculator_fill_properties",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L235",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_apply_ecopath_defaults",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L391",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_apply_lim",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1452",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_build_det_bc",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1563",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_collapse_det_scaling",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L741",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_get_dc",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L733",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_get_groups_df",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L942",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_get_ppr",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L991",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_get_ppr2npp_ratio",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L837",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_get_te",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L768",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_get_z",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L655",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_is_sppr_balanced",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2423",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_monte_carlo_sppr",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2430",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_monte_carlo_sppr_2",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2552",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_rename_results",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2255",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_sample_sppr_new_forced_balance",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1648",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_solve_det_scaling",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1005",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_sppr_1986",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1023",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_sppr_1995",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1041",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_sppr_1995_tl_fix",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1383",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_sppr_2015",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1064",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_sppr_ewe",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1307",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_sppr_ewe_ido",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1765",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_sppr_new",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2209",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_sppr_symbolic",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2040",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1899",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
+      "target": "pprcalculator_py_dataframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L350",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_apply_ecopath_defaults",
+      "target": "pprcalculator_py_series",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L236",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_236",
       "target": "pprcalculator_pprcalculator_apply_ecopath_defaults",
       "confidence_score": 1.0
     },
@@ -3324,10 +4413,130 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "PPRCalculator.py",
-      "source_location": "L298",
+      "source_location": "L392",
       "weight": 1.0,
-      "source": "pprcalculator_rationale_298",
+      "source": "pprcalculator_rationale_392",
       "target": "pprcalculator_pprcalculator_apply_lim",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L590",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_is_model_balanced",
+      "target": "pprcalculator_py_series",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L591",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_591",
+      "target": "pprcalculator_pprcalculator_is_model_balanced",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1452",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_build_det_bc",
+      "target": "pprcalculator_py_series",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1563",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_collapse_det_scaling",
+      "target": "pprcalculator_py_series",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L942",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_get_ppr",
+      "target": "pprcalculator_py_series",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L991",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_get_ppr2npp_ratio",
+      "target": "pprcalculator_py_series",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L837",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_get_te",
+      "target": "pprcalculator_py_series",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L892",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_get_tl",
+      "target": "pprcalculator_py_series",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L655",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_is_sppr_balanced",
+      "target": "pprcalculator_py_series",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2552",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_rename_results",
+      "target": "pprcalculator_py_series",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1648",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_solve_det_scaling",
+      "target": "pprcalculator_py_series",
       "confidence_score": 1.0
     },
     {
@@ -3345,9 +4554,9 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "PPRCalculator.py",
-      "source_location": "L498",
+      "source_location": "L615",
       "weight": 1.0,
-      "source": "pprcalculator_rationale_498",
+      "source": "pprcalculator_rationale_615",
       "target": "pprcalculator_pprcalculator_balance_model",
       "confidence_score": 1.0
     },
@@ -3355,10 +4564,20 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "PPRCalculator.py",
-      "source_location": "L524",
+      "source_location": "L656",
       "weight": 1.0,
-      "source": "pprcalculator_rationale_524",
+      "source": "pprcalculator_rationale_656",
       "target": "pprcalculator_pprcalculator_is_sppr_balanced",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L722",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_722",
+      "target": "pprcalculator_pprcalculator_get_model",
       "confidence_score": 1.0
     },
     {
@@ -3382,6 +4601,16 @@
       "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_sppr_2015",
       "target": "pprcalculator_pprcalculator_get_groups_df"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L734",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_734",
+      "target": "pprcalculator_pprcalculator_get_groups_df",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -3464,9 +4693,9 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "PPRCalculator.py",
-      "source_location": "L586",
+      "source_location": "L742",
       "weight": 1.0,
-      "source": "pprcalculator_rationale_586",
+      "source": "pprcalculator_rationale_742",
       "target": "pprcalculator_pprcalculator_get_dc",
       "confidence_score": 1.0
     },
@@ -3518,9 +4747,9 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "PPRCalculator.py",
-      "source_location": "L607",
+      "source_location": "L769",
       "weight": 1.0,
-      "source": "pprcalculator_rationale_607",
+      "source": "pprcalculator_rationale_769",
       "target": "pprcalculator_pprcalculator_get_z",
       "confidence_score": 1.0
     },
@@ -3624,6 +4853,16 @@
       "target": "pprcalculator_pprcalculator_get_det_seq"
     },
     {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L804",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_804",
+      "target": "pprcalculator_pprcalculator_get_det_seq",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
@@ -3712,6 +4951,16 @@
       "target": "pprcalculator_pprcalculator_get_pp_seq"
     },
     {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L812",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_812",
+      "target": "pprcalculator_pprcalculator_get_pp_seq",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
@@ -3743,6 +4992,16 @@
       "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
       "target": "pprcalculator_pprcalculator_get_regular_seq"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L820",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_820",
+      "target": "pprcalculator_pprcalculator_get_regular_seq",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -3820,6 +5079,16 @@
       "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
       "target": "pprcalculator_pprcalculator_get_import_seq"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L828",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_828",
+      "target": "pprcalculator_pprcalculator_get_import_seq",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -3913,19 +5182,9 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "PPRCalculator.py",
-      "source_location": "L607",
+      "source_location": "L838",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "pprcalculator_rationale_607",
-      "target": "pprcalculator_pprcalculator_get_te"
-    },
-    {
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "source_file": "PPRCalculator.py",
-      "source_location": "L645",
-      "weight": 1.0,
-      "source": "pprcalculator_rationale_645",
+      "source": "pprcalculator_rationale_838",
       "target": "pprcalculator_pprcalculator_get_te",
       "confidence_score": 1.0
     },
@@ -3977,9 +5236,9 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "PPRCalculator.py",
-      "source_location": "L686",
+      "source_location": "L893",
       "weight": 1.0,
-      "source": "pprcalculator_rationale_686",
+      "source": "pprcalculator_rationale_893",
       "target": "pprcalculator_pprcalculator_get_tl",
       "confidence_score": 1.0
     },
@@ -4006,6 +5265,16 @@
       "target": "pprcalculator_pprcalculator_get_ppr"
     },
     {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L943",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_943",
+      "target": "pprcalculator_pprcalculator_get_ppr",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
@@ -4020,9 +5289,39 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "PPRCalculator.py",
-      "source_location": "L773",
+      "source_location": "L972",
       "weight": 1.0,
-      "source": "pprcalculator_rationale_773",
+      "source": "pprcalculator_rationale_972",
+      "target": "pprcalculator_pprcalculator_get_npp",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L992",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_992",
+      "target": "pprcalculator_pprcalculator_get_ppr2npp_ratio",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1006",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_1006",
+      "target": "pprcalculator_pprcalculator_sppr_1986",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1024",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_1024",
       "target": "pprcalculator_pprcalculator_sppr_1995",
       "confidence_score": 1.0
     },
@@ -4030,9 +5329,19 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "PPRCalculator.py",
-      "source_location": "L797",
+      "source_location": "L1042",
       "weight": 1.0,
-      "source": "pprcalculator_rationale_797",
+      "source": "pprcalculator_rationale_1042",
+      "target": "pprcalculator_pprcalculator_sppr_1995_tl_fix",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1065",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_1065",
       "target": "pprcalculator_pprcalculator_sppr_ewe",
       "confidence_score": 1.0
     },
@@ -4073,10 +5382,31 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1023",
+      "source_location": "L1308",
       "weight": 1.0,
-      "source": "pprcalculator_rationale_1023",
+      "source": "pprcalculator_rationale_1308",
       "target": "pprcalculator_pprcalculator_sppr_ewe_ido",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1384",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_1384",
+      "target": "pprcalculator_pprcalculator_sppr_2015",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1452",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_build_det_bc",
+      "target": "ndarray",
       "confidence_score": 1.0
     },
     {
@@ -4086,9 +5416,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1444",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_sppr_new",
-      "target": "pprcalculator_pprcalculator_build_det_bc",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_build_det_bc"
     },
     {
       "relation": "calls",
@@ -4097,9 +5427,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1689",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
-      "target": "pprcalculator_pprcalculator_build_det_bc",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_build_det_bc"
     },
     {
       "relation": "calls",
@@ -4108,18 +5438,73 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1556",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
-      "target": "pprcalculator_pprcalculator_build_det_bc",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_build_det_bc"
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1138",
+      "source_location": "L1453",
       "weight": 1.0,
-      "source": "pprcalculator_rationale_1138",
+      "source": "pprcalculator_rationale_1453",
       "target": "pprcalculator_pprcalculator_build_det_bc",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1563",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_collapse_det_scaling",
+      "target": "ndarray",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2430",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_monte_carlo_sppr_2",
+      "target": "ndarray",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1534",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_resolve_det_param",
+      "target": "ndarray",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1648",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_solve_det_scaling",
+      "target": "ndarray",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1516",
+      "weight": 1.0,
+      "source": "pprcalculator_pprcalculator_spectral_radius",
+      "target": "ndarray",
       "confidence_score": 1.0
     },
     {
@@ -4129,17 +5514,17 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1311",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_solve_det_scaling",
-      "target": "pprcalculator_pprcalculator_spectral_radius",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_spectral_radius"
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1187",
+      "source_location": "L1517",
       "weight": 1.0,
-      "source": "pprcalculator_rationale_1187",
+      "source": "pprcalculator_rationale_1517",
       "target": "pprcalculator_pprcalculator_spectral_radius",
       "confidence_score": 1.0
     },
@@ -4150,9 +5535,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1297",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_solve_det_scaling",
-      "target": "pprcalculator_pprcalculator_resolve_det_param",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_resolve_det_param"
     },
     {
       "relation": "calls",
@@ -4161,17 +5546,17 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1431",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_sppr_new",
-      "target": "pprcalculator_pprcalculator_resolve_det_param",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_resolve_det_param"
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1196",
+      "source_location": "L1535",
       "weight": 1.0,
-      "source": "pprcalculator_rationale_1196",
+      "source": "pprcalculator_rationale_1535",
       "target": "pprcalculator_pprcalculator_resolve_det_param",
       "confidence_score": 1.0
     },
@@ -4182,9 +5567,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1335",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_solve_det_scaling",
-      "target": "pprcalculator_pprcalculator_collapse_det_scaling",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_collapse_det_scaling"
     },
     {
       "relation": "calls",
@@ -4223,9 +5608,9 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1218",
+      "source_location": "L1566",
       "weight": 1.0,
-      "source": "pprcalculator_rationale_1218",
+      "source": "pprcalculator_rationale_1566",
       "target": "pprcalculator_pprcalculator_collapse_det_scaling",
       "confidence_score": 1.0
     },
@@ -4236,9 +5621,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1445",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_sppr_new",
-      "target": "pprcalculator_pprcalculator_solve_det_scaling",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_solve_det_scaling"
     },
     {
       "relation": "calls",
@@ -4247,9 +5632,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1690",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
-      "target": "pprcalculator_pprcalculator_solve_det_scaling",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_solve_det_scaling"
     },
     {
       "relation": "calls",
@@ -4258,17 +5643,17 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1557",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
-      "target": "pprcalculator_pprcalculator_solve_det_scaling",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_solve_det_scaling"
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1281",
+      "source_location": "L1652",
       "weight": 1.0,
-      "source": "pprcalculator_rationale_1281",
+      "source": "pprcalculator_rationale_1652",
       "target": "pprcalculator_pprcalculator_solve_det_scaling",
       "confidence_score": 1.0
     },
@@ -4328,6 +5713,16 @@
       "target": "utils_move_scattered_identity"
     },
     {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1768",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_1768",
+      "target": "pprcalculator_pprcalculator_sppr_new",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
@@ -4339,6 +5734,16 @@
       "target": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp"
     },
     {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1902",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_1902",
+      "target": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
@@ -4348,6 +5753,16 @@
       "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_sppr_symbolic",
       "target": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2043",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_2043",
+      "target": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -4364,9 +5779,29 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1751",
+      "source_location": "L2213",
       "weight": 1.0,
-      "source": "pprcalculator_rationale_1751",
+      "source": "pprcalculator_rationale_2213",
+      "target": "pprcalculator_pprcalculator_sppr_symbolic",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2256",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_2256",
+      "target": "pprcalculator_pprcalculator_sample_sppr_new_forced_balance",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2296",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_2296",
       "target": "pprcalculator_pprcalculator_monte_carlo_sppr",
       "confidence_score": 1.0
     },
@@ -4374,10 +5809,20 @@
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
       "source_file": "PPRCalculator.py",
-      "source_location": "L1856",
+      "source_location": "L2434",
       "weight": 1.0,
-      "source": "pprcalculator_rationale_1856",
+      "source": "pprcalculator_rationale_2434",
       "target": "pprcalculator_pprcalculator_monte_carlo_sppr_2",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2553",
+      "weight": 1.0,
+      "source": "pprcalculator_rationale_2553",
+      "target": "pprcalculator_pprcalculator_rename_results",
       "confidence_score": 1.0
     },
     {
@@ -4601,116 +6046,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "CHANGELOG_multi_det_openness.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "source": "changelog_multi_det_openness",
-      "target": "changelog_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_change_log",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "CHANGELOG_multi_det_openness.md",
-      "source_location": "L55",
-      "weight": 1.0,
-      "source": "changelog_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_change_log",
-      "target": "changelog_multi_det_openness_files_methods_touched_pprcalculator_py",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "CHANGELOG_multi_det_openness.md",
-      "source_location": "L26",
-      "weight": 1.0,
-      "source": "changelog_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_change_log",
-      "target": "changelog_multi_det_openness_new_public_parameters_identical_across_sppr_new_sppr_symbolic_monte_carlo_sppr_monte_carlo_sppr_2",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "CHANGELOG_multi_det_openness.md",
-      "source_location": "L12",
-      "weight": 1.0,
-      "source": "changelog_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_change_log",
-      "target": "changelog_multi_det_openness_review_points_addressed",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "CHANGELOG_multi_det_openness.md",
-      "source_location": "L74",
-      "weight": 1.0,
-      "source": "changelog_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_change_log",
-      "target": "changelog_multi_det_openness_tests_executed",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "CHANGELOG_multi_det_openness.md",
-      "source_location": "L39",
-      "weight": 1.0,
-      "source": "changelog_multi_det_openness_new_public_parameters_identical_across_sppr_new_sppr_symbolic_monte_carlo_sppr_monte_carlo_sppr_2",
-      "target": "changelog_multi_det_openness_openness_math_per_det_\u03b8_ext_aligned_to_the_det_columns",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "CHANGELOG_multi_det_openness.md",
-      "source_location": "L79",
-      "weight": 1.0,
-      "source": "changelog_multi_det_openness_tests_executed",
-      "target": "changelog_multi_det_openness_1_sppr_new_golden_regression_default_params_old",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "CHANGELOG_multi_det_openness.md",
-      "source_location": "L90",
-      "weight": 1.0,
-      "source": "changelog_multi_det_openness_tests_executed",
-      "target": "changelog_multi_det_openness_2_sppr_symbolic_golden_regression_default_params_old_all_12_combos",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "CHANGELOG_multi_det_openness.md",
-      "source_location": "L96",
-      "weight": 1.0,
-      "source": "changelog_multi_det_openness_tests_executed",
-      "target": "changelog_multi_det_openness_3_feature_behaviour_tests_scratch_feature_tests_py_11_11_passed",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "CHANGELOG_multi_det_openness.md",
-      "source_location": "L112",
-      "weight": 1.0,
-      "source": "changelog_multi_det_openness_tests_executed",
-      "target": "changelog_multi_det_openness_4_monte_carlo_smoke_negatives_rejected_never_raised",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "CHANGELOG_multi_det_openness.md",
-      "source_location": "L119",
-      "weight": 1.0,
-      "source": "changelog_multi_det_openness_tests_executed",
-      "target": "changelog_multi_det_openness_5_post_documentation_re_verification",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "CLAUDE.md",
       "source_location": "L1",
       "weight": 1.0,
@@ -4754,9 +6089,9 @@
       "source_file": "README.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "readme",
-      "target": "readme_fishestimationai",
-      "confidence_score": 1.0
+      "target": "readme_fishestimationai"
     },
     {
       "relation": "contains",
@@ -4764,9 +6099,9 @@
       "source_file": "README.md",
       "source_location": "L38",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "readme_fishestimationai",
-      "target": "readme_data",
-      "confidence_score": 1.0
+      "target": "readme_data"
     },
     {
       "relation": "contains",
@@ -4774,9 +6109,9 @@
       "source_file": "README.md",
       "source_location": "L91",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "readme_fishestimationai",
-      "target": "readme_dependencies",
-      "confidence_score": 1.0
+      "target": "readme_dependencies"
     },
     {
       "relation": "contains",
@@ -4784,9 +6119,9 @@
       "source_file": "README.md",
       "source_location": "L80",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "readme_fishestimationai",
-      "target": "readme_key_concepts",
-      "confidence_score": 1.0
+      "target": "readme_key_concepts"
     },
     {
       "relation": "contains",
@@ -4794,9 +6129,9 @@
       "source_file": "README.md",
       "source_location": "L69",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "readme_fishestimationai",
-      "target": "readme_notebooks",
-      "confidence_score": 1.0
+      "target": "readme_notebooks"
     },
     {
       "relation": "contains",
@@ -4804,9 +6139,9 @@
       "source_file": "README.md",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "readme_fishestimationai",
-      "target": "readme_overview",
-      "confidence_score": 1.0
+      "target": "readme_overview"
     },
     {
       "relation": "contains",
@@ -4814,9 +6149,9 @@
       "source_file": "README.md",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "readme_fishestimationai",
-      "target": "readme_project_structure",
-      "confidence_score": 1.0
+      "target": "readme_project_structure"
     },
     {
       "relation": "contains",
@@ -4824,9 +6159,9 @@
       "source_file": "README.md",
       "source_location": "L25",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "readme_fishestimationai",
-      "target": "readme_sppr_methods",
-      "confidence_score": 1.0
+      "target": "readme_sppr_methods"
     },
     {
       "relation": "contains",
@@ -4834,9 +6169,9 @@
       "source_file": "README.md",
       "source_location": "L47",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "readme_fishestimationai",
-      "target": "readme_usage",
-      "confidence_score": 1.0
+      "target": "readme_usage"
     },
     {
       "relation": "contains",
@@ -4844,8 +6179,278 @@
       "source_file": "README.md",
       "source_location": "L57",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "readme_usage",
-      "target": "readme_programmatic_use",
+      "target": "readme_programmatic_use"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "user_guide",
+      "target": "user_guide_user_guide_modeldata_and_pprcalculator",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L596",
+      "weight": 1.0,
+      "source": "user_guide_user_guide_modeldata_and_pprcalculator",
+      "target": "user_guide_10_choosing_a_method_rules_of_thumb",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "user_guide_user_guide_modeldata_and_pprcalculator",
+      "target": "user_guide_1_background_what_is_ppr_sppr",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L46",
+      "weight": 1.0,
+      "source": "user_guide_user_guide_modeldata_and_pprcalculator",
+      "target": "user_guide_2_key_ecological_quantities_and_group_types",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L84",
+      "weight": 1.0,
+      "source": "user_guide_user_guide_modeldata_and_pprcalculator",
+      "target": "user_guide_3_modeldata_loading_a_model",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L139",
+      "weight": 1.0,
+      "source": "user_guide_user_guide_modeldata_and_pprcalculator",
+      "target": "user_guide_4_pprcalculator_building_it",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L201",
+      "weight": 1.0,
+      "source": "user_guide_user_guide_modeldata_and_pprcalculator",
+      "target": "user_guide_5_pprcalculator_inspecting_the_model",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L271",
+      "weight": 1.0,
+      "source": "user_guide_user_guide_modeldata_and_pprcalculator",
+      "target": "user_guide_6_pprcalculator_sppr_methods",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L525",
+      "weight": 1.0,
+      "source": "user_guide_user_guide_modeldata_and_pprcalculator",
+      "target": "user_guide_7_validation_helpers",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L546",
+      "weight": 1.0,
+      "source": "user_guide_user_guide_modeldata_and_pprcalculator",
+      "target": "user_guide_8_utilities",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L559",
+      "weight": 1.0,
+      "source": "user_guide_user_guide_modeldata_and_pprcalculator",
+      "target": "user_guide_9_end_to_end_example",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L89",
+      "weight": 1.0,
+      "source": "user_guide_3_modeldata_loading_a_model",
+      "target": "user_guide_3_1_constructor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L114",
+      "weight": 1.0,
+      "source": "user_guide_3_modeldata_loading_a_model",
+      "target": "user_guide_3_2_attributes_available_after_construction",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L125",
+      "weight": 1.0,
+      "source": "user_guide_3_modeldata_loading_a_model",
+      "target": "user_guide_3_3_useful_methods",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L144",
+      "weight": 1.0,
+      "source": "user_guide_4_pprcalculator_building_it",
+      "target": "user_guide_4_1_primary_constructor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L169",
+      "weight": 1.0,
+      "source": "user_guide_4_pprcalculator_building_it",
+      "target": "user_guide_4_2_alternative_constructors",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L221",
+      "weight": 1.0,
+      "source": "user_guide_5_pprcalculator_inspecting_the_model",
+      "target": "user_guide_5_1_get_te_and_the_te_option_choices",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L241",
+      "weight": 1.0,
+      "source": "user_guide_5_pprcalculator_inspecting_the_model",
+      "target": "user_guide_5_2_get_tl_trophic_levels",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L257",
+      "weight": 1.0,
+      "source": "user_guide_5_pprcalculator_inspecting_the_model",
+      "target": "user_guide_5_3_get_ppr_turning_sppr_into_total_ppr",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L276",
+      "weight": 1.0,
+      "source": "user_guide_6_pprcalculator_sppr_methods",
+      "target": "user_guide_6_1_quick_reference",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L291",
+      "weight": 1.0,
+      "source": "user_guide_6_pprcalculator_sppr_methods",
+      "target": "user_guide_6_2_the_classic_chain_methods",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L322",
+      "weight": 1.0,
+      "source": "user_guide_6_pprcalculator_sppr_methods",
+      "target": "user_guide_6_3_the_network_methods",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L363",
+      "weight": 1.0,
+      "source": "user_guide_6_pprcalculator_sppr_methods",
+      "target": "user_guide_6_4_sppr_new_the_primary_solver",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L399",
+      "weight": 1.0,
+      "source": "user_guide_6_pprcalculator_sppr_methods",
+      "target": "user_guide_6_5_the_detritus_knobs_shared_by_sppr_new_sppr_symbolic_the_symbolic_helpers_and_both_monte_carlo_methods",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L439",
+      "weight": 1.0,
+      "source": "user_guide_6_pprcalculator_sppr_methods",
+      "target": "user_guide_6_6_what_the_coupled_detritus_solve_actually_computes_for_the_curious",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L455",
+      "weight": 1.0,
+      "source": "user_guide_6_pprcalculator_sppr_methods",
+      "target": "user_guide_6_7_sppr_symbolic_keeping_imported_diet_explicit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "USER_GUIDE.md",
+      "source_location": "L489",
+      "weight": 1.0,
+      "source": "user_guide_6_pprcalculator_sppr_methods",
+      "target": "user_guide_6_8_monte_carlo_uncertainty",
       "confidence_score": 1.0
     },
     {
@@ -4854,9 +6459,9 @@
       "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_2026_06_14_multi_det_openness",
-      "target": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "confidence_score": 1.0
+      "target": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan"
     },
     {
       "relation": "contains",
@@ -4864,9 +6469,9 @@
       "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
       "source_location": "L25",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_new_public_parameter_surface_identical_across_all_methods",
-      "confidence_score": 1.0
+      "target": "plans_2026_06_14_multi_det_openness_new_public_parameter_surface_identical_across_all_methods"
     },
     {
       "relation": "contains",
@@ -4874,9 +6479,9 @@
       "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
       "source_location": "L745",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_self_review_notes",
-      "confidence_score": 1.0
+      "target": "plans_2026_06_14_multi_det_openness_self_review_notes"
     },
     {
       "relation": "contains",
@@ -4884,9 +6489,9 @@
       "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
       "source_location": "L48",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_task_0_capture_full_golden_baseline_regression_oracle",
-      "confidence_score": 1.0
+      "target": "plans_2026_06_14_multi_det_openness_task_0_capture_full_golden_baseline_regression_oracle"
     },
     {
       "relation": "contains",
@@ -4894,9 +6499,9 @@
       "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
       "source_location": "L717",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_task_10_change_log_cleanup_git_graphify",
-      "confidence_score": 1.0
+      "target": "plans_2026_06_14_multi_det_openness_task_10_change_log_cleanup_git_graphify"
     },
     {
       "relation": "contains",
@@ -4904,9 +6509,9 @@
       "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
       "source_location": "L96",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_task_1_add_resolve_det_param_and_spectral_radius_helpers",
-      "confidence_score": 1.0
+      "target": "plans_2026_06_14_multi_det_openness_task_1_add_resolve_det_param_and_spectral_radius_helpers"
     },
     {
       "relation": "contains",
@@ -4914,9 +6519,9 @@
       "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
       "source_location": "L153",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_task_2_add_build_det_bc_numeric_recycling_system_builder",
-      "confidence_score": 1.0
+      "target": "plans_2026_06_14_multi_det_openness_task_2_add_build_det_bc_numeric_recycling_system_builder"
     },
     {
       "relation": "contains",
@@ -4924,9 +6529,9 @@
       "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
       "source_location": "L231",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_task_3_upgrade_collapse_det_scaling_points_7_openness_return_diagnostics",
-      "confidence_score": 1.0
+      "target": "plans_2026_06_14_multi_det_openness_task_3_upgrade_collapse_det_scaling_points_7_openness_return_diagnostics"
     },
     {
       "relation": "contains",
@@ -4934,9 +6539,9 @@
       "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
       "source_location": "L308",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_task_4_add_solve_det_scaling_openness_stability_decision_apply_diagnostics",
-      "confidence_score": 1.0
+      "target": "plans_2026_06_14_multi_det_openness_task_4_add_solve_det_scaling_openness_stability_decision_apply_diagnostics"
     },
     {
       "relation": "contains",
@@ -4944,9 +6549,9 @@
       "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
       "source_location": "L400",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_task_5_rewire_sppr_new_to_use_the_helpers",
-      "confidence_score": 1.0
+      "target": "plans_2026_06_14_multi_det_openness_task_5_rewire_sppr_new_to_use_the_helpers"
     },
     {
       "relation": "contains",
@@ -4954,9 +6559,9 @@
       "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
       "source_location": "L486",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_task_6_rewire_both_sppr_symbolic_helpers_sppr_symbolic",
-      "confidence_score": 1.0
+      "target": "plans_2026_06_14_multi_det_openness_task_6_rewire_both_sppr_symbolic_helpers_sppr_symbolic"
     },
     {
       "relation": "contains",
@@ -4964,9 +6569,9 @@
       "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
       "source_location": "L583",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_task_7_thread_new_params_through_monte_carlo",
-      "confidence_score": 1.0
+      "target": "plans_2026_06_14_multi_det_openness_task_7_thread_new_params_through_monte_carlo"
     },
     {
       "relation": "contains",
@@ -4974,9 +6579,9 @@
       "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
       "source_location": "L623",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_task_8_feature_behavior_tests_openness_collapse_modes",
-      "confidence_score": 1.0
+      "target": "plans_2026_06_14_multi_det_openness_task_8_feature_behavior_tests_openness_collapse_modes"
     },
     {
       "relation": "contains",
@@ -4984,9 +6589,9 @@
       "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
       "source_location": "L695",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_task_9_documentation_pass_over_all_of_pprcalculator_py_subagent",
-      "confidence_score": 1.0
+      "target": "plans_2026_06_14_multi_det_openness_task_9_documentation_pass_over_all_of_pprcalculator_py_subagent"
     }
   ],
   "hyperedges": [
@@ -5013,5 +6618,5 @@
       "source_file": "graphify-out/converted/PPRs_59b295f7.md"
     }
   ],
-  "built_at_commit": "be221734156fe3657fed1c14be95de6d8d8e8b74"
+  "built_at_commit": "71cc7e3fcb0d636ddf001f957634256486c2f4dd"
 }

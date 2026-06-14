@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 import pandas as pd
 import sympy as sm
@@ -6,6 +8,7 @@ from scipy.stats import gamma
 import igraph as ig
 from scipy.optimize import minimize
 import warnings
+from typing import Any, Optional
 
 from ModelData import ModelData
 from utils import mat_from_np, remove_cycles, move_scattered_identity
@@ -14,10 +17,32 @@ from copy import deepcopy
 class PPRCalculator:
 
     # constructors:
-    def __init__(self, model_number, underdetermined=False, zero_catch=True, zero_biomass_accum=True, default_gs=True, weight_flow=1.0, weight_guess=1.0):
-        # Primary constructor: build a ModelData from a model number / json filepath,
-        # delegate to from_modeldata to populate all properties, then copy the resulting
-        # instance's attributes onto self (so `PPRCalculator(path)` returns a ready object).
+    def __init__(self, model_number: int | str, underdetermined: bool = False, zero_catch: bool = True, zero_biomass_accum: bool = True, default_gs: bool = True, weight_flow: float = 1.0, weight_guess: float = 1.0) -> None:
+        """Primary constructor: build the calculator directly from a model identifier.
+
+        Loads a ModelData from the given model number / json filepath, delegates to
+        from_modeldata to run the full property-filling pipeline, then copies the
+        resulting instance's attributes onto self so PPRCalculator(path) returns a
+        ready-to-use object.
+
+        Args:
+            model_number (int | str): model number or json filepath understood by ModelData.
+            underdetermined (bool): if True, missing mass-balance variables are filled by
+                the Linear Inverse Model (apply_lim) instead of the deterministic Ecopath
+                defaults alone. Defaults to False.
+            zero_catch (bool): if True, treat missing catch values as 0. Defaults to True.
+            zero_biomass_accum (bool): if True, treat missing biomass-accumulation values
+                as 0. Defaults to True.
+            default_gs (bool): if True, assign the default GS=0.2 to regular groups lacking
+                a gs value. Defaults to True.
+            weight_flow (float): weight of the minimum-total-flow (parsimony) penalty in the
+                LIM objective. Defaults to 1.0.
+            weight_guess (float): weight of the deviation-from-biological-guess penalty in the
+                LIM objective. Defaults to 1.0.
+
+        Returns:
+            None. Populates self in place.
+        """
         # load model:
         instance = self.from_modeldata(
             ModelData(model_number),
@@ -31,11 +56,27 @@ class PPRCalculator:
         self.__dict__.update(instance.__dict__)
          
     @classmethod
-    def from_dict(cls, data_dict, underdetermined=False, zero_catch=True, zero_biomass_accum=True, default_gs=True, weight_flow=1.0, weight_guess=1.0):
-        # Alternative constructor: rebuild an instance directly from a dict of pre-existing
-        # attributes (e.g. a previously serialized state) rather than from a ModelData/file.
-        # Re-runs the Ecopath defaults / LIM / property-filling / sorting pipeline so the
-        # instance is fully consistent.
+    def from_dict(cls, data_dict: dict, underdetermined: bool = False, zero_catch: bool = True, zero_biomass_accum: bool = True, default_gs: bool = True, weight_flow: float = 1.0, weight_guess: float = 1.0) -> "PPRCalculator":
+        """Alternative constructor: rebuild an instance from a dict of pre-existing attributes.
+
+        Used to reconstruct a calculator from a previously serialized state (e.g. a toy model)
+        rather than from a ModelData / file. The dict is copied onto a blank instance and the
+        full pipeline (apply_ecopath_defaults -> optional apply_lim -> _fill_properties ->
+        _sort) is re-run so the result is fully consistent.
+
+        Args:
+            data_dict (dict): mapping of attribute name -> value to seed the instance with;
+                must at least contain a valid _groups_df.
+            underdetermined (bool): if True, fill missing flows via apply_lim. Defaults to False.
+            zero_catch (bool): treat missing catch as 0. Defaults to True.
+            zero_biomass_accum (bool): treat missing biomass accumulation as 0. Defaults to True.
+            default_gs (bool): assign default GS=0.2 to regular groups lacking gs. Defaults to True.
+            weight_flow (float): LIM minimum-flow penalty weight. Defaults to 1.0.
+            weight_guess (float): LIM guess-deviation penalty weight. Defaults to 1.0.
+
+        Returns:
+            PPRCalculator: a fully built, sorted instance.
+        """
         instance = cls.__new__(cls)
         instance.__dict__.update(data_dict)
 
@@ -62,11 +103,30 @@ class PPRCalculator:
         return instance
 
     @classmethod
-    def from_modeldata(cls, modeldata: ModelData, underdetermined=False, zero_catch=True, zero_biomass_accum=True, default_gs=True, weight_flow=1.0, weight_guess=1.0):
-        # Core constructor used by __init__: take a loaded ModelData, copy out its groups
-        # table, diet-composition (DC) matrix, detritus-fate matrix and name<->seq dicts,
-        # then run the full pipeline: apply_ecopath_defaults -> (optional) apply_lim ->
-        # _fill_properties -> _sort. Groups are kept sorted by descending seq throughout.
+    def from_modeldata(cls, modeldata: ModelData, underdetermined: bool = False, zero_catch: bool = True, zero_biomass_accum: bool = True, default_gs: bool = True, weight_flow: float = 1.0, weight_guess: float = 1.0) -> "PPRCalculator":
+        """Core constructor used by __init__: build the calculator from a loaded ModelData.
+
+        Copies the groups table, diet-composition (DC) matrix, detritus-fate matrix and the
+        name<->seq dicts out of the ModelData, verifies at least one detritus group exists,
+        then runs the full pipeline: apply_ecopath_defaults -> (optional) apply_lim ->
+        _fill_properties -> _sort. Groups are kept sorted by descending seq throughout.
+
+        Args:
+            modeldata (ModelData): the loaded model whose groups_data, DC, det_fate and
+                seq/name dicts are copied into the new instance.
+            underdetermined (bool): if True, fill missing flows via apply_lim. Defaults to False.
+            zero_catch (bool): treat missing catch as 0. Defaults to True.
+            zero_biomass_accum (bool): treat missing biomass accumulation as 0. Defaults to True.
+            default_gs (bool): assign default GS=0.2 to regular groups lacking gs. Defaults to True.
+            weight_flow (float): LIM minimum-flow penalty weight. Defaults to 1.0.
+            weight_guess (float): LIM guess-deviation penalty weight. Defaults to 1.0.
+
+        Returns:
+            PPRCalculator: a fully built, sorted instance.
+
+        Raises:
+            Exception: if the model contains no DET (detritus) group.
+        """
         instance = cls.__new__(cls)
         instance._model = modeldata
         instance.is_underdetermined = underdetermined
@@ -108,10 +168,17 @@ class PPRCalculator:
 
         return instance
 
-    def _sort(self):
-        # Normalize ordering of every Series/DataFrame attribute so all vectors and matrices
-        # share a consistent descending-seq index (and descending columns for matrices).
-        # _groups_df is deliberately skipped so it keeps its own ordering.
+    def _sort(self) -> "PPRCalculator":
+        """Normalize the ordering of every Series/DataFrame attribute on the instance.
+
+        Iterates over all attributes and re-sorts each pandas Series by descending index and
+        each DataFrame by descending index and columns, so all vectors and matrices share a
+        consistent group ordering. _groups_df is deliberately skipped so it keeps its own
+        ordering.
+
+        Returns:
+            PPRCalculator: self, after in-place re-sorting of the relevant attributes.
+        """
         for name, value in vars(self).items():
             if isinstance(value, pd.Series):
                 setattr(self, name, value.sort_index(ascending=False))
@@ -119,12 +186,21 @@ class PPRCalculator:
                 setattr(self, name, value.sort_index(ascending=False).sort_index(ascending=False, axis=1))
         return self
 
-    def _fill_properties(self, groups_df):
-        # Unpack the fully-filled groups table into the individual named vectors the rest of
-        # the class uses (production p, consumption q, catch, predation, growth, migration,
-        # natural mortality M0, respiration, egestion, and the ratios EE/GE/GS/TL), then run
-        # an initial balance check and store a mass-balanced copy of the model.
+    def _fill_properties(self, groups_df: pd.DataFrame) -> None:
+        """Unpack the fully-filled groups table into the individual named vectors.
 
+        Splits the completed groups DataFrame into the per-group Series the rest of the class
+        relies on (production p, consumption q, catch, predation, growth/biomass_accum,
+        immigration/emigration/net_migration, natural mortality M0, respiration, egestion, and
+        the ratios EE/GE/GS/TL). Missing columns (detritus_import, tl) are synthesized first.
+        Finally runs an initial balance check and stores a mass-balanced copy of the model.
+
+        Args:
+            groups_df (pd.DataFrame): the completed per-group parameter table (post defaults/LIM).
+
+        Returns:
+            None. Sets the vector attributes, self.is_balanced and self.balanced_model in place.
+        """
         self._groups_df = groups_df.copy()
 
         # add missing columns:
@@ -156,17 +232,34 @@ class PPRCalculator:
         self.balanced_model = self.balance_model(change_production=False)
     
     @classmethod
-    def apply_ecopath_defaults(cls, df, DC, det_fate=None, zero_catch=False, zero_biomass_accum=False, default_gs=False):
-        """
-        Applies Ecopath defaults and ensures flows are synced with ratios.
-        Assumes p, q, ee, and catch are given. assumes p, q not given for detritus group.
-            calculates M0 = p*(1-ee)
-        Assumes gs is 0.2 for regular groups and 0 for pp, det, diet_import.
-            calculates egestion = q*gs.
-        Assumes biomas_accum, net_migration are 0 where currently nan.
-        Calculates once cell missing from p, q, egestion, respiration.
-        Calculates predation = Z.sum(axis=1).
-            Calculates once cell missing from M0, predation, catch, biomass_accum, net_migration.
+    def apply_ecopath_defaults(cls, df: pd.DataFrame, DC: pd.DataFrame, det_fate: Optional[pd.DataFrame] = None, zero_catch: bool = False, zero_biomass_accum: bool = False, default_gs: bool = False) -> pd.DataFrame:
+        """Apply standard Ecopath defaults and sync the mass-balance flows with the ratios.
+
+        Deterministically completes the per-group parameter table using the Ecopath
+        assumptions: given p, q, ee and catch (and p, q absent for detritus), it derives
+        M0 = p*(1-ee), egestion = q*gs (with gs defaulting to 0.2 for regular groups and 0
+        for PP/DET/Import), treats missing biomass_accum and net_migration as 0, fills a single
+        missing cell of the consumption equation (q = p + respiration + egestion) and of the
+        production equation (p = M0 + catch + predation + net_migration + biomass_accum), and
+        sets predation as the column sum of the flow matrix Z. Detritus q (= inflow) is built
+        from each group's flow_to_det = M0 + egestion routed through det_fate.
+
+        Args:
+            df (pd.DataFrame): per-group parameter table to complete (modified copy returned).
+            DC (pd.DataFrame): diet-composition matrix used to build the flow matrix Z and
+                hence predation.
+            det_fate (Optional[pd.DataFrame]): matrix giving, per group, the fraction of its
+                flow_to_det reaching each detritus column. If None, all detritus inflow is
+                pooled into a single total. Defaults to None.
+            zero_catch (bool): if True, missing catch values are filled with 0. Defaults to False.
+            zero_biomass_accum (bool): if True, missing biomass_accum values are filled with 0.
+                Defaults to False.
+            default_gs (bool): if True, regular groups lacking gs get the default 0.2.
+                Defaults to False.
+
+        Returns:
+            pd.DataFrame: the completed table with all flow vectors and the ratios
+            ee/ge/gs (and flow_to_det) filled in, sorted by descending seq.
         """
         df = df.sort_index(ascending=False)
         is_regular = df["trophic_info"] == "Regular"
@@ -235,6 +328,7 @@ class PPRCalculator:
         df.loc[:, 'qb'] = (df['q'] / df['biomass']).fillna(0)
 
         def _solve_linear_equation(df, eq_cols, signs):
+            # Fill a single missing term of a signed linear balance: sum(signs * cols) == 0.
             # Identify rows where exactly ONE variable is missing (otherwise it's unsolvable this way)
             solvable_mask = df[eq_cols].isna().sum(axis=1) == 1
 
@@ -294,10 +388,27 @@ class PPRCalculator:
 
         return df
 
-    def apply_lim(self, df, weight_flow=1.0, weight_guess=0.0):
-        """
-        Uses Linear Inverse Modeling (SLSQP) to fill in missing mass-balance 
-        variables by dynamically registering active constraints and coordinating guesses.
+    def apply_lim(self, df: pd.DataFrame, weight_flow: float = 1.0, weight_guess: float = 0.0) -> pd.DataFrame:
+        """Fill missing mass-balance variables via a per-group Linear Inverse Model (SLSQP).
+
+        For each group with one or more unknowns among {q, p, respiration, egestion, M0,
+        biomass_accum}, builds smart biological initial guesses, dynamically registers only
+        the constraints that involve a free variable (consumption balance, production balance,
+        EE bounds [0, 0.95], GS bounds [0.10, 0.35]), and minimizes a weighted sum of a
+        parsimony (minimum total flow) penalty and a deviation-from-guess penalty. On failure
+        the original guesses are kept and a message is printed. Detritus rows are rebalanced
+        from flow_to_det / det_fate afterwards.
+
+        Args:
+            df (pd.DataFrame): per-group parameter table with possible NaNs to be solved.
+            weight_flow (float): weight on the minimum-total-flow (parsimony) penalty.
+                Defaults to 1.0.
+            weight_guess (float): weight on the squared deviation from the biological guesses.
+                Defaults to 0.0.
+
+        Returns:
+            pd.DataFrame: the table with solved flows and recomputed ee/gs/ge/flow_to_det and
+            rebalanced detritus rows.
         """
         df_out = df.copy()
 
@@ -476,12 +587,18 @@ class PPRCalculator:
         return _finalize_outputs(df_out)
 
     # balancing checks:
-    def is_model_balanced(self):
-        # Check the two Ecopath mass-balance identities hold (within tolerance) for the
-        # current vectors: production = catch+predation+growth+net_migration+M0, and
-        # consumption = production+egestion+respiration. Returns (is_balanced, production,
-        # consumption) so callers can inspect the recomputed flows.
+    def is_model_balanced(self) -> tuple[bool, pd.Series, pd.Series]:
+        """Check the two Ecopath mass-balance identities hold (within tolerance).
 
+        Recomputes production = catch + predation + growth + net_migration + M0 and
+        consumption = production + egestion + respiration from the current vectors and compares
+        them (np.isclose) against the stored p and q.
+
+        Returns:
+            tuple[bool, pd.Series, pd.Series]: (model_is_balanced, production, consumption),
+            where model_is_balanced is True iff both identities hold, and the two Series are the
+            recomputed production and consumption per group so callers can inspect the flows.
+        """
         # production = catch + predation + growth + net_migration + M0
         production = self.catch + self.predation + self.growth + self.net_migration + self.M0
         p_is_balanced = all(np.isclose(production, self.p))
@@ -494,8 +611,23 @@ class PPRCalculator:
 
         return model_is_balanced, production, consumption
     
-    def balance_model(self, change_production=False):
-        """rebalance by changing growth, and net_migration (if change_production=False) or production (otherwise)"""
+    def balance_model(self, change_production: bool = False) -> "PPRCalculator":
+        """Iteratively force the model onto exact mass balance and return a balanced copy.
+
+        Works on a deepcopy so self is untouched. Each iteration recomputes growth from the
+        consumption identity, then either net_migration (change_production=False) or production
+        (change_production=True) from the production identity, and re-derives predation (column
+        sum of Z) and M0 = p*(1-EE). It repeats until predation and M0 stop changing, i.e. the
+        flows are self-consistent.
+
+        Args:
+            change_production (bool): if False (default) the residual is absorbed into growth
+                and net_migration, keeping production p fixed; if True the residual is absorbed
+                into production p instead.
+
+        Returns:
+            PPRCalculator: a deepcopied, mass-balanced instance (n_balance_runs incremented).
+        """
         # TODO: change this function so I can decide which subset of parameters stays constant
         balanced_self = deepcopy(self)
         close_enough = False
@@ -520,15 +652,31 @@ class PPRCalculator:
         
         return balanced_self
     
-    def is_sppr_balanced(self, sppr, diet_import_equations=None):
-        """Check an SPPR result is self-consistent: the primary-production inflow into the
-        system equals the production-required outflow implied by the exports
-        (catch + growth + net_migration) weighted by their per-group SPPR.
+    def is_sppr_balanced(self, sppr: pd.DataFrame | pd.Series, diet_import_equations: Optional[tuple] = None) -> tuple[bool, float, float]:
+        """Check an SPPR result is globally self-consistent (inflow == outflow).
 
-        Two regimes: the '_old' helper (diet_import_equations is None) treats PP and Import
-        groups as the production basis; the '_new' helper additionally solves the symbolic
-        diet-import equations so imported diet contributes its own DIET_SPPR-weighted inflow.
-        Returns (is_balanced, inflow, outflow)."""
+        The primary-production inflow into the system must equal the production-required
+        outflow implied by the exports (catch + growth + net_migration) weighted by each
+        group's SPPR.
+
+        Two regimes:
+          - diet_import_equations is None (the '_old' helper): PP and Import groups form the
+            production basis and inflow is their total production p.
+          - diet_import_equations given (the '_new' helper): only PP forms the within-system
+            basis, and the symbolic diet-import equations are solved so imported diet
+            contributes its own DIET_SPPR-weighted inflow on top.
+
+        Args:
+            sppr (pd.DataFrame | pd.Series): an SPPR result from one of the SPPR_* methods;
+                DataFrames are summed across columns to a per-group total.
+            diet_import_equations (Optional[tuple]): (equations, variables) sympy system from a
+                symbolic SPPR call; if provided the diet-import-aware ('_new') check is used.
+                Defaults to None.
+
+        Returns:
+            tuple[bool, float, float]: (is_balanced, inflow, outflow), where is_balanced is
+            np.isclose(inflow, outflow).
+        """
         def _helper_old(sppr):
             sppr = PPRCalculator.rename_results(sppr, self.name2seq)
 
@@ -570,25 +718,39 @@ class PPRCalculator:
         else:
             return _helper_new(sppr, diet_import_equations)
     # getters:
-    def get_model(self):
-        # Return the underlying ModelData if this instance was built from one (file/model
-        # number), or None for toy/from_dict instances that have no backing model.
+    def get_model(self) -> Optional[ModelData]:
+        """Return the underlying ModelData, or None for toy / from_dict instances.
+
+        Returns:
+            Optional[ModelData]: the backing ModelData if this instance was built from a
+            file/model number, else None.
+        """
         if hasattr(self, "_model"):
             return self._model
         else:
             return None
 
-    def get_groups_df(self):
-        # Return a defensive (sorted) copy of the per-group parameter table.
-        return self._groups_df.copy().sort_index(ascending=False)
-    
-    def get_DC(self, DET_as_PP=True, normalize=False):
+    def get_groups_df(self) -> pd.DataFrame:
+        """Return a defensive (descending-seq sorted) copy of the per-group parameter table.
+
+        Returns:
+            pd.DataFrame: a copy of _groups_df sorted by descending seq.
         """
+        return self._groups_df.copy().sort_index(ascending=False)
+
+    def get_DC(self, DET_as_PP: bool = True, normalize: bool = False) -> pd.DataFrame:
+        """Return the diet-composition (DC) matrix, optionally redefining detritus rows.
+
         Args:
-            DET_as_PP (bool, optional): if True, DET row is set to 1. otherwise, it is (M0 + egestion)/(flow2det).
-                Defaults to True.
-            normalize (bool, optional): if True, DC rows sum to 1. else, they keep original sum.
-                Defaults to normalize.
+            DET_as_PP (bool, optional): if True, the DET row is the stored DC (detritus treated
+                as a basal source, row set to 1). If False, the DET row is rebuilt from the flow
+                matrix as (M0 + egestion) shares, i.e. Z/Z.sum, with the non-DET rows rescaled to
+                preserve their original row sums. Defaults to True.
+            normalize (bool, optional): if True, every DC row is renormalized to sum to 1;
+                otherwise rows keep their original sum. Defaults to False.
+
+        Returns:
+            pd.DataFrame: the (n x n) DC matrix, sorted by descending index and columns.
         """
         if DET_as_PP:
             DC = self._DC.copy()
@@ -603,8 +765,21 @@ class PPRCalculator:
             DC = DC.div(DC.sum(axis=1), axis=0).fillna(0)
         return DC.sort_index(ascending=False).sort_index(ascending=False, axis=1)
     
-    def get_Z(self, DET_as_PP=False):
-        """get Z matrix. if DET_as_PP is False (default), DET rows are flow_to_det split by det_fate. otherwise set to 0"""
+    def get_Z(self, DET_as_PP: bool = False) -> pd.DataFrame:
+        """Return the flow matrix Z = DC * q (consumption-weighted diet), with DET rows redefined.
+
+        Z[i, j] is the flow from prey j into predator i. For non-detritus rows it is the diet
+        composition scaled by the group's consumption q. The DET rows are special:
+
+        Args:
+            DET_as_PP (bool, optional): if False (default), each DET row is the group's
+                flow_to_det = (M0 + egestion) split across prey by det_fate (or assigned whole
+                when no fate column exists). If True, DET rows are set to 0 (detritus treated as
+                a basal source contributing no outgoing diet flow). Defaults to False.
+
+        Returns:
+            pd.DataFrame: the (n x n) flow matrix Z, sorted by descending index and columns.
+        """
         Z = self._DC.mul(self._groups_df['q'].fillna(0), axis='index')
         DET_seq = self.get_DET_seq()
         if not DET_as_PP:
@@ -625,32 +800,64 @@ class PPRCalculator:
                 Z.loc[det_j, :] = 0
         return Z.sort_index(ascending=False).sort_index(ascending=False, axis=1)
     
-    def get_DET_seq(self):
-        # Sorted seq IDs of all detritus (DET) groups.
+    def get_DET_seq(self) -> list:
+        """Return the sorted seq IDs of all detritus (DET) groups.
+
+        Returns:
+            list: ascending-sorted sequence numbers of the DET groups.
+        """
         return sorted(self._groups_df.index[self._groups_df['trophic_info'] == 'DET'].values)
 
-    def get_PP_seq(self):
-        # Sorted seq IDs of all primary producer (PP) groups.
+    def get_PP_seq(self) -> list:
+        """Return the sorted seq IDs of all primary-producer (PP) groups.
+
+        Returns:
+            list: ascending-sorted sequence numbers of the PP groups.
+        """
         return sorted(self._groups_df.index[self._groups_df['trophic_info'] == 'PP'].values)
 
-    def get_Regular_seq(self):
-        # Sorted seq IDs of all regular (consumer) groups.
+    def get_Regular_seq(self) -> list:
+        """Return the sorted seq IDs of all regular (consumer) groups.
+
+        Returns:
+            list: ascending-sorted sequence numbers of the Regular groups.
+        """
         return sorted(self._groups_df.index[self._groups_df['trophic_info'] == 'Regular'].values)
 
-    def get_Import_seq(self):
-        # Sorted seq IDs of all imported-diet groups (external production source).
-        return sorted(self._groups_df.index[self._groups_df['trophic_info'] == 'Import'].values)
-    
-    def get_TE(self, TE_option: str, DET_values=1, as_matrix=True, global_TE='mean'):
-        """
-        Args:
-            TE_option (str): should be one of ['GE', 'TE', 'With Egestion', 'global']. if 'global', global_value must be set.
-            DET_values (int, optional): TE of Detritus (from detritus to others). Defaults to 1.
-            as_matrix (bool, optional): whether to return pd.Dataframe (nxn) or pd.Series (nx1). Defaults to True.
-            global_TE (str or int, optional): global value for TE in case of TE_option == 'global'. 
-                Defaults to 'mean', and then it is the mean TE of catch if sum(catch)!=0, else to mean of biomass.
+    def get_Import_seq(self) -> list:
+        """Return the sorted seq IDs of all imported-diet (Import) groups.
+
+        Import groups represent an external production source feeding the modeled system.
+
         Returns:
-            if as_matrix: TE DataFrame, else TE Series.
+            list: ascending-sorted sequence numbers of the Import groups.
+        """
+        return sorted(self._groups_df.index[self._groups_df['trophic_info'] == 'Import'].values)
+
+    def get_TE(self, TE_option: str, DET_values: float = 1, as_matrix: bool = True, global_TE: str | float = 'mean') -> pd.DataFrame | pd.Series:
+        """Build the per-group transfer-efficiency (TE) vector or matrix.
+
+        Args:
+            TE_option (str): selects how each group's transfer efficiency is computed; one of:
+                'GE' -> gross efficiency p/q;
+                'TE' -> gross efficiency times the ecotrophic fraction, (p/q)*(1 - M0/p);
+                'With Egestion' -> (p/q)*(q/(q - egestion)), i.e. efficiency on assimilated intake;
+                'global' -> a single scalar TE broadcast to all groups (see global_TE).
+            DET_values (float, optional): TE assigned to the detritus rows (transfer from
+                detritus to others). Defaults to 1.
+            as_matrix (bool, optional): if True return an (n x n) DataFrame (the vector
+                broadcast across columns); if False return the length-n Series. Defaults to True.
+            global_TE (str | float, optional): used only when TE_option == 'global'. If 'mean'
+                (default) the global value is the catch-weighted mean of the per-group 'TE'
+                efficiency (biomass-weighted when total catch is 0); otherwise it is used as the
+                literal global TE value.
+
+        Returns:
+            pd.DataFrame | pd.Series: the TE matrix if as_matrix else the TE Series, sorted by
+            descending index (and columns for the matrix).
+
+        Raises:
+            Exception: if TE_option is not one of the four supported strings.
         """
         TE_options = ['GE', 'TE', 'With Egestion', 'global']
         if TE_option == 'GE':
@@ -682,17 +889,24 @@ class PPRCalculator:
         
         return te.sort_index(ascending=False)
     
-    def get_TL(self, break_cycles: bool, DET_as_PP: bool, TE_option='With Egestion'):
-        """Compute the trophic level of every group via the standard linear-algebra
-        definition TL = (I - DC)^-1 . 1, i.e. one plus the diet-weighted mean TL of prey.
+    def get_TL(self, break_cycles: bool, DET_as_PP: bool, TE_option: str = 'With Egestion') -> pd.Series:
+        """Compute the trophic level of every group via the standard linear-algebra definition.
 
-        break_cycles: if True, remove cycles from the flow matrix (Ulanowicz) before
-            building DC so the inversion is well-behaved.
-        DET_as_PP: passed through to get_Z / get_DC (whether detritus is treated as a
-            basal source).
-        TE_option: controls how detritus rows of DC are redefined ('TE' zeroes detritus
-            feeding regular groups; 'GE' rebuilds detritus diet from M0 / det_fate; other
-            options leave DC as-is).
+        Solves TL = (I - DC)^-1 . 1, i.e. each group's TL is one plus the diet-weighted mean TL
+        of its prey. Detritus rows of DC are first redefined per TE_option so basal sources sit
+        at TL 1.
+
+        Args:
+            break_cycles (bool): if True, remove cycles from the flow matrix (Ulanowicz
+                algorithm) and rebuild DC before inverting, so the inversion is well-behaved.
+            DET_as_PP (bool): passed through to get_Z / get_DC; whether detritus is treated as
+                a basal production source.
+            TE_option (str, optional): how detritus rows of DC are redefined before inversion:
+                'TE' zeroes detritus feeding regular groups; 'GE' rebuilds the detritus diet
+                from M0 / det_fate; other options leave DC as-is. Defaults to 'With Egestion'.
+
+        Returns:
+            pd.Series: per-group trophic level, indexed by seq, sorted descending.
         """
         DET_seq = self.get_DET_seq()
         Regular_seq = self.get_Regular_seq()
@@ -725,10 +939,22 @@ class PPRCalculator:
         TL = pd.Series(TL, index=DC.index).sort_index(ascending=False)
         return TL
 
-    def get_PPR(self, sppr, only_inner=False):
-        # Convert a per-group SPPR (primary production required per unit production) into
-        # total PPR by weighting each group's SPPR by its catch and summing: PPR = catch . SPPR.
-        # only_inner drops the Import columns so only within-system production is counted.
+    def get_PPR(self, sppr: pd.DataFrame | pd.Series, only_inner: bool = False) -> pd.DataFrame | pd.Series:
+        """Convert a per-group SPPR into total primary production required (PPR) by the catch.
+
+        Weights each group's SPPR (primary production required per unit production) by its
+        catch and sums: PPR = catch . SPPR. The SPPR input is relabeled to seq, reindexed onto
+        the catch index, and infinities are zeroed first.
+
+        Args:
+            sppr (pd.DataFrame | pd.Series): an SPPR result from one of the SPPR_* methods.
+            only_inner (bool, optional): if True, drop the Import columns so only
+                within-system production is counted. Defaults to False.
+
+        Returns:
+            pd.DataFrame | pd.Series: total PPR per basal source; a 1-row DataFrame if sppr is a
+            DataFrame, else a Series.
+        """
         sppr = sppr.copy().fillna(0) # sppr is an output of an SPPR calculating method from this class.
         sppr = PPRCalculator.rename_results(sppr, self.name2seq)
         sppr = sppr.reindex(self.catch.index, fill_value=0)
@@ -742,25 +968,50 @@ class PPRCalculator:
         else:
             return self.catch.dot(sppr)
     
-    def get_NPP(self, only_inner=True):
-        # Net primary production of the system = total production p of the PP groups.
-        # Only the within-system case is implemented.
+    def get_NPP(self, only_inner: bool = True) -> float:
+        """Return the net primary production (NPP) of the system.
+
+        NPP is the total production p of the primary-producer (PP) groups.
+
+        Args:
+            only_inner (bool, optional): must be True; only the within-system case is
+                implemented. Defaults to True.
+
+        Returns:
+            float: summed production of the PP groups.
+
+        Raises:
+            Exception: if only_inner is False (not implemented).
+        """
         if only_inner:
             return self.p[self.get_PP_seq()].sum()
         else:
             raise Exception('not implemented yet')
 
-    def get_PPR2NPP_ratio(self, sppr):
-        # Fraction of available NPP appropriated by the catch: total PPR / total NPP.
+    def get_PPR2NPP_ratio(self, sppr: pd.DataFrame | pd.Series) -> float:
+        """Return the fraction of available NPP appropriated by the catch (PPR / NPP).
+
+        Args:
+            sppr (pd.DataFrame | pd.Series): an SPPR result from one of the SPPR_* methods.
+
+        Returns:
+            float: total within-system PPR divided by total NPP.
+        """
         return self.get_PPR(sppr, only_inner=True).sum(axis=1).sum() / self.get_NPP(only_inner=True)
         
     ##########################################################################################
     ############################## SPPR calculating methods ##################################
     ##########################################################################################
-    def SPPR_1986(self):
-        # Pauly & Christensen (1986)-style SPPR: a single catch-weighted mean trophic level
-        # is computed for the whole catch, then SPPR = TE^(1-TL) with a fixed transfer
-        # efficiency TE=0.1. Returns one SPPR value per group (constant for a given model).
+    def SPPR_1986(self) -> pd.DataFrame:
+        """Pauly & Christensen (1986)-style SPPR using a single catch-weighted trophic level.
+
+        Computes one catch-weighted mean trophic level for the whole catch, then SPPR =
+        TE^(1-TL) with a fixed transfer efficiency TE = 0.1. The same value is assigned to
+        every group (constant for a given model). Returns all zeros if there is no catch.
+
+        Returns:
+            pd.DataFrame: a single 'sppr' column indexed by group seq.
+        """
         if all(self.catch == 0):
             return pd.DataFrame(0, index=self.GE.index, columns=['sppr'])
         TE = 0.1
@@ -769,22 +1020,39 @@ class PPRCalculator:
         SPPR = pd.DataFrame(SPPR, index=self.GE.index, columns=['sppr'])
         return SPPR
     
-    def SPPR_1995(self, global_TE=0.1):
-        """Christensen & Pauly (1995)-style SPPR: per-group SPPR = TE^(1-TL) using each
-        group's own (continuous) trophic level and a single global transfer efficiency.
+    def SPPR_1995(self, global_TE: str | float = 0.1) -> pd.DataFrame:
+        """Christensen & Pauly (1995)-style per-group SPPR = TE^(1-TL).
+
+        Uses each group's own continuous trophic level together with a single global transfer
+        efficiency.
 
         Args:
-            global_TE (float, optional): 'mean' or float. Defaults to 0.1.
+            global_TE (str | float, optional): the global TE; either the literal float or
+                'mean' (catch- / biomass-weighted mean efficiency, see get_TE). Defaults to 0.1.
+
+        Returns:
+            pd.DataFrame: a single 'sppr' column indexed by group seq.
         """
         TE = self.get_TE(TE_option='global', global_TE=global_TE, as_matrix=False)
         TL = self.get_TL(break_cycles=True, DET_as_PP=True)  # break cylces in DC and force DET to be of TL=1.
         SPPR = TE ** (1 - TL)
         return SPPR.to_frame(name='sppr')
     
-    def SPPR_1995_TL_fix(self, global_TE=0.1):
-        # Variant of SPPR_1995 that linearly interpolates between the integer trophic levels
-        # bracketing each group's fractional TL: SPPR = (1-frac)*(1/TE)^(TLint-1) + frac*(1/TE)^TLint.
-        # This avoids the discontinuity of raising 1/TE to a non-integer power directly.
+    def SPPR_1995_TL_fix(self, global_TE: str | float = 0.1) -> pd.DataFrame:
+        """SPPR_1995 variant that linearly interpolates between bracketing integer trophic levels.
+
+        Instead of raising 1/TE to a non-integer power directly, it blends the two integer
+        levels bracketing each group's fractional TL:
+        SPPR = (1-frac)*(1/TE)^(TLint-1) + frac*(1/TE)^TLint, which avoids the discontinuity of
+        the direct fractional exponent.
+
+        Args:
+            global_TE (str | float, optional): the global TE; literal float or 'mean'
+                (see get_TE). Defaults to 0.1.
+
+        Returns:
+            pd.DataFrame: a single 'sppr' column indexed by group seq.
+        """
         TE = self.get_TE(TE_option='global', global_TE=global_TE, as_matrix=False)
         TL = self.get_TL(break_cycles=True, DET_as_PP=True)  # break cylces in DC and force DET to be of TL=1.
         TL_fraction = TL % 1
@@ -793,18 +1061,31 @@ class PPRCalculator:
         sppr = sppr.fillna(1)
         return sppr.to_frame(name='sppr')
         
-    def SPPR_EwE(self, TE_option: str, use_EE=True, return_paths=True, silent=True):
-        """Path-enumeration SPPR in the style of the Ecopath with Ecosim (EwE) flow-network
-        analysis: enumerate every simple path from each group down to a basal terminal node
-        and sum the product of edge weights (DC/TE) along each path.
+    def SPPR_EwE(self, TE_option: str, use_EE: bool = True, return_paths: bool = True, silent: bool = True) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
+        """Path-enumeration SPPR in the style of Ecopath with Ecosim (EwE) flow-network analysis.
 
-        A = DC/TE is the per-edge production-required weight. For each (group, basal-source)
-        pair, SPPR is the sum over all paths of the product of A along the path. If use_EE
-        the rows are scaled by ecotrophic efficiency.
+        Enumerates every simple path from each group down to a basal terminal node (a node with
+        an all-zero DC row) and sums the product of the edge weights along each path.
+        A = DC/TE is the per-edge production-required weight, so for each (group, basal-source)
+        pair SPPR is the sum over all paths of the product of A along the path. When use_EE, the
+        rows are scaled by ecotrophic efficiency.
 
-        return_paths selects between the slow implementation that also returns the explicit
-        path lists (_slow_EwE_with_paths) and the fast vectorized one that does not
-        (_fast_EwE_no_paths). Returns (SPPR, A, paths_dict-or-{})."""
+        Args:
+            TE_option (str): transfer-efficiency mode for building A; one of 'GE', 'TE',
+                'With Egestion', 'global' (see get_TE).
+            use_EE (bool, optional): if True, scale each row by the group's ecotrophic
+                efficiency EE. Defaults to True.
+            return_paths (bool, optional): if True use the slow implementation that also returns
+                the explicit per-(source, sink) path lists; if False use the fast vectorized
+                implementation that returns an empty dict for paths. Defaults to True.
+            silent (bool, optional): if True, suppress the tqdm progress bars. Defaults to True.
+
+        Returns:
+            tuple[pd.DataFrame, pd.DataFrame, dict]: (SPPR, A, paths_dict), where SPPR is the
+            (groups x basal-terminals) production-required matrix, A is the per-edge weight
+            matrix DC/TE, and paths_dict maps source -> sink -> list of node-name paths (empty
+            dict when return_paths is False).
+        """
         def _get_paths_with_safety_valve(g, start_node, terminal_indices, max_paths=1_000_000):
             """
             Increments depth until either all paths are found
@@ -900,10 +1181,12 @@ class PPRCalculator:
                     sink_idx = path[-1]
                     sink_node = nodes_tuple[sink_idx]
 
+                    # Production required along this path = product of edge weights A[u][v].
                     prod = 1.0
                     for i in range(len(path) - 1):
                         prod *= A_list[path[i]][path[i + 1]]
 
+                    # Accumulate into the (source, basal-sink) cell -- summing over all paths.
                     # Add directly to the pre-allocated matrix using mapped indices
                     sppr_matrix[start_idx, term_idx_to_col[sink_idx]] += prod
 
@@ -984,7 +1267,9 @@ class PPRCalculator:
             # Bulk-fetch all edge weights from A at once
             all_edge_values = A_vals[edge_starts, edge_ends]
 
-            # Calculate products using reduceat (C-level segmented product)
+            # Calculate products using reduceat (C-level segmented product).
+            # reduceat multiplies each contiguous segment of the flattened edge array, so each
+            # path's edge weights collapse to a single product in one vectorized call.
             path_products = np.ones(len(all_paths))
             if len(all_edge_values) > 0:
                 # Calculate the starting index of each path in the flattened edge array
@@ -1003,7 +1288,7 @@ class PPRCalculator:
             rows = meta_arr[:, 0]
             cols = np.array([term_idx_to_col[tid] for tid in meta_arr[:, 1]])
 
-            # Vectorized 'Scatter-Add'
+            # Vectorized 'Scatter-Add': sum every path's product into its (source, sink) cell.
             np.add.at(sppr_matrix, (rows, cols), path_products)
 
             # 6. Final DataFrame formatting
@@ -1019,16 +1304,30 @@ class PPRCalculator:
         else:
             return _fast_EwE_no_paths(TE_option=TE_option, use_EE=use_EE, silent=silent)
 
-    def SPPR_EwE_Ido(self, TE_option: str, global_TE='mean', use_EE=True):
-        """Ido's matrix (nullspace) reformulation of the EwE path-summation SPPR: instead of
-        enumerating paths, build A = DC/TE with cycles removed, replace producer rows by
-        identity rows, and find the steady state as the nullspace of L = A - I. The basis is
-        RREF-normalized so each column is anchored to one basal source. Returns (SPPR, A, L).
+    def SPPR_EwE_Ido(self, TE_option: str, global_TE: str | float = 'mean', use_EE: bool = True) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+        """Matrix (nullspace) reformulation of the EwE path-summation SPPR.
+
+        Instead of enumerating paths, build the per-edge weight matrix A = DC/TE with cycles
+        removed, replace each basal (producer) row by an identity row, and find the steady-state
+        SPPR as the nullspace of L = A - I (so A.x = x). The nullspace basis is RREF-normalized
+        so each resulting column is anchored to exactly one basal source. When use_EE the rows
+        are scaled by ecotrophic efficiency.
 
         Args:
-            TE_option (str): should be one of ['GE', 'TE', 'With Egestion', 'global']. if 'global', global_value must be set.
-            global_TE (str or int, optional): global value for TE in case of TE_option == 'global'. 
-                Defaults to 'mean', and then it is the mean TE of catch if sum(catch)!=0, else to mean of biomass.
+            TE_option (str): transfer-efficiency mode for building A; one of 'GE', 'TE',
+                'With Egestion', 'global' (the 'global' case requires global_TE).
+            global_TE (str | float, optional): the global TE used when TE_option == 'global';
+                'mean' (catch-weighted, or biomass-weighted when total catch is 0) or a literal
+                float. Defaults to 'mean'.
+            use_EE (bool, optional): if True, scale each row by ecotrophic efficiency EE.
+                Defaults to True.
+
+        Returns:
+            tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: (SPPR, A, L), the per-group SPPR
+            (groups x basal sources), the per-edge weight matrix A, and L = A - I.
+
+        Raises:
+            ValueError: if L has an empty nullspace (no steady-state solution / disconnected).
         """
         DC = self.get_DC(DET_as_PP=True)
         DCNoCyc = remove_cycles(DC.copy(), new=False)  # should work on Z instead?
@@ -1058,10 +1357,13 @@ class PPRCalculator:
         if len(ns) == 0:
             raise ValueError("No steady-state solution found. Check matrix connectivity.")
         
-        # normalize by the first primary producer:
+        # Stack the nullspace vectors as rows and RREF them so each basis row is pivoted on a
+        # single basal source (a leading 1), giving one SPPR column per basal source.
         ns = [np.array(s).T.flatten() for s in ns]
         M = sm.Matrix(ns)
         rref_matrix, _ = M.rref()
+        # Drop all-zero rows and convert the symbolic RREF rows to float; transpose so columns
+        # are the basal sources and rows are the groups.
         basis = [np.array(rref_matrix.row(i).evalf()).astype(float).flatten()
                     for i in range(rref_matrix.rows)
                     if not rref_matrix.row(i).is_zero]
@@ -1069,6 +1371,7 @@ class PPRCalculator:
 
         # turn back to DataFrames:
         SPPR = pd.DataFrame(basis, index=new_index)
+        # Name each column by the group whose row holds the pivot 1 (its anchoring basal source).
         SPPR = SPPR.rename(columns=lambda c: SPPR.index.values[SPPR[c] == 1][0])
         if use_EE:
             SPPR = SPPR.mul(self.EE, axis='index')
@@ -1077,12 +1380,24 @@ class PPRCalculator:
 
         return SPPR, A, L
 
-    def SPPR_2015(self, only_pp_det=True):
-        # 2015-method SPPR: a matrix-inversion (Leontief-style) formulation. Detritus columns
-        # are dissolved by reassigning the PP-derived fraction of each detritus flow back onto
-        # the PP groups, leaving only living compartments. The production-normalized transaction
-        # matrix A then yields L = (I - A)^-1, whose PP columns give per-group SPPR; a balancing
-        # detritus SPPR is added back at the end. Returns (SPPR, A, L).
+    def SPPR_2015(self, only_pp_det: bool = True) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+        """2015-method SPPR: a matrix-inversion (Leontief-style) formulation.
+
+        Detritus columns are dissolved by reassigning the PP-derived fraction of each detritus
+        flow back onto the PP groups, leaving only living compartments. The production-normalized
+        transaction matrix A then yields the production-requirement matrix L = (I - A)^-1, whose
+        PP columns give the per-group SPPR; a balancing detritus SPPR is added back at the end.
+
+        Args:
+            only_pp_det (bool, optional): whether to reassign only the PP-derived fraction of
+                each detritus flow back onto PP (the article's choice). Note: the body forces
+                this to True, so it is effectively always True. Defaults to True.
+
+        Returns:
+            tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: (SPPR, A, L), the per-group SPPR
+            (groups x PP+Import sources), the production-normalized transaction matrix A, and
+            the production-requirement matrix L = (I - A)^-1.
+        """
         only_pp_det=True
 
         groups_data = self.get_groups_df()
@@ -1134,20 +1449,35 @@ class PPRCalculator:
 
         return SPPR, A, L
 
-    def _build_det_BC(self, sppr_basis, non_DET_sppr, DET_seq, DC, TE_option):
-        """Build the detritus recycling system (I - B) x = c for GE / With Egestion.
+    def _build_det_BC(self, sppr_basis: pd.DataFrame, non_DET_sppr: pd.Series, DET_seq: list, DC: pd.DataFrame, TE_option: str) -> tuple[np.ndarray, np.ndarray]:
+        """Build the detritus recycling system (I - B) x = c for the GE / With Egestion modes.
 
-        x_l        = scaling factor for detritus group l
-        c[l]       = m_eff_l . non_DET_sppr      (production from non-detritus sources)
-        B[l, j]    = m_eff_l . sppr_basis[det_j] (recursive dependence on detritus basis j)
+        Each detritus group l has an unknown scaling factor x_l; recycled detritus production
+        depends on the SPPR already attributed to other compartments, giving the coupled system:
 
-        where m_eff_l = M0*fracs/q_l                          (GE)
-                      = M0*fracs/q_l + DC.T @ (egestion*fracs/q_l)  (With Egestion)
-        and fracs = det_fate[:, det_l] (fraction of each group's flow_to_det reaching det_l).
+            x_l     = scaling factor for detritus group l
+            c[l]    = m_eff_l . non_DET_sppr       (production drawn from non-detritus sources)
+            B[l, j] = m_eff_l . sppr_basis[det_j]  (recursive dependence on detritus basis j)
 
-        Point 6 guard: in a MULTI-DET model, a det_fate matrix that is present but missing
-        a column for det_l means nothing feeds det_l -> fracs = 0 (warn), NOT whole-flow.
-        For single-DET (or no det_fate at all) fracs defaults to 1 (old behavior)."""
+        where m_eff_l = M0*fracs/q_l                                 (GE)
+                      = M0*fracs/q_l + DC.T @ (egestion*fracs/q_l)   (With Egestion)
+        and fracs = det_fate[:, det_l] is the fraction of each group's flow_to_det reaching
+        det_l. In a multi-DET model, a present det_fate matrix lacking a column for det_l means
+        nothing feeds det_l -> fracs = 0 (a warning is emitted), NOT whole-flow. For single-DET
+        (or no det_fate at all) fracs defaults to 1 (legacy behavior).
+
+        Args:
+            sppr_basis (pd.DataFrame): the current SPPR basis (per group x basal source) whose
+                detritus columns the recycling depends on.
+            non_DET_sppr (pd.Series): per-group SPPR contribution from all non-detritus sources.
+            DET_seq (list): seq IDs of the detritus groups being solved.
+            DC (pd.DataFrame): diet-composition matrix (used for the egestion term).
+            TE_option (str): 'GE' or 'With Egestion'; selects whether the egestion term is added.
+
+        Returns:
+            tuple[np.ndarray, np.ndarray]: (B, c), the k x k recycling matrix and the length-k
+            source vector of the system (I - B) x = c, where k = len(DET_seq).
+        """
         k = len(DET_seq)
         det_fate = getattr(self, '_det_fate', None)
         B = np.zeros((k, k))
@@ -1183,22 +1513,40 @@ class PPRCalculator:
         return B, c
 
     @staticmethod
-    def _spectral_radius(M):
-        """Largest absolute eigenvalue of M (0 for empty). Used to test whether the
-        detritus recycling matrix B is subcritical (rho < 1 => finite, nonnegative
-        solution to the recycling system (I - B) x = c exists)."""
+    def _spectral_radius(M: np.ndarray) -> float:
+        """Return the spectral radius (largest absolute eigenvalue) of M.
+
+        Used to test whether the detritus recycling matrix B is subcritical: when rho(B) < 1 a
+        finite, nonnegative solution to the recycling system (I - B) x = c exists, and the
+        Neumann series sum(B^k) converges. rho >= 1 signals divergent recycling.
+
+        Args:
+            M (np.ndarray): a square matrix (the detritus recycling matrix B).
+
+        Returns:
+            float: the largest absolute eigenvalue of M, or 0.0 if M is empty.
+        """
         M = np.asarray(M, dtype=float)
         if M.size == 0:
             return 0.0
         return float(np.max(np.abs(np.linalg.eigvals(M))))
 
-    def _resolve_det_param(self, param, DET_seq, default):
-        """Resolve a per-DET parameter into an np.array aligned with DET_seq.
+    def _resolve_det_param(self, param: float | dict | None, DET_seq: list, default: float) -> np.ndarray:
+        """Resolve a per-DET parameter into a float array aligned with DET_seq.
 
-        Accepts a scalar (broadcast to all DET groups) or a dict keyed by DET group
-        seq (int) or DET group name (str). Missing dict keys fall back to `default`.
-        Used to turn the user-facing det_theta / det_external_sppr knobs into per-DET
-        vectors aligned with the detritus columns being scaled."""
+        Turns the user-facing det_theta / det_external_sppr knobs into per-DET vectors aligned
+        with the detritus columns being scaled.
+
+        Args:
+            param (float | dict | None): a scalar broadcast to all DET groups, or a dict keyed
+                by DET group seq (int) or DET group name (str). None falls back to `default`.
+                Dict entries missing for a given DET group also fall back to `default`.
+            DET_seq (list): seq IDs of the detritus groups, defining the output order.
+            default (float): value used for None param and for missing dict keys.
+
+        Returns:
+            np.ndarray: a length-len(DET_seq) float array of per-DET values.
+        """
         if param is None:
             param = default
         if np.isscalar(param):
@@ -1212,25 +1560,48 @@ class PPRCalculator:
         return out
 
     @staticmethod
-    def _collapse_det_scaling(SPPR, DET_seq, non_DET_sppr, M0, egestion, q,
-                              flow_to_det, DC, TE_option, det_fate=None,
-                              theta=None, ext=None, det_open_mode='none'):
-        """Fallback DET scaling: treat all DET groups as one pooled pool, solve the 1-D
-        self-consistency x = a + b*x, and multiply every DET column by that scalar.
+    def _collapse_det_scaling(SPPR: pd.DataFrame, DET_seq: list, non_DET_sppr: pd.Series, M0: pd.Series, egestion: pd.Series, q: pd.Series,
+                              flow_to_det: pd.Series, DC: pd.DataFrame, TE_option: str, det_fate: Optional[pd.DataFrame] = None,
+                              theta: Optional[np.ndarray] = None, ext: Optional[np.ndarray] = None, det_open_mode: str = 'none') -> tuple[pd.DataFrame, float, float, float]:
+        """Fallback DET scaling: pool all detritus into one compartment and solve a 1-D problem.
 
-        Treats all DET groups as a single combined pool: individual basis vectors are
-        summed, a single scale factor is solved from the 1-D self-consistency equation,
-        and every DET column is multiplied by that factor.  The combined denominator
-        q_combined >> any individual q_j, which typically brings b well below 1.
+        Used when the coupled detritus system is unstable. Sums the individual detritus basis
+        vectors into one combined pool, solves the scalar self-consistency x = a + b*x, and
+        multiplies every DET column of SPPR by that single factor. The combined denominator
+        q_combined >> any individual q_j, which usually brings b well below 1.
 
-        Point 7: weight M0/egestion by `fate_to_modeled_det` = sum over modeled DET columns
-        of det_fate, so the numerator only counts material that actually enters the modeled
-        detritus system (consistent with q_combined, which is already fate-weighted).
-        With det_fate rows summing to 1 this weight is 1 (no-op on the real models).
+        M0 / egestion are weighted by fate_to_modeled = sum over the modeled DET columns of
+        det_fate, so the numerator counts only material actually entering the modeled detritus
+        system (consistent with the fate-weighted q_combined). With det_fate rows summing to 1
+        this weight is 1 (a no-op on the real models). Openness is applied to the pooled scalar
+        using the mean theta / ext across DET groups.
 
-        Openness (point 8) is applied to the pooled scalar using the mean theta / ext across
-        DET groups: 'recycling_loss' damps b; 'source_dilution' damps b and dilutes a toward
-        the external SPPR. Returns (SPPR, sppr_det, a, b)."""
+        Args:
+            SPPR (pd.DataFrame): the SPPR basis; its DET columns are scaled in place.
+            DET_seq (list): seq IDs of the detritus groups.
+            non_DET_sppr (pd.Series): per-group SPPR from non-detritus sources.
+            M0 (pd.Series): natural-mortality flow per group.
+            egestion (pd.Series): egestion flow per group.
+            q (pd.Series): consumption per group (used to form q_combined).
+            flow_to_det (pd.Series): M0 + egestion per group (fallback denominator).
+            DC (pd.DataFrame): diet-composition matrix (egestion term, With Egestion only).
+            TE_option (str): 'GE' or 'With Egestion'.
+            det_fate (Optional[pd.DataFrame]): per-group fate fractions to each DET column.
+                Defaults to None.
+            theta (Optional[np.ndarray]): per-DET availability/retention used for openness;
+                its mean is applied. Defaults to None.
+            ext (Optional[np.ndarray]): per-DET external SPPR used for source dilution; its mean
+                is applied. Defaults to None.
+            det_open_mode (str): 'none', 'recycling_loss' (damp b), or 'source_dilution' (damp b
+                and dilute a toward ext). Defaults to 'none'.
+
+        Returns:
+            tuple[pd.DataFrame, float, float, float]: (SPPR, sppr_det, a, b), the scaled SPPR,
+            the pooled scaling scalar sppr_det = a/(1-b), and the solved coefficients a and b.
+
+        Raises:
+            ValueError: if b >= 1 (pooled recycling still diverges).
+        """
         q_combined = float(sum(float(q[d]) for d in DET_seq if float(q[d]) > 0))
         if q_combined <= 0:
             q_combined = float(flow_to_det.sum())
@@ -1274,25 +1645,58 @@ class PPRCalculator:
             SPPR[det_j] *= sppr_det
         return SPPR, sppr_det, a, b
 
-    def _solve_det_scaling(self, B, c_vec, DET_seq, SPPR, non_DET_sppr, DC, TE_option,
-                           det_collapse_mode='never', det_open_mode='none',
-                           det_theta=1.0, det_external_sppr=0.0,
-                           tol=1e-10, cond_threshold=1e10):
-        """Apply openness, decide solve-vs-pool by spectral radius / conditioning, scale the
-        DET columns of SPPR in place, and record self.detritus_resolution_info.
+    def _solve_det_scaling(self, B: np.ndarray, c_vec: np.ndarray, DET_seq: list, SPPR: pd.DataFrame, non_DET_sppr: pd.Series, DC: pd.DataFrame, TE_option: str,
+                           det_collapse_mode: str = 'never', det_open_mode: str = 'none',
+                           det_theta: float | dict = 1.0, det_external_sppr: float | dict = 0.0,
+                           tol: float = 1e-10, cond_threshold: float = 1e10) -> pd.DataFrame:
+        """Resolve the detritus recycling system: apply openness, choose solve-vs-pool, scale SPPR.
 
-        det_collapse_mode: 'never'  (always solve; may return negatives, never raises -- the
-                                     Monte-Carlo samplers rely on negatives being returned so
-                                     they can reject unstable draws),
-                           'auto'   (pool iff rho>=1-tol or cond>cond_threshold),
-                           'always' (always pool through _collapse_det_scaling).
-        det_open_mode:     'none' | 'recycling_loss' (8A) | 'source_dilution' (8B).
+        Applies the openness transform to (B, c), tests stability via spectral radius and matrix
+        conditioning, decides whether to solve the coupled system directly or fall back to the
+        pooled scaling, scales the DET columns of SPPR in place, and records a diagnostic
+        dict on self.detritus_resolution_info.
 
-        Openness transform on the recycling system (theta, ext aligned to DET_seq):
-            none            : B_open = B,            c_open = c
-            recycling_loss  : B_open = diag(theta) B, c_open = c
-            source_dilution : B_open = diag(theta) B, c_open = theta*c + ext*(1-theta)
-        With theta=1 / ext=0 all three reduce to the original system (old result kept)."""
+        Args:
+            B (np.ndarray): k x k recycling matrix from _build_det_BC.
+            c_vec (np.ndarray): length-k source vector from _build_det_BC.
+            DET_seq (list): seq IDs of the detritus groups (length k).
+            SPPR (pd.DataFrame): SPPR basis whose DET columns are scaled in place.
+            non_DET_sppr (pd.Series): per-group SPPR from non-detritus sources (for the pool).
+            DC (pd.DataFrame): diet-composition matrix (egestion term in the pool path).
+            TE_option (str): 'GE' or 'With Egestion'.
+            det_collapse_mode (str): how the solve-vs-pool decision is made:
+                'never' -> always solve the coupled system directly (may return negative SPPR
+                but never raises; the Monte-Carlo samplers rely on this to reject unstable draws);
+                'auto' -> pool only if the system is unstable (spectral radius rho >= 1-tol or
+                condition number > cond_threshold);
+                'always' -> always use the pooled scaling. Defaults to 'never'.
+            det_open_mode (str): openness model: 'none' (closed recycling); 'recycling_loss'
+                (a fraction of recycled detritus is lost, damping B by diag(theta)); or
+                'source_dilution' (damp B by diag(theta) AND dilute the source toward an external
+                SPPR). Defaults to 'none'.
+            det_theta (float | dict): detritus availability/retention fraction; a single float
+                for all DET groups or a dict keyed by DET seq (int) or name (str). 1.0 reproduces
+                the closed system. Defaults to 1.0.
+            det_external_sppr (float | dict): external SPPR assigned to diluted material under
+                'source_dilution'; same scalar-or-dict form as det_theta. Defaults to 0.0.
+            tol (float): tolerance used in the rho >= 1 - tol instability test. Defaults to 1e-10.
+            cond_threshold (float): condition-number threshold above which (I - B) is deemed
+                ill-conditioned. Defaults to 1e10.
+
+        Returns:
+            pd.DataFrame: SPPR with its DET columns scaled.
+
+        Raises:
+            ValueError: if det_open_mode or det_collapse_mode is not a recognized value, or if
+                the pooled fallback also diverges.
+
+        Notes:
+            Openness transform on the recycling system (theta, ext aligned to DET_seq):
+                none            : B_open = B,             c_open = c
+                recycling_loss  : B_open = diag(theta) B, c_open = c
+                source_dilution : B_open = diag(theta) B, c_open = theta*c + ext*(1-theta)
+            With theta=1 / ext=0 all three reduce to the original closed system.
+        """
         k = len(DET_seq)
         theta = self._resolve_det_param(det_theta, DET_seq, 1.0)
         ext = self._resolve_det_param(det_external_sppr, DET_seq, 0.0)
@@ -1344,6 +1748,8 @@ class PPRCalculator:
                 'collapse_scalar': scalar, 'collapse_a': a_p, 'collapse_b': b_p,
             }
         else:
+            # Directly solve the coupled recycling system (I - B) x = c for the per-DET scaling
+            # factors, then multiply each detritus column by its own factor.
             x_vec = np.linalg.solve(IminusB, c_open)
             for i, det_j in enumerate(DET_seq):
                 SPPR[det_j] *= x_vec[i]
@@ -1356,15 +1762,50 @@ class PPRCalculator:
             }
         return SPPR
 
-    def SPPR_new(self, TE=None, TE_option='GE', DET_TE_vals=1, collapse_det=None,
-                 det_collapse_mode='never', det_open_mode='none',
-                 det_theta=1.0, det_external_sppr=0.0):
-        # Primary numeric SPPR solver. Builds A = DC/TE, replaces basal (producer) rows with
-        # identity rows, and finds the steady-state SPPR as the nullspace of L = A - I, RREF-
-        # normalized so each column is anchored to one basal source. Detritus columns are then
-        # resolved: 'TE' scales each by its direct PP+Import inflow share; 'GE'/'With Egestion'
-        # build the coupled recycling system (I - B) x = c and solve it (with optional openness
-        # / collapse) via _solve_det_scaling. Returns (SPPR, A, L).
+    def SPPR_new(self, TE: Optional[pd.DataFrame] = None, TE_option: str = 'GE', DET_TE_vals: float = 1, collapse_det: Optional[bool] = None,
+                 det_collapse_mode: str = 'never', det_open_mode: str = 'none',
+                 det_theta: float | dict = 1.0, det_external_sppr: float | dict = 0.0) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+        """Primary numeric SPPR solver via the nullspace of L = A - I.
+
+        Builds the per-edge weight matrix A = DC/TE, replaces basal (producer) rows with
+        identity rows, and finds the steady-state SPPR as the nullspace of L = A - I, RREF-
+        normalized so each column is anchored to one basal source. Detritus columns are then
+        resolved by TE_option: 'TE' scales each detritus column by its direct PP+Import inflow
+        share (times theta); 'GE' / 'With Egestion' build the coupled recycling system
+        (I - B) x = c via _build_det_BC and resolve it (with optional openness / collapse)
+        through _solve_det_scaling.
+
+        Args:
+            TE (Optional[pd.DataFrame]): an explicit TE matrix (e.g. a Monte-Carlo sample);
+                if None it is built from TE_option. Defaults to None.
+            TE_option (str): transfer-efficiency mode when TE is None; one of 'GE', 'TE',
+                'With Egestion', 'global'. Defaults to 'GE'.
+            DET_TE_vals (float): TE assigned to detritus rows when building the TE matrix.
+                Defaults to 1.
+            collapse_det (Optional[bool]): legacy boolean retained for backward compatibility:
+                False maps to det_collapse_mode='never', True maps to 'auto', None leaves
+                det_collapse_mode as given. Defaults to None.
+            det_collapse_mode (str): detritus solve-vs-pool strategy: 'never' (always solve the
+                coupled system; may return negative SPPR but never raises), 'auto' (pool only if
+                unstable -- spectral radius >= 1 or ill-conditioned), or 'always' (always pool).
+                Defaults to 'never'.
+            det_open_mode (str): detritus recycling openness: 'none' (closed recycling),
+                'recycling_loss' (damp recycling B by diag(theta)), or 'source_dilution' (damp B
+                by diag(theta) and dilute the source toward an external SPPR). Defaults to 'none'.
+            det_theta (float | dict): detritus availability/retention fraction; a float applied
+                to all detritus groups or a dict keyed by DET seq (int) or name (str). 1.0
+                reproduces the closed system. Defaults to 1.0.
+            det_external_sppr (float | dict): external SPPR assigned to diluted material under
+                'source_dilution'; same scalar-or-dict form as det_theta. Defaults to 0.0.
+
+        Returns:
+            tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: (SPPR, A, L), the per-group SPPR
+            (groups x basal sources), the per-edge weight matrix A, and L = A - I.
+
+        Raises:
+            ValueError: if L has an empty nullspace (no steady-state solution).
+            Exception: if TE_option is not one of the supported strings.
+        """
         # Back-compat shim: the old boolean collapse_det maps onto the new enum.
         # collapse_det=False -> 'never' (always solve), True -> 'auto' (pool iff unstable),
         # None -> leave det_collapse_mode as given (defaults to 'never' == old default).
@@ -1399,10 +1840,13 @@ class PPRCalculator:
         if len(ns) == 0:
             raise ValueError("No steady-state solution found. Check matrix connectivity.")
         
-        # normalize by the first primary producer:
+        # Stack the nullspace vectors as rows and RREF them so each basis row is pivoted on a
+        # single basal source (a leading 1), yielding one SPPR column per basal source.
         ns = [np.array(s).T.flatten() for s in ns]
         M = sm.Matrix(ns)
         rref_matrix, _ = M.rref()
+        # Drop all-zero rows, cast the symbolic RREF rows to float, and transpose so columns are
+        # the basal sources and rows are the groups.
         basis = [np.array(rref_matrix.row(i).evalf()).astype(float).flatten()
                     for i in range(rref_matrix.rows)
                     if not rref_matrix.row(i).is_zero]
@@ -1410,6 +1854,7 @@ class PPRCalculator:
 
         # turn back to DataFrames:
         SPPR = pd.DataFrame(basis, index=new_index)
+        # Name each column by the group holding the pivot 1 (its anchoring basal source).
         SPPR = SPPR.rename(columns=lambda c: SPPR.index.values[SPPR[c] == 1][0])
         A = pd.DataFrame(np.array(A.tolist(), dtype=float), index=new_index, columns=new_columns)
         L = pd.DataFrame(np.array(L.tolist(), dtype=float), index=new_index, columns=new_columns)
@@ -1451,16 +1896,42 @@ class PPRCalculator:
 
         return SPPR, A, L
     
-    def _SPPR_symbolic_helper_diet_import_as_PP(self, TE, TE_option, DET_TE_vals, sppr_det_value,
-                                                det_collapse_mode='never', det_open_mode='none',
-                                                det_theta=1.0, det_external_sppr=0.0):
-        # Symbolic SPPR helper, "diet import as PP" variant: imported diet is treated like an
-        # extra primary-production source (its own free SPPR symbol set to 1). Builds the per-
-        # group SPPR equations A x - x = 0 symbolically, solves the non-detritus block, then the
-        # detritus block, and returns both the symbolic solution and a numeric basis matrix
-        # (sppr_mat). Detritus columns are scaled either by the exact symbolic solution (default
-        # path) or through the shared numeric recycling solver when openness/collapse is requested.
-        # Returns (sppr_symbolic, sppr_mat, equations, variables).
+    def _SPPR_symbolic_helper_diet_import_as_PP(self, TE: Optional[pd.DataFrame], TE_option: str, DET_TE_vals: float, sppr_det_value: Optional[float],
+                                                det_collapse_mode: str = 'never', det_open_mode: str = 'none',
+                                                det_theta: float | dict = 1.0, det_external_sppr: float | dict = 0.0) -> tuple[pd.DataFrame, pd.DataFrame, list, list]:
+        """Symbolic SPPR helper, "diet import as PP" variant.
+
+        Imported diet is treated like an extra primary-production source (its own free SPPR
+        symbol fixed to 1). Builds the per-group SPPR equations A x - x = 0 symbolically, solves
+        the non-detritus block, then the detritus block, and returns both the symbolic solution
+        and a numeric basis matrix (sppr_mat). Detritus columns are scaled either by the exact
+        symbolic solution (default path: det_open_mode='none' and det_collapse_mode='never') or
+        through the shared numeric recycling solver (_build_det_BC + _solve_det_scaling) when
+        openness/collapse is requested.
+
+        Args:
+            TE (Optional[pd.DataFrame]): explicit TE matrix; if None it is built from TE_option.
+            TE_option (str): transfer-efficiency / detritus-DC mode; one of 'GE', 'TE',
+                'With Egestion', 'global'.
+            DET_TE_vals (float): TE assigned to detritus rows when building the TE matrix.
+            sppr_det_value (Optional[float]): if not None, every detritus column is scaled by
+                this fixed value instead of being solved.
+            det_collapse_mode (str): 'never', 'auto', or 'always' (see SPPR_new). Defaults to 'never'.
+            det_open_mode (str): 'none', 'recycling_loss', or 'source_dilution' (see SPPR_new).
+                Defaults to 'none'.
+            det_theta (float | dict): detritus availability/retention; float or dict keyed by
+                DET seq/name. Defaults to 1.0.
+            det_external_sppr (float | dict): external SPPR for 'source_dilution'. Defaults to 0.0.
+
+        Returns:
+            tuple[pd.DataFrame, pd.DataFrame, list, list]: (sppr_symbolic, sppr_mat, equations,
+            variables), where sppr_symbolic is the symbolic per-group solution, sppr_mat is the
+            numeric basis matrix (groups x basal sources), equations is the full symbolic system,
+            and variables is the ordered list of SPPR symbols.
+
+        Raises:
+            Exception: if TE_option is not one of the supported strings.
+        """
         DET_seq = self.get_DET_seq()
         non_DET_seq = [i for i in self.GE.index if i not in DET_seq]
         Regular_seq = self.get_Regular_seq()
@@ -1516,6 +1987,8 @@ class PPRCalculator:
         ordered_symbols = symbols_by_trophic_info['Regular'] + symbols_by_trophic_info['DET'] \
                         + symbols_by_trophic_info['Import'] + symbols_by_trophic_info['PP']
         sppr_vec = pd.DataFrame(ordered_symbols, index=index)
+        # Steady-state SPPR equations: A x - x = 0. Split into a non-detritus block (solved
+        # first) and a detritus block (solved after substituting the non-DET solution back in).
         equations = A @ sppr_vec - sppr_vec
         equation_DET = equations.loc[DET_seq]
         equations_non_DET = equations.loc[non_DET_seq]
@@ -1564,15 +2037,43 @@ class PPRCalculator:
 
         return sppr_symbolic, sppr_mat, equations, variables
     
-    def _SPPR_symbolic_helper_diet_import_as_DC(self, TE, TE_option, DET_TE_vals, sppr_det_value,
-                                                det_collapse_mode='never', det_open_mode='none',
-                                                det_theta=1.0, det_external_sppr=0.0):
-        # Symbolic SPPR helper, "diet import as DC" variant: imported diet is kept as a separate
-        # production source whose own SPPR (DIET_SPPR_*) is solved from a second linear system,
-        # so each imported group carries the diet-composition-weighted production it requires.
-        # Solves the non-detritus SPPR block, the detritus block, then the diet-import block,
-        # and folds the DIET_* contributions back into the single Import column of the numeric
-        # basis matrix. Returns (sppr_symbolic, sppr_mat, equations, variables).
+    def _SPPR_symbolic_helper_diet_import_as_DC(self, TE: Optional[pd.DataFrame], TE_option: str, DET_TE_vals: float, sppr_det_value: Optional[float],
+                                                det_collapse_mode: str = 'never', det_open_mode: str = 'none',
+                                                det_theta: float | dict = 1.0, det_external_sppr: float | dict = 0.0) -> tuple[pd.DataFrame, pd.DataFrame, list, list]:
+        """Symbolic SPPR helper, "diet import as DC" variant.
+
+        Imported diet is kept as a separate production source whose own SPPR (DIET_SPPR_*) is
+        solved from a second linear system, so each imported group carries the
+        diet-composition-weighted production it requires. Solves the non-detritus SPPR block,
+        the detritus block, then the diet-import block, and folds the DIET_* contributions back
+        into the single Import column of the numeric basis matrix. Detritus columns use the exact
+        symbolic scaling by default, or the shared numeric recycling solver when openness/collapse
+        is requested.
+
+        Args:
+            TE (Optional[pd.DataFrame]): explicit TE matrix; if None it is built from TE_option.
+            TE_option (str): transfer-efficiency / detritus-DC mode; one of 'GE', 'TE',
+                'With Egestion', 'global'.
+            DET_TE_vals (float): TE assigned to detritus rows when building the TE matrix.
+            sppr_det_value (Optional[float]): if not None, every detritus column is scaled by
+                this fixed value instead of being solved.
+            det_collapse_mode (str): 'never', 'auto', or 'always' (see SPPR_new). Defaults to 'never'.
+            det_open_mode (str): 'none', 'recycling_loss', or 'source_dilution' (see SPPR_new).
+                Defaults to 'none'.
+            det_theta (float | dict): detritus availability/retention; float or dict keyed by
+                DET seq/name. Defaults to 1.0.
+            det_external_sppr (float | dict): external SPPR for 'source_dilution'. Defaults to 0.0.
+
+        Returns:
+            tuple[pd.DataFrame, pd.DataFrame, list, list]: (sppr_symbolic, sppr_mat, equations,
+            variables), where sppr_symbolic is the symbolic per-group solution, sppr_mat is the
+            numeric basis matrix (groups x basal sources, with diet-import folded into the Import
+            column), equations is the combined SPPR + diet-import symbolic system, and variables
+            is the ordered list of DIET_SPPR and SPPR symbols.
+
+        Raises:
+            Exception: if TE_option is not one of the supported strings.
+        """
         DET_seq = self.get_DET_seq()
         Regular_seq = self.get_Regular_seq()
         Import_seq = self.get_Import_seq()
@@ -1647,6 +2148,9 @@ class PPRCalculator:
         sppr_det = sol_dict2[sppr_det_symbol]
 
         # solve diet import equation:
+        # Each imported group's own SPPR (DIET_SPPR_*) is the diet-composition-weighted SPPR of
+        # what it eats, so it satisfies its own linear system once the within-system SPPR (with
+        # PP pinned to 1 and detritus substituted) is known.
         sppr = sppr_vec.replace(sol_dict1)
         subs_dict_PP = {v: 1 for v in sppr_vec.squeeze().loc[PP_seq]}
         subs_dict = subs_dict_PP | {ds: sol_dict2[ds].subs(subs_dict_PP) for ds in symbols_by_trophic_info['DET']}
@@ -1702,13 +2206,41 @@ class PPRCalculator:
 
         return sppr_symbolic, sppr_mat, equations, variabls
 
-    def SPPR_symbolic(self, TE=None, TE_option='GE', diet_import_option='as_DC', DET_TE_vals=1,
-                      sppr_det_value=None, collapse_det=None,
-                      det_collapse_mode='never', det_open_mode='none',
-                      det_theta=1.0, det_external_sppr=0.0):
-        # Same back-compat shim and detritus knobs as SPPR_new, forwarded to whichever
-        # diet-import helper is selected. The default path (open_mode='none', mode='never')
-        # keeps the proven sympy per-DET scaling and is byte-identical to the old output.
+    def SPPR_symbolic(self, TE: Optional[pd.DataFrame] = None, TE_option: str = 'GE', diet_import_option: str = 'as_DC', DET_TE_vals: float = 1,
+                      sppr_det_value: Optional[float] = None, collapse_det: Optional[bool] = None,
+                      det_collapse_mode: str = 'never', det_open_mode: str = 'none',
+                      det_theta: float | dict = 1.0, det_external_sppr: float | dict = 0.0) -> tuple[pd.DataFrame, pd.DataFrame, list, list]:
+        """Symbolic SPPR solver: dispatch to the selected diet-import helper.
+
+        Applies the same legacy collapse_det shim and detritus knobs as SPPR_new and forwards
+        them to whichever diet-import helper is chosen. The default path (det_open_mode='none',
+        det_collapse_mode='never') keeps the exact sympy per-DET scaling.
+
+        Args:
+            TE (Optional[pd.DataFrame]): explicit TE matrix; if None it is built from TE_option.
+                Defaults to None.
+            TE_option (str): transfer-efficiency mode; one of 'GE', 'TE', 'With Egestion',
+                'global'. Defaults to 'GE'.
+            diet_import_option (str): how imported diet is handled: 'as_DC' (imported diet kept
+                as a separate production source with its own DIET_SPPR) or 'as_PP' (imported
+                diet treated as an extra primary-production source). Defaults to 'as_DC'.
+            DET_TE_vals (float): TE assigned to detritus rows. Defaults to 1.
+            sppr_det_value (Optional[float]): if set, detritus columns are scaled by this fixed
+                value instead of being solved. Defaults to None.
+            collapse_det (Optional[bool]): legacy boolean: False -> 'never', True -> 'auto',
+                None -> leave det_collapse_mode as given. Defaults to None.
+            det_collapse_mode (str): 'never', 'auto', or 'always' (see SPPR_new). Defaults to 'never'.
+            det_open_mode (str): 'none', 'recycling_loss', or 'source_dilution' (see SPPR_new).
+                Defaults to 'none'.
+            det_theta (float | dict): detritus availability/retention; float or dict keyed by
+                DET seq/name. Defaults to 1.0.
+            det_external_sppr (float | dict): external SPPR for 'source_dilution'. Defaults to 0.0.
+
+        Returns:
+            tuple[pd.DataFrame, pd.DataFrame, list, list]: (sppr_symbolic, sppr_mat, equations,
+            variables) from the selected helper (see _SPPR_symbolic_helper_diet_import_as_DC /
+            _as_PP).
+        """
         if collapse_det is not None:
             det_collapse_mode = 'auto' if collapse_det else 'never'
         kwargs = dict(TE=TE, TE_option=TE_option, DET_TE_vals=DET_TE_vals,
@@ -1720,11 +2252,24 @@ class PPRCalculator:
         elif diet_import_option == 'as_DC':
             return self._SPPR_symbolic_helper_diet_import_as_DC(**kwargs)
 
-    def _sample_SPPR_new_forced_balance(self, TE=None, sppr_det=None):
-        # Run SPPR_new with detritus kept symbolic (a single unknown x = sppr_det), then solve
-        # for the one x that forces the PP inflow to exactly equal the export outflow
-        # (catch+growth+net_migration weighted by SPPR), and scale the detritus columns by it.
-        # Returns (sppr, sppr_det).
+    def _sample_SPPR_new_forced_balance(self, TE: Optional[pd.DataFrame] = None, sppr_det: Optional[float] = None) -> tuple[pd.DataFrame, float]:
+        """Run SPPR_new and force exact global balance by solving the single detritus SPPR.
+
+        Treats the detritus scaling as one symbolic unknown x = sppr_det, then solves the scalar
+        equation that forces the PP inflow to exactly equal the export outflow
+        (catch + growth + net_migration weighted by SPPR), and scales the detritus columns by the
+        solved value.
+
+        Args:
+            TE (Optional[pd.DataFrame]): explicit TE matrix passed through to SPPR_new; if None it
+                is built internally. Defaults to None.
+            sppr_det (Optional[float]): unused placeholder; the value is solved and returned.
+                Defaults to None.
+
+        Returns:
+            tuple[pd.DataFrame, float]: (sppr, sppr_det), the balanced SPPR DataFrame and the
+            single detritus scaling value that achieves balance.
+        """
         sppr, _, _ = self.SPPR_new(
             DET_modeling='as_PP', DET_TE_vals=1, TE=TE
         )
@@ -1744,22 +2289,49 @@ class PPRCalculator:
 
         return sppr, sppr_det
 
-    def monte_carlo_SPPR(self, n_samples=1000, TE_error_percent=10, TE_error_cut_percent=20,
-                            TE_option='GE', DET_TE_vals=1, kind='new', diet_import_option='as_DC', silent=True,
-                            det_collapse_mode='never', det_open_mode='none',
-                            det_theta=1.0, det_external_sppr=0.0):
-        """Monte-Carlo uncertainty propagation over transfer efficiency. Repeatedly resamples
-        the TE matrix from gamma distributions centred on the model TEs (with relative error
-        TE_error_percent and clipped at +/- TE_error_cut_percent), recomputes SPPR via SPPR_new
-        or SPPR_symbolic, discards samples that produce any negative SPPR, and averages the rest.
+    def monte_carlo_SPPR(self, n_samples: int = 1000, TE_error_percent: float = 10, TE_error_cut_percent: float = 20,
+                            TE_option: str = 'GE', DET_TE_vals: float = 1, kind: str = 'new', diet_import_option: str = 'as_DC', silent: bool = True,
+                            det_collapse_mode: str = 'never', det_open_mode: str = 'none',
+                            det_theta: float | dict = 1.0, det_external_sppr: float | dict = 0.0) -> tuple:
+        """Monte-Carlo uncertainty propagation over transfer efficiency.
 
-        Returns (mean_sppr, accepted_samples_array, rejection_fraction, equations, variables);
-        equations/variables are None for kind='new'.
+        Repeatedly resamples the TE matrix from gamma distributions centred on the model TEs
+        (relative error TE_error_percent, clipped at +/- TE_error_cut_percent), recomputes SPPR
+        via SPPR_new or SPPR_symbolic, discards any sample that produces a negative SPPR (an
+        unstable / non-physical draw), and averages the accepted samples.
 
         Args:
-            n_samples (int, optional): number of sppr samples. Defaults to 1000.
-            TE_error_percent (float, optional): percentage of TE std relative to it's mean. Defaults to 0.1.
-            TE_error_cut_percent (float, optional): cut value to TE in percentage relative to it's mean. Defaults to 0.2.
+            n_samples (int, optional): number of SPPR samples to draw. Defaults to 1000.
+            TE_error_percent (float, optional): TE standard deviation as a percentage of its mean
+                (the gamma CV). Defaults to 10.
+            TE_error_cut_percent (float, optional): clip band for each TE sample as a percentage
+                of its mean. Defaults to 20.
+            TE_option (str, optional): transfer-efficiency mode; one of 'GE', 'TE',
+                'With Egestion', 'global'. Defaults to 'GE'.
+            DET_TE_vals (float, optional): TE assigned to detritus rows. Defaults to 1.
+            kind (str, optional): which solver to resample: 'new' (SPPR_new) or 'symbolic'
+                (SPPR_symbolic). Defaults to 'new'.
+            diet_import_option (str, optional): 'as_DC' or 'as_PP', passed to SPPR_symbolic when
+                kind='symbolic'. Defaults to 'as_DC'.
+            silent (bool, optional): suppress progress bars / prints. Defaults to True.
+            det_collapse_mode (str, optional): 'never', 'auto', or 'always' (see SPPR_new);
+                forwarded to every SPPR call. Defaults to 'never'.
+            det_open_mode (str, optional): 'none', 'recycling_loss', or 'source_dilution' (see
+                SPPR_new). Defaults to 'none'.
+            det_theta (float | dict, optional): detritus availability/retention; float or dict
+                keyed by DET seq/name. Defaults to 1.0.
+            det_external_sppr (float | dict, optional): external SPPR for 'source_dilution'.
+                Defaults to 0.0.
+
+        Returns:
+            tuple: (mean_sppr, accepted_samples_array, rejection_fraction, equations, variables),
+            where mean_sppr is a pd.DataFrame averaged over accepted samples,
+            accepted_samples_array is the np.ndarray of accepted SPPR samples,
+            rejection_fraction is the float share of discarded samples, and equations/variables
+            are the symbolic system from SPPR_symbolic (both None when kind='new').
+
+        Raises:
+            Exception: if kind is not 'new' or 'symbolic'.
         """
 
         # define basis sequence:
@@ -1787,14 +2359,18 @@ class PPRCalculator:
             TE_error = TE_error_percent / 100
             shape = 1/(TE_error**2)
 
+            # Gamma keeps the sampled TE strictly positive (unlike a normal) with the requested
+            # mean and CV; shape/scale chosen above so mean=TE_means and std/mean=TE_error.
             sampler = lambda: gamma.rvs(a=shape, scale=TE_means/shape)
             TE_sample = sampler()
 
+            # Clip each TE to the +/- TE_error_cut_percent band to drop extreme tail draws.
             TE_high = (TE_means * (1 + TE_error_cut_percent/100)).values
             TE_low = (TE_means * (1 - TE_error_cut_percent/100)).values
             TE_sample[TE_sample >= TE_high] = TE_high[TE_sample >= TE_high]
             TE_sample[TE_sample <= TE_low] = TE_low[TE_sample <= TE_low]
 
+            # Broadcast the per-group TE vector into a full n x n matrix, then pin basal rows to 1.
             TE_sample = pd.DataFrame([TE_sample]*self.n_groups, index=TE_means.index, columns=TE_means.index).T
 
             TE_sample.loc[basis_seq, :] = 1
@@ -1829,13 +2405,15 @@ class PPRCalculator:
                 _, sppr, _, _ = self.SPPR_symbolic(TE=TE_sample, TE_option=TE_option, DET_TE_vals=DET_TE_vals, diet_import_option=diet_import_option, **det_kwargs)
             # turn to numpy and collect:
             sppr = sppr.values
+            # Rejection step: a negative SPPR means the resampled TE drove the detritus
+            # recycling system unstable / non-physical, so drop this draw from the average.
             if np.any(sppr < -1e-10):
                 not_counted_counter += 1
                 counted_rows_array[i] = False
                 continue
             sppr_array[i, :, :] = sppr
-                
-        # take average SPPR:
+
+        # take average SPPR over the accepted (non-rejected) samples only:
         sppr = np.mean(sppr_array[counted_rows_array], axis=0)
 
         if not silent:
@@ -1849,19 +2427,43 @@ class PPRCalculator:
         else:
             return sppr, sppr_array[counted_rows_array], not_counted_counter/n_samples, e, v
 
-    def monte_carlo_SPPR_2(self, n_samples=1000, TE_error_percent=10, TE_error_cut_percent=20,
-                         TE_option='GE', DET_TE_vals=1, kind='new', silent=True,
-                         det_collapse_mode='never', det_open_mode='none',
-                         det_theta=1.0, det_external_sppr=0.0):
-        """Variant of monte_carlo_SPPR supporting only kind='new'. Pre-allocates the sample
-        array from the model's (n_groups x n_PP) shape rather than the first SPPR call, but is
-        otherwise the same gamma-resampling / negative-rejection / averaging loop.
-        Returns (mean_sppr, accepted_samples_array, rejection_fraction).
+    def monte_carlo_SPPR_2(self, n_samples: int = 1000, TE_error_percent: float = 10, TE_error_cut_percent: float = 20,
+                         TE_option: str = 'GE', DET_TE_vals: float = 1, kind: str = 'new', silent: bool = True,
+                         det_collapse_mode: str = 'never', det_open_mode: str = 'none',
+                         det_theta: float | dict = 1.0, det_external_sppr: float | dict = 0.0) -> tuple[pd.DataFrame, np.ndarray, float]:
+        """Variant of monte_carlo_SPPR supporting only kind='new'.
+
+        Pre-allocates the sample array from the model's (n_groups x n_PP) shape rather than from
+        the first SPPR call, but is otherwise the same gamma-resampling / negative-rejection /
+        averaging loop as monte_carlo_SPPR.
 
         Args:
-            n_samples (int, optional): number of sppr samples. Defaults to 1000.
-            TE_error_percent (float, optional): percentage of TE std relative to it's mean. Defaults to 0.1.
-            TE_error_cut_percent (float, optional): cut value to TE in percentage relative to it's mean. Defaults to 0.2.
+            n_samples (int, optional): number of SPPR samples to draw. Defaults to 1000.
+            TE_error_percent (float, optional): TE standard deviation as a percentage of its mean
+                (the gamma CV). Defaults to 10.
+            TE_error_cut_percent (float, optional): clip band for each TE sample as a percentage
+                of its mean. Defaults to 20.
+            TE_option (str, optional): transfer-efficiency mode; one of 'GE', 'TE',
+                'With Egestion', 'global'. Defaults to 'GE'.
+            DET_TE_vals (float, optional): TE assigned to detritus rows. Defaults to 1.
+            kind (str, optional): must be 'new'. Defaults to 'new'.
+            silent (bool, optional): suppress progress bars / prints. Defaults to True.
+            det_collapse_mode (str, optional): 'never', 'auto', or 'always' (see SPPR_new).
+                Defaults to 'never'.
+            det_open_mode (str, optional): 'none', 'recycling_loss', or 'source_dilution' (see
+                SPPR_new). Defaults to 'none'.
+            det_theta (float | dict, optional): detritus availability/retention; float or dict
+                keyed by DET seq/name. Defaults to 1.0.
+            det_external_sppr (float | dict, optional): external SPPR for 'source_dilution'.
+                Defaults to 0.0.
+
+        Returns:
+            tuple[pd.DataFrame, np.ndarray, float]: (mean_sppr, accepted_samples_array,
+            rejection_fraction), the per-group SPPR averaged over accepted samples, the array of
+            accepted SPPR samples, and the share of discarded samples.
+
+        Raises:
+            Exception: if kind is not 'new'.
         """
 
         # define basis sequence:
@@ -1887,14 +2489,17 @@ class PPRCalculator:
             TE_error = TE_error_percent / 100
             shape = 1/(TE_error**2)
 
+            # Gamma keeps the sampled TE strictly positive with the requested mean and CV.
             sampler = lambda: gamma.rvs(a=shape, scale=TE_means/shape)
             TE_sample = sampler()
 
+            # Clip each TE to the +/- TE_error_cut_percent band to drop extreme tail draws.
             TE_high = (TE_means * (1 + TE_error_cut_percent/100)).values
             TE_low = (TE_means * (1 - TE_error_cut_percent/100)).values
             TE_sample[TE_sample >= TE_high] = TE_high[TE_sample >= TE_high]
             TE_sample[TE_sample <= TE_low] = TE_low[TE_sample <= TE_low]
 
+            # Broadcast the per-group TE vector into a full matrix, then pin basal rows to 1.
             TE_sample = pd.DataFrame([TE_sample]*n_groups, index=TE_means.index, columns=TE_means.index).T
 
             TE_sample.loc[basis_seq, :] = 1
@@ -1925,13 +2530,14 @@ class PPRCalculator:
                 raise Exception(f'kind = {kind}')
             # turn to numpy and collect:
             sppr = sppr.values
+            # Reject negative (unstable / non-physical) draws so they don't bias the mean.
             if np.any(sppr < -1e-10):
                 not_counted_counter += 1
                 counted_rows_array[i] = False
                 continue
             sppr_array[i, :, :] = sppr
-            
-        # take average SPPR:
+
+        # take average SPPR over the accepted (non-rejected) samples only:
         sppr = np.mean(sppr_array[counted_rows_array], axis=0)
 
         if not silent:
@@ -1943,10 +2549,22 @@ class PPRCalculator:
     
     # class methods:
     @classmethod
-    def rename_results(cls, results: list, renaming_dict):
-        # Relabel the index (and columns, for DataFrames) of one result or a list of results
-        # using renaming_dict -- typically to map between group seq IDs and group names. Sorts
-        # by descending index/columns first; returns the same type (single object or list) given.
+    def rename_results(cls, results: list | pd.DataFrame | pd.Series, renaming_dict: dict) -> list | pd.DataFrame | pd.Series:
+        """Relabel the index (and columns) of one or more SPPR-style results.
+
+        Typically used to map between group seq IDs and group names. Each result is first sorted
+        by descending index (and columns for DataFrames), then renamed.
+
+        Args:
+            results (list | pd.DataFrame | pd.Series): a single result or a list of results to
+                relabel.
+            renaming_dict (dict): mapping applied to index labels (and column labels for
+                DataFrames), e.g. seq2name or name2seq.
+
+        Returns:
+            list | pd.DataFrame | pd.Series: the relabeled result(s), returned as the same type
+            (single object or list) that was passed in.
+        """
         is_list = isinstance(results, list)
         results = results if isinstance(results, list) else [results]
         for i in range(len(results)):

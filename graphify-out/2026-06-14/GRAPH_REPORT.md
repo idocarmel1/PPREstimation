@@ -1,16 +1,16 @@
 # Graph Report - FishEstimationAI  (2026-06-14)
 
 ## Corpus Check
-- 245 files · ~3,153,664 words
+- 247 files · ~3,165,872 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 137 nodes · 236 edges · 31 communities (6 shown, 25 thin omitted)
+- 184 nodes · 292 edges · 32 communities (8 shown, 24 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 2 edges (avg confidence: 0.5)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `1bd4f8f3`
+- Built from commit: `be221734`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -22,6 +22,7 @@
 - [[_COMMUNITY_Excel Export & Entry Points|Excel Export & Entry Points]]
 - [[_COMMUNITY_ModelData Species Groups|ModelData Species Groups]]
 - [[_COMMUNITY_ModelData IO & JSON Loading|ModelData I/O & JSON Loading]]
+- [[_COMMUNITY_Community 7|Community 7]]
 - [[_COMMUNITY_SpeciesGroup Model|SpeciesGroup Model]]
 - [[_COMMUNITY_Diet Composition Concept|Diet Composition Concept]]
 - [[_COMMUNITY_Ecopath Marine Models|Ecopath Marine Models]]
@@ -48,16 +49,16 @@
 - [[_COMMUNITY_Community 32|Community 32]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `PPRCalculator` - 42 edges
+1. `PPRCalculator` - 46 edges
 2. `ModelData` - 15 edges
-3. `get_DC()` - 7 edges
-4. `mat_from_np()` - 7 edges
-5. `get_seq2name()` - 6 edges
-6. `remove_cycles()` - 6 edges
-7. `move_scattered_identity()` - 5 edges
-8. `_remove_cycles_nexus()` - 5 edges
-9. `SpeciesGroupLegacy` - 4 edges
-10. `SpeciesGroup` - 4 edges
+3. `Multi-DET Openness, Collapse Modes & Diagnostics — Implementation Plan` - 14 edges
+4. `FishEstimationAI` - 9 edges
+5. `get_DC()` - 7 edges
+6. `mat_from_np()` - 7 edges
+7. `get_seq2name()` - 6 edges
+8. `remove_cycles()` - 6 edges
+9. `Tests executed` - 6 edges
+10. `move_scattered_identity()` - 5 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `PPRCalculator` --uses--> `ModelData`  [INFERRED]
@@ -73,11 +74,15 @@
 ## Hyperedges (group relationships)
 - **PPR Estimation Methods Comparison** — converted_pprs_59b295f7_sppr_1986, converted_pprs_59b295f7_sppr_1995_mtl_global_te_01, converted_pprs_59b295f7_sppr_1995_tl2_global_te_01, converted_pprs_59b295f7_sppr_1995_mtl_global_mte, converted_pprs_59b295f7_sppr_ewe, converted_pprs_59b295f7_sppr_2015, converted_pprs_59b295f7_sppr_new_2015, converted_pprs_59b295f7_sppr_new_full, converted_pprs_59b295f7_sppr_new_ge, converted_pprs_59b295f7_sppr_symbolic_ge, converted_pprs_59b295f7_sppr_symbolic_te, converted_pprs_59b295f7_sppr_mc_ge [EXTRACTED 1.00]
 
-## Communities (31 total, 25 thin omitted)
+## Communities (32 total, 24 thin omitted)
 
 ### Community 0 - "PPRCalculator Core Methods"
-Cohesion: 0.35
-Nodes (3): Args:             n_samples (int, optional): number of sppr samples. Defaults t, Args:             DET_as_PP (bool, optional): if True, DET row is set to 1. oth, get Z matrix. if DET_as_PP is False (default), DET rows are flow_to_det split by
+Cohesion: 0.13
+Nodes (13): PPRCalculator, Build the detritus recycling system (I - B) x = c for GE / With Egestion., Largest absolute eigenvalue of M (0 for empty). Used to test whether the, Resolve a per-DET parameter into an np.array aligned with DET_seq.          Ac, Fallback DET scaling: treat all DET groups as one pooled pool, solve the 1-D, Apply openness, decide solve-vs-pool by spectral radius / conditioning, scale th, Monte-Carlo uncertainty propagation over transfer efficiency. Repeatedly resampl, Variant of monte_carlo_SPPR supporting only kind='new'. Pre-allocates the sample (+5 more)
+
+### Community 2 - "Community 2"
+Cohesion: 0.13
+Nodes (14): Multi-DET Openness, Collapse Modes & Diagnostics — Implementation Plan, New public parameter surface (identical across all methods), Self-review notes, Task 0: Capture full golden baseline (regression oracle), Task 10: Change log, cleanup, git, graphify, Task 1: Add `_resolve_det_param` and `_spectral_radius` helpers, Task 2: Add `_build_det_BC` (numeric recycling system builder), Task 3: Upgrade `_collapse_det_scaling` (points 7 + openness, return diagnostics) (+6 more)
 
 ### Community 3 - "Ecopath Defaults & LIM"
 Cohesion: 0.19
@@ -85,35 +90,43 @@ Nodes (4): ModelData, Applies Ecopath defaults and ensures flows are synced with
 
 ### Community 4 - "Excel Export & Entry Points"
 Cohesion: 0.18
-Nodes (15): main(), # TODO: change this function so I can decide which subset of parameters stays co, Args:             TE_option (str): should be one of ['GE', 'TE', 'With Egestion, _find_all_cycles(), _get_circuit_probability(), mat_from_np(), move_scattered_identity(), Removes cycles from a flow matrix Z using the Ulanowicz method.     Z[i, j] rep (+7 more)
+Nodes (15): main(), Ido's matrix (nullspace) reformulation of the EwE path-summation SPPR: instead o, # TODO: change this function so I can decide which subset of parameters stays co, _find_all_cycles(), _get_circuit_probability(), mat_from_np(), move_scattered_identity(), Removes cycles from a flow matrix Z using the Ulanowicz method.     Z[i, j] rep (+7 more)
 
 ### Community 5 - "ModelData Species Groups"
-Cohesion: 0.11
-Nodes (17): get_DC(), get_seq2name(), ModelData, ModelData class supporting both old API (model_number) and new API (json_filepat, Initialize ModelData from either a model_number (int) or json_filepath (str)., Initialize ModelData from a JSON filepath.                  Filename format: {, Initialize ModelData from a model number (legacy API)., Parse filename to extract model_number, model_name, and model_year. (+9 more)
+Cohesion: 0.08
+Nodes (21): get_DC(), get_seq2name(), load_json_dict(), ModelData, ModelData class supporting both old API (model_number) and new API (json_filepat, Initialize ModelData from either a model_number (int) or json_filepath (str)., Load a JSON file and return as dictionary., Initialize ModelData from a JSON filepath.                  Filename format: { (+13 more)
 
-### Community 8 - "SpeciesGroup Model"
-Cohesion: 0.15
-Nodes (6): load_json_dict(), Load a JSON file and return as dictionary., Factory method to create an instance from a dictionary., Load JSON file and deserialize to list of SpeciesGroupLegacy objects., read_json_SpeciesGroup_list(), SpeciesGroupLegacy
+### Community 6 - "ModelData I/O & JSON Loading"
+Cohesion: 0.17
+Nodes (11): 1. `SPPR_new` golden regression (default params == old), 2. `SPPR_symbolic` golden regression (default params == old), all 12 combos, 3. Feature behaviour tests (`scratch_feature_tests.py`) — 11/11 passed, 4. Monte-Carlo smoke (negatives rejected, never raised), 5. Post-documentation re-verification, Files / methods touched (`PPRCalculator.py`), Multi-DET Openness, Collapse Modes & Diagnostics — Change Log, New public parameters (identical across `SPPR_new`, `SPPR_symbolic`, `monte_carlo_SPPR`, `monte_carlo_SPPR_2`) (+3 more)
 
 ### Community 31 - "Community 31"
 Cohesion: 0.40
 Nodes (4): FishEstimationAI — Claude Instructions, graphify, Knowledge Graph, Project Overview
 
+### Community 32 - "Community 32"
+Cohesion: 0.18
+Nodes (10): Data, Dependencies, FishEstimationAI, Key Concepts, Notebooks, Overview, Programmatic use, Project Structure (+2 more)
+
 ## Knowledge Gaps
-- **25 isolated node(s):** `Knowledge Graph`, `Project Overview`, `graphify`, `PPREstimation`, `PPR Estimation Project` (+20 more)
+- **53 isolated node(s):** `Review points addressed`, `Openness math (per-DET θ, ext aligned to the DET columns)`, `Files / methods touched (`PPRCalculator.py`)`, `1. `SPPR_new` golden regression (default params == old)`, `2. `SPPR_symbolic` golden regression (default params == old), all 12 combos` (+48 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **25 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **24 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `PPRCalculator` connect `Community 1` to `PPRCalculator Core Methods`, `Community 2`, `Ecopath Defaults & LIM`, `Excel Export & Entry Points`, `ModelData Species Groups`, `ModelData I/O & JSON Loading`?**
-  _High betweenness centrality (0.363) - this node is a cross-community bridge._
-- **Why does `ModelData` connect `ModelData Species Groups` to `SpeciesGroup Model`, `Community 1`, `Ecopath Defaults & LIM`, `Excel Export & Entry Points`?**
-  _High betweenness centrality (0.297) - this node is a cross-community bridge._
+- **Why does `PPRCalculator` connect `PPRCalculator Core Methods` to `Community 1`, `Ecopath Defaults & LIM`, `Excel Export & Entry Points`, `ModelData Species Groups`, `Community 7`?**
+  _High betweenness centrality (0.262) - this node is a cross-community bridge._
+- **Why does `ModelData` connect `ModelData Species Groups` to `PPRCalculator Core Methods`, `Ecopath Defaults & LIM`, `Excel Export & Entry Points`?**
+  _High betweenness centrality (0.189) - this node is a cross-community bridge._
+- **Why does `SpeciesGroupLegacy` connect `SpeciesGroup Model` to `ModelData Species Groups`?**
+  _High betweenness centrality (0.028) - this node is a cross-community bridge._
 - **Are the 2 inferred relationships involving `ModelData` (e.g. with `PPRCalculator` and `ModelData`) actually correct?**
   _`ModelData` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `Load a JSON file and return as dictionary.`, `Factory method to create an instance from a dictionary.`, `Factory method to create an instance from a dictionary.` to the rest of the system?**
-  _57 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `ModelData Species Groups` be split into smaller, more focused modules?**
-  _Cohesion score 0.10582010582010581 - nodes in this community are weakly interconnected._
+  _91 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `PPRCalculator Core Methods` be split into smaller, more focused modules?**
+  _Cohesion score 0.13124274099883856 - nodes in this community are weakly interconnected._
+- **Should `Community 2` be split into smaller, more focused modules?**
+  _Cohesion score 0.13333333333333333 - nodes in this community are weakly interconnected._
