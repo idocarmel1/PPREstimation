@@ -155,7 +155,7 @@
       "source_location": "L194",
       "_origin": "ast",
       "id": "modeldata_modeldata",
-      "community": 4,
+      "community": 5,
       "norm_label": "modeldata"
     },
     {
@@ -165,7 +165,7 @@
       "source_location": "L211",
       "_origin": "ast",
       "id": "modeldata_modeldata_init",
-      "community": 4,
+      "community": 5,
       "norm_label": ".__init__()"
     },
     {
@@ -175,7 +175,7 @@
       "source_location": "L238",
       "_origin": "ast",
       "id": "modeldata_modeldata_init_from_json_filepath",
-      "community": 4,
+      "community": 5,
       "norm_label": "._init_from_json_filepath()"
     },
     {
@@ -185,7 +185,7 @@
       "source_location": "L314",
       "_origin": "ast",
       "id": "modeldata_modeldata_init_from_model_number",
-      "community": 4,
+      "community": 5,
       "norm_label": "._init_from_model_number()"
     },
     {
@@ -195,7 +195,7 @@
       "source_location": "L482",
       "_origin": "ast",
       "id": "modeldata_modeldata_parse_filename",
-      "community": 4,
+      "community": 5,
       "norm_label": "._parse_filename()"
     },
     {
@@ -205,7 +205,7 @@
       "source_location": "L523",
       "_origin": "ast",
       "id": "modeldata_modeldata_load_json_dict_static",
-      "community": 4,
+      "community": 5,
       "norm_label": ".load_json_dict_static()"
     },
     {
@@ -215,7 +215,7 @@
       "source_location": "L539",
       "_origin": "ast",
       "id": "modeldata_modeldata_get_seq2name",
-      "community": 4,
+      "community": 5,
       "norm_label": ".get_seq2name()"
     },
     {
@@ -235,7 +235,7 @@
       "source_location": "L639",
       "_origin": "ast",
       "id": "modeldata_modeldata_get_species_groups",
-      "community": 4,
+      "community": 5,
       "norm_label": ".get_species_groups()"
     },
     {
@@ -265,7 +265,7 @@
       "source_location": "L765",
       "_origin": "ast",
       "id": "modeldata_get_seq2name",
-      "community": 4,
+      "community": 5,
       "norm_label": "get_seq2name()"
     },
     {
@@ -275,7 +275,7 @@
       "source_location": "L799",
       "_origin": "ast",
       "id": "modeldata_get_dc",
-      "community": 4,
+      "community": 5,
       "norm_label": "get_dc()"
     },
     {
@@ -385,7 +385,7 @@
       "source_location": "L195",
       "_origin": "ast",
       "id": "modeldata_rationale_195",
-      "community": 4,
+      "community": 5,
       "norm_label": "container for one ecopath model's group table, diet composition and detritus fat"
     },
     {
@@ -395,7 +395,7 @@
       "source_location": "L212",
       "_origin": "ast",
       "id": "modeldata_rationale_212",
-      "community": 4,
+      "community": 5,
       "norm_label": "initialize modeldata from either a model_number (int) or json_filepath (str)."
     },
     {
@@ -405,7 +405,7 @@
       "source_location": "L239",
       "_origin": "ast",
       "id": "modeldata_rationale_239",
-      "community": 4,
+      "community": 5,
       "norm_label": "initialize modeldata from a per-model json file (new api).          parses model"
     },
     {
@@ -415,7 +415,7 @@
       "source_location": "L315",
       "_origin": "ast",
       "id": "modeldata_rationale_315",
-      "community": 4,
+      "community": 5,
       "norm_label": "initialize modeldata from a model number using the bundled legacy data."
     },
     {
@@ -425,7 +425,7 @@
       "source_location": "L483",
       "_origin": "ast",
       "id": "modeldata_rationale_483",
-      "community": 4,
+      "community": 5,
       "norm_label": "parse a model filename stem into (model_number, model_name, model_year)."
     },
     {
@@ -435,7 +435,7 @@
       "source_location": "L524",
       "_origin": "ast",
       "id": "modeldata_rationale_524",
-      "community": 4,
+      "community": 5,
       "norm_label": "load a json file from an absolute/explicit path and return it as a dict."
     },
     {
@@ -445,7 +445,7 @@
       "source_location": "L540",
       "_origin": "ast",
       "id": "modeldata_rationale_540",
-      "community": 4,
+      "community": 5,
       "norm_label": "build a {group_seq: group_name} mapping from a model dict, plus a diet_import en"
     },
     {
@@ -465,7 +465,7 @@
       "source_location": "L640",
       "_origin": "ast",
       "id": "modeldata_rationale_640",
-      "community": 4,
+      "community": 5,
       "norm_label": "parse and clean the raw group records of a model into ``speciesgroup`` objects."
     },
     {
@@ -485,7 +485,7 @@
       "source_location": "L766",
       "_origin": "ast",
       "id": "modeldata_rationale_766",
-      "community": 4,
+      "community": 5,
       "norm_label": "build a {group_seq: group_name} mapping for a model from the bundled legacy data"
     },
     {
@@ -495,7 +495,7 @@
       "source_location": "L800",
       "_origin": "ast",
       "id": "modeldata_rationale_800",
-      "community": 4,
+      "community": 5,
       "norm_label": "build the diet composition (dc) and detritus fate matrices from the bundled lega"
     },
     {
@@ -545,7 +545,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator",
-      "community": 7,
+      "community": 33,
       "norm_label": "pprcalculator"
     },
     {
@@ -585,7 +585,7 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "pprcalculator_py_modeldata",
-      "community": 4,
+      "community": 3,
       "norm_label": "modeldata"
     },
     {
@@ -615,7 +615,7 @@
       "source_location": "L189",
       "_origin": "ast",
       "id": "pprcalculator_py_dataframe",
-      "community": 1,
+      "community": 33,
       "norm_label": "dataframe"
     },
     {
@@ -645,7 +645,7 @@
       "source_location": "L590",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_is_model_balanced",
-      "community": 3,
+      "community": 1,
       "norm_label": ".is_model_balanced()"
     },
     {
@@ -655,7 +655,7 @@
       "source_location": "L590",
       "_origin": "ast",
       "id": "pprcalculator_py_series",
-      "community": 0,
+      "community": 1,
       "norm_label": "series"
     },
     {
@@ -675,7 +675,7 @@
       "source_location": "L655",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_is_sppr_balanced",
-      "community": 1,
+      "community": 33,
       "norm_label": ".is_sppr_balanced()"
     },
     {
@@ -695,7 +695,7 @@
       "source_location": "L733",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_get_groups_df",
-      "community": 8,
+      "community": 33,
       "norm_label": ".get_groups_df()"
     },
     {
@@ -755,7 +755,7 @@
       "source_location": "L827",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_get_import_seq",
-      "community": 9,
+      "community": 7,
       "norm_label": ".get_import_seq()"
     },
     {
@@ -795,7 +795,7 @@
       "source_location": "L971",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_get_npp",
-      "community": 7,
+      "community": 1,
       "norm_label": ".get_npp()"
     },
     {
@@ -815,7 +815,7 @@
       "source_location": "L1005",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_sppr_1986",
-      "community": 1,
+      "community": 33,
       "norm_label": ".sppr_1986()"
     },
     {
@@ -845,7 +845,7 @@
       "source_location": "L1064",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_sppr_ewe",
-      "community": 7,
+      "community": 33,
       "norm_label": ".sppr_ewe()"
     },
     {
@@ -865,7 +865,7 @@
       "source_location": "L1383",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_sppr_2015",
-      "community": 8,
+      "community": 7,
       "norm_label": ".sppr_2015()"
     },
     {
@@ -875,7 +875,7 @@
       "source_location": "L1452",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_build_det_bc",
-      "community": 0,
+      "community": 9,
       "norm_label": "._build_det_bc()"
     },
     {
@@ -965,7 +965,7 @@
       "source_location": "L2209",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_sppr_symbolic",
-      "community": 9,
+      "community": 2,
       "norm_label": ".sppr_symbolic()"
     },
     {
@@ -985,7 +985,7 @@
       "source_location": "L2292",
       "_origin": "ast",
       "id": "pprcalculator_pprcalculator_monte_carlo_sppr",
-      "community": 9,
+      "community": 2,
       "norm_label": ".monte_carlo_sppr()"
     },
     {
@@ -1085,7 +1085,7 @@
       "source_location": "L591",
       "_origin": "ast",
       "id": "pprcalculator_rationale_591",
-      "community": 3,
+      "community": 1,
       "norm_label": "check the two ecopath mass-balance identities hold (within tolerance)."
     },
     {
@@ -1105,7 +1105,7 @@
       "source_location": "L656",
       "_origin": "ast",
       "id": "pprcalculator_rationale_656",
-      "community": 1,
+      "community": 33,
       "norm_label": "check an sppr result is globally self-consistent (inflow == outflow)."
     },
     {
@@ -1125,7 +1125,7 @@
       "source_location": "L734",
       "_origin": "ast",
       "id": "pprcalculator_rationale_734",
-      "community": 8,
+      "community": 33,
       "norm_label": "return a defensive (descending-seq sorted) copy of the per-group parameter table"
     },
     {
@@ -1185,7 +1185,7 @@
       "source_location": "L828",
       "_origin": "ast",
       "id": "pprcalculator_rationale_828",
-      "community": 9,
+      "community": 7,
       "norm_label": "return the sorted seq ids of all imported-diet (import) groups.          impor"
     },
     {
@@ -1225,7 +1225,7 @@
       "source_location": "L972",
       "_origin": "ast",
       "id": "pprcalculator_rationale_972",
-      "community": 7,
+      "community": 1,
       "norm_label": "return the net primary production (npp) of the system.          npp is the tot"
     },
     {
@@ -1245,7 +1245,7 @@
       "source_location": "L1006",
       "_origin": "ast",
       "id": "pprcalculator_rationale_1006",
-      "community": 1,
+      "community": 33,
       "norm_label": "pauly & christensen (1986)-style sppr using a single catch-weighted trophic leve"
     },
     {
@@ -1275,7 +1275,7 @@
       "source_location": "L1065",
       "_origin": "ast",
       "id": "pprcalculator_rationale_1065",
-      "community": 7,
+      "community": 33,
       "norm_label": "path-enumeration sppr in the style of ecopath with ecosim (ewe) flow-network ana"
     },
     {
@@ -1295,7 +1295,7 @@
       "source_location": "L1384",
       "_origin": "ast",
       "id": "pprcalculator_rationale_1384",
-      "community": 8,
+      "community": 7,
       "norm_label": "2015-method sppr: a matrix-inversion (leontief-style) formulation.          de"
     },
     {
@@ -1305,7 +1305,7 @@
       "source_location": "L1453",
       "_origin": "ast",
       "id": "pprcalculator_rationale_1453",
-      "community": 0,
+      "community": 9,
       "norm_label": "build the detritus recycling system (i - b) x = c for the ge / with egestion mod"
     },
     {
@@ -1385,7 +1385,7 @@
       "source_location": "L2213",
       "_origin": "ast",
       "id": "pprcalculator_rationale_2213",
-      "community": 9,
+      "community": 2,
       "norm_label": "symbolic sppr solver: dispatch to the selected diet-import helper.          ap"
     },
     {
@@ -1405,7 +1405,7 @@
       "source_location": "L2296",
       "_origin": "ast",
       "id": "pprcalculator_rationale_2296",
-      "community": 9,
+      "community": 2,
       "norm_label": "monte-carlo uncertainty propagation over transfer efficiency.          repeate"
     },
     {
@@ -2029,156 +2029,6 @@
       "norm_label": "10. choosing a method (rules of thumb)"
     },
     {
-      "label": "2026-06-14-multi-det-openness.md",
-      "file_type": "document",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "plans_2026_06_14_multi_det_openness",
-      "community": 2,
-      "norm_label": "2026-06-14-multi-det-openness.md"
-    },
-    {
-      "label": "Multi-DET Openness, Collapse Modes & Diagnostics \u2014 Implementation Plan",
-      "file_type": "document",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "community": 2,
-      "norm_label": "multi-det openness, collapse modes & diagnostics \u2014 implementation plan"
-    },
-    {
-      "label": "New public parameter surface (identical across all methods)",
-      "file_type": "document",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L25",
-      "_origin": "ast",
-      "id": "plans_2026_06_14_multi_det_openness_new_public_parameter_surface_identical_across_all_methods",
-      "community": 2,
-      "norm_label": "new public parameter surface (identical across all methods)"
-    },
-    {
-      "label": "Task 0: Capture full golden baseline (regression oracle)",
-      "file_type": "document",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L48",
-      "_origin": "ast",
-      "id": "plans_2026_06_14_multi_det_openness_task_0_capture_full_golden_baseline_regression_oracle",
-      "community": 2,
-      "norm_label": "task 0: capture full golden baseline (regression oracle)"
-    },
-    {
-      "label": "Task 1: Add `_resolve_det_param` and `_spectral_radius` helpers",
-      "file_type": "document",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L96",
-      "_origin": "ast",
-      "id": "plans_2026_06_14_multi_det_openness_task_1_add_resolve_det_param_and_spectral_radius_helpers",
-      "community": 2,
-      "norm_label": "task 1: add `_resolve_det_param` and `_spectral_radius` helpers"
-    },
-    {
-      "label": "Task 2: Add `_build_det_BC` (numeric recycling system builder)",
-      "file_type": "document",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L153",
-      "_origin": "ast",
-      "id": "plans_2026_06_14_multi_det_openness_task_2_add_build_det_bc_numeric_recycling_system_builder",
-      "community": 2,
-      "norm_label": "task 2: add `_build_det_bc` (numeric recycling system builder)"
-    },
-    {
-      "label": "Task 3: Upgrade `_collapse_det_scaling` (points 7 + openness, return diagnostics)",
-      "file_type": "document",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L231",
-      "_origin": "ast",
-      "id": "plans_2026_06_14_multi_det_openness_task_3_upgrade_collapse_det_scaling_points_7_openness_return_diagnostics",
-      "community": 2,
-      "norm_label": "task 3: upgrade `_collapse_det_scaling` (points 7 + openness, return diagnostics)"
-    },
-    {
-      "label": "Task 4: Add `_solve_det_scaling` (openness + stability decision + apply + diagnostics)",
-      "file_type": "document",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L308",
-      "_origin": "ast",
-      "id": "plans_2026_06_14_multi_det_openness_task_4_add_solve_det_scaling_openness_stability_decision_apply_diagnostics",
-      "community": 2,
-      "norm_label": "task 4: add `_solve_det_scaling` (openness + stability decision + apply + diagnostics)"
-    },
-    {
-      "label": "Task 5: Rewire `SPPR_new` to use the helpers",
-      "file_type": "document",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L400",
-      "_origin": "ast",
-      "id": "plans_2026_06_14_multi_det_openness_task_5_rewire_sppr_new_to_use_the_helpers",
-      "community": 2,
-      "norm_label": "task 5: rewire `sppr_new` to use the helpers"
-    },
-    {
-      "label": "Task 6: Rewire both `SPPR_symbolic` helpers + `SPPR_symbolic`",
-      "file_type": "document",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L486",
-      "_origin": "ast",
-      "id": "plans_2026_06_14_multi_det_openness_task_6_rewire_both_sppr_symbolic_helpers_sppr_symbolic",
-      "community": 2,
-      "norm_label": "task 6: rewire both `sppr_symbolic` helpers + `sppr_symbolic`"
-    },
-    {
-      "label": "Task 7: Thread new params through Monte-Carlo",
-      "file_type": "document",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L583",
-      "_origin": "ast",
-      "id": "plans_2026_06_14_multi_det_openness_task_7_thread_new_params_through_monte_carlo",
-      "community": 2,
-      "norm_label": "task 7: thread new params through monte-carlo"
-    },
-    {
-      "label": "Task 8: Feature behavior tests (openness + collapse modes)",
-      "file_type": "document",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L623",
-      "_origin": "ast",
-      "id": "plans_2026_06_14_multi_det_openness_task_8_feature_behavior_tests_openness_collapse_modes",
-      "community": 2,
-      "norm_label": "task 8: feature behavior tests (openness + collapse modes)"
-    },
-    {
-      "label": "Task 9: Documentation pass over all of `PPRCalculator.py` (subagent)",
-      "file_type": "document",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L695",
-      "_origin": "ast",
-      "id": "plans_2026_06_14_multi_det_openness_task_9_documentation_pass_over_all_of_pprcalculator_py_subagent",
-      "community": 2,
-      "norm_label": "task 9: documentation pass over all of `pprcalculator.py` (subagent)"
-    },
-    {
-      "label": "Task 10: Change log, cleanup, git, graphify",
-      "file_type": "document",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L717",
-      "_origin": "ast",
-      "id": "plans_2026_06_14_multi_det_openness_task_10_change_log_cleanup_git_graphify",
-      "community": 2,
-      "norm_label": "task 10: change log, cleanup, git, graphify"
-    },
-    {
-      "label": "Self-review notes",
-      "file_type": "document",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L745",
-      "_origin": "ast",
-      "id": "plans_2026_06_14_multi_det_openness_self_review_notes",
-      "community": 2,
-      "norm_label": "self-review notes"
-    },
-    {
       "label": "PPR Estimation Project",
       "file_type": "document",
       "source_file": "README.md",
@@ -2559,9 +2409,9 @@
       "source_file": "ModelData.py",
       "source_location": "L15",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_rationale_15",
-      "target": "modeldata_load_json_dict",
-      "confidence_score": 1.0
+      "target": "modeldata_load_json_dict"
     },
     {
       "relation": "method",
@@ -2599,9 +2449,9 @@
       "source_file": "ModelData.py",
       "source_location": "L68",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_rationale_68",
-      "target": "modeldata_speciesgrouplegacy_from_dict",
-      "confidence_score": 1.0
+      "target": "modeldata_speciesgrouplegacy_from_dict"
     },
     {
       "relation": "rationale_for",
@@ -2609,9 +2459,9 @@
       "source_file": "ModelData.py",
       "source_location": "L84",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_rationale_84",
-      "target": "modeldata_speciesgrouplegacy_str",
-      "confidence_score": 1.0
+      "target": "modeldata_speciesgrouplegacy_str"
     },
     {
       "relation": "rationale_for",
@@ -2619,9 +2469,9 @@
       "source_file": "ModelData.py",
       "source_location": "L96",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_rationale_96",
-      "target": "modeldata_speciesgrouplegacy_to_df_row",
-      "confidence_score": 1.0
+      "target": "modeldata_speciesgrouplegacy_to_df_row"
     },
     {
       "relation": "references",
@@ -2630,9 +2480,9 @@
       "source_file": "ModelData.py",
       "source_location": "L95",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_speciesgrouplegacy_to_df_row",
-      "target": "modeldata_py_dataframe",
-      "confidence_score": 1.0
+      "target": "modeldata_py_dataframe"
     },
     {
       "relation": "references",
@@ -2641,9 +2491,9 @@
       "source_file": "ModelData.py",
       "source_location": "L799",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_get_dc",
-      "target": "modeldata_py_dataframe",
-      "confidence_score": 1.0
+      "target": "modeldata_py_dataframe"
     },
     {
       "relation": "references",
@@ -2652,9 +2502,9 @@
       "source_file": "ModelData.py",
       "source_location": "L572",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_modeldata_get_dc",
-      "target": "modeldata_py_dataframe",
-      "confidence_score": 1.0
+      "target": "modeldata_py_dataframe"
     },
     {
       "relation": "references",
@@ -2663,9 +2513,9 @@
       "source_file": "ModelData.py",
       "source_location": "L707",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_modeldata_get_groups_df",
-      "target": "modeldata_py_dataframe",
-      "confidence_score": 1.0
+      "target": "modeldata_py_dataframe"
     },
     {
       "relation": "references",
@@ -2674,9 +2524,9 @@
       "source_file": "ModelData.py",
       "source_location": "L155",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_speciesgroup_to_df_row",
-      "target": "modeldata_py_dataframe",
-      "confidence_score": 1.0
+      "target": "modeldata_py_dataframe"
     },
     {
       "relation": "method",
@@ -2748,9 +2598,9 @@
       "source_file": "ModelData.py",
       "source_location": "L139",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_rationale_139",
-      "target": "modeldata_speciesgroup_from_dict",
-      "confidence_score": 1.0
+      "target": "modeldata_speciesgroup_from_dict"
     },
     {
       "relation": "calls",
@@ -2769,9 +2619,9 @@
       "source_file": "ModelData.py",
       "source_location": "L156",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_rationale_156",
-      "target": "modeldata_speciesgroup_to_df_row",
-      "confidence_score": 1.0
+      "target": "modeldata_speciesgroup_to_df_row"
     },
     {
       "relation": "rationale_for",
@@ -2779,9 +2629,9 @@
       "source_file": "ModelData.py",
       "source_location": "L170",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_rationale_170",
-      "target": "modeldata_read_json_speciesgroup_list",
-      "confidence_score": 1.0
+      "target": "modeldata_read_json_speciesgroup_list"
     },
     {
       "relation": "references",
@@ -2790,9 +2640,9 @@
       "source_file": "ModelData.py",
       "source_location": "L169",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_read_json_speciesgroup_list",
-      "target": "any",
-      "confidence_score": 1.0
+      "target": "any"
     },
     {
       "relation": "references",
@@ -2801,9 +2651,9 @@
       "source_file": "ModelData.py",
       "source_location": "L892",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_get_model_data",
-      "target": "any",
-      "confidence_score": 1.0
+      "target": "any"
     },
     {
       "relation": "references",
@@ -2812,9 +2662,9 @@
       "source_file": "ModelData.py",
       "source_location": "L909",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_get_model_diet_data",
-      "target": "any",
-      "confidence_score": 1.0
+      "target": "any"
     },
     {
       "relation": "references",
@@ -2823,9 +2673,9 @@
       "source_file": "ModelData.py",
       "source_location": "L875",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_get_model_metadata",
-      "target": "any",
-      "confidence_score": 1.0
+      "target": "any"
     },
     {
       "relation": "method",
@@ -2923,9 +2773,9 @@
       "source_file": "ModelData.py",
       "source_location": "L195",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_rationale_195",
-      "target": "modeldata_modeldata",
-      "confidence_score": 1.0
+      "target": "modeldata_modeldata"
     },
     {
       "relation": "uses",
@@ -2933,9 +2783,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L13",
       "weight": 0.8,
+      "confidence_score": 0.5,
       "source": "ndarray",
-      "target": "modeldata_modeldata",
-      "confidence_score": 0.5
+      "target": "modeldata_modeldata"
     },
     {
       "relation": "imports",
@@ -2964,9 +2814,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L13",
       "weight": 0.8,
+      "confidence_score": 0.5,
       "source": "pprcalculator_py_dataframe",
-      "target": "modeldata_modeldata",
-      "confidence_score": 0.5
+      "target": "modeldata_modeldata"
     },
     {
       "relation": "uses",
@@ -2984,9 +2834,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L13",
       "weight": 0.8,
+      "confidence_score": 0.5,
       "source": "pprcalculator_py_series",
-      "target": "modeldata_modeldata",
-      "confidence_score": 0.5
+      "target": "modeldata_modeldata"
     },
     {
       "relation": "imports",
@@ -3049,9 +2899,9 @@
       "source_file": "ModelData.py",
       "source_location": "L212",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_rationale_212",
-      "target": "modeldata_modeldata_init",
-      "confidence_score": 1.0
+      "target": "modeldata_modeldata_init"
     },
     {
       "relation": "calls",
@@ -3125,9 +2975,9 @@
       "source_file": "ModelData.py",
       "source_location": "L239",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_rationale_239",
-      "target": "modeldata_modeldata_init_from_json_filepath",
-      "confidence_score": 1.0
+      "target": "modeldata_modeldata_init_from_json_filepath"
     },
     {
       "relation": "calls",
@@ -3157,9 +3007,9 @@
       "source_file": "ModelData.py",
       "source_location": "L315",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_rationale_315",
-      "target": "modeldata_modeldata_init_from_model_number",
-      "confidence_score": 1.0
+      "target": "modeldata_modeldata_init_from_model_number"
     },
     {
       "relation": "rationale_for",
@@ -3167,9 +3017,9 @@
       "source_file": "ModelData.py",
       "source_location": "L483",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_rationale_483",
-      "target": "modeldata_modeldata_parse_filename",
-      "confidence_score": 1.0
+      "target": "modeldata_modeldata_parse_filename"
     },
     {
       "relation": "rationale_for",
@@ -3177,9 +3027,9 @@
       "source_file": "ModelData.py",
       "source_location": "L524",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_rationale_524",
-      "target": "modeldata_modeldata_load_json_dict_static",
-      "confidence_score": 1.0
+      "target": "modeldata_modeldata_load_json_dict_static"
     },
     {
       "relation": "rationale_for",
@@ -3187,9 +3037,9 @@
       "source_file": "ModelData.py",
       "source_location": "L540",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_rationale_540",
-      "target": "modeldata_modeldata_get_seq2name",
-      "confidence_score": 1.0
+      "target": "modeldata_modeldata_get_seq2name"
     },
     {
       "relation": "rationale_for",
@@ -3197,9 +3047,9 @@
       "source_file": "ModelData.py",
       "source_location": "L573",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_rationale_573",
-      "target": "modeldata_modeldata_get_dc",
-      "confidence_score": 1.0
+      "target": "modeldata_modeldata_get_dc"
     },
     {
       "relation": "rationale_for",
@@ -3207,9 +3057,9 @@
       "source_file": "ModelData.py",
       "source_location": "L640",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_rationale_640",
-      "target": "modeldata_modeldata_get_species_groups",
-      "confidence_score": 1.0
+      "target": "modeldata_modeldata_get_species_groups"
     },
     {
       "relation": "references",
@@ -3218,9 +3068,9 @@
       "source_file": "ModelData.py",
       "source_location": "L707",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_modeldata_get_groups_df",
-      "target": "modeldata_py_series",
-      "confidence_score": 1.0
+      "target": "modeldata_py_series"
     },
     {
       "relation": "rationale_for",
@@ -3228,9 +3078,9 @@
       "source_file": "ModelData.py",
       "source_location": "L708",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_rationale_708",
-      "target": "modeldata_modeldata_get_groups_df",
-      "confidence_score": 1.0
+      "target": "modeldata_modeldata_get_groups_df"
     },
     {
       "relation": "rationale_for",
@@ -3238,9 +3088,9 @@
       "source_file": "ModelData.py",
       "source_location": "L766",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_rationale_766",
-      "target": "modeldata_get_seq2name",
-      "confidence_score": 1.0
+      "target": "modeldata_get_seq2name"
     },
     {
       "relation": "imports",
@@ -3259,9 +3109,9 @@
       "source_file": "ModelData.py",
       "source_location": "L800",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_rationale_800",
-      "target": "modeldata_get_dc",
-      "confidence_score": 1.0
+      "target": "modeldata_get_dc"
     },
     {
       "relation": "imports",
@@ -3280,9 +3130,9 @@
       "source_file": "ModelData.py",
       "source_location": "L876",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_rationale_876",
-      "target": "modeldata_get_model_metadata",
-      "confidence_score": 1.0
+      "target": "modeldata_get_model_metadata"
     },
     {
       "relation": "rationale_for",
@@ -3290,9 +3140,9 @@
       "source_file": "ModelData.py",
       "source_location": "L893",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_rationale_893",
-      "target": "modeldata_get_model_data",
-      "confidence_score": 1.0
+      "target": "modeldata_get_model_data"
     },
     {
       "relation": "rationale_for",
@@ -3300,9 +3150,9 @@
       "source_file": "ModelData.py",
       "source_location": "L910",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "modeldata_rationale_910",
-      "target": "modeldata_get_model_diet_data",
-      "confidence_score": 1.0
+      "target": "modeldata_get_model_diet_data"
     },
     {
       "relation": "imports_from",
@@ -3386,9 +3236,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L631",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_631",
-      "target": "pprcalculator",
-      "confidence_score": 1.0
+      "target": "pprcalculator"
     },
     {
       "relation": "imports",
@@ -3860,9 +3710,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L21",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_21",
-      "target": "pprcalculator_pprcalculator_init",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_init"
     },
     {
       "relation": "calls",
@@ -3925,9 +3775,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L60",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_60",
-      "target": "pprcalculator_pprcalculator_from_dict",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_from_dict"
     },
     {
       "relation": "calls",
@@ -4012,9 +3862,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L107",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_107",
-      "target": "pprcalculator_pprcalculator_from_modeldata",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_from_modeldata"
     },
     {
       "relation": "references",
@@ -4023,9 +3873,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L721",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_get_model",
-      "target": "pprcalculator_py_modeldata",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_modeldata"
     },
     {
       "relation": "rationale_for",
@@ -4033,9 +3883,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L172",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_172",
-      "target": "pprcalculator_pprcalculator_sort",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_sort"
     },
     {
       "relation": "calls",
@@ -4077,9 +3927,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L189",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_fill_properties",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "rationale_for",
@@ -4087,9 +3937,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L190",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_190",
-      "target": "pprcalculator_pprcalculator_fill_properties",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_fill_properties"
     },
     {
       "relation": "references",
@@ -4098,9 +3948,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L235",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_apply_ecopath_defaults",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4109,9 +3959,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L391",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_apply_lim",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4120,9 +3970,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1452",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_build_det_bc",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4131,9 +3981,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1563",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_collapse_det_scaling",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4142,9 +3992,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L741",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_get_dc",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4153,9 +4003,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L733",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_get_groups_df",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4164,9 +4014,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L942",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_get_ppr",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4175,9 +4025,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L991",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_get_ppr2npp_ratio",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4186,9 +4036,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L837",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_get_te",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4197,9 +4047,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L768",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_get_z",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4208,9 +4058,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L655",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_is_sppr_balanced",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "calls",
@@ -4219,9 +4069,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L2423",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_monte_carlo_sppr",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4230,9 +4080,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L2430",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_monte_carlo_sppr_2",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4241,9 +4091,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L2552",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_rename_results",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4252,9 +4102,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L2255",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_sample_sppr_new_forced_balance",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4263,9 +4113,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1648",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_solve_det_scaling",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4274,9 +4124,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1005",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_sppr_1986",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4285,9 +4135,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1023",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_sppr_1995",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4296,9 +4146,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1041",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_sppr_1995_tl_fix",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4307,9 +4157,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1383",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_sppr_2015",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4318,9 +4168,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1064",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_sppr_ewe",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4329,9 +4179,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1307",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_sppr_ewe_ido",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4340,9 +4190,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1765",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_sppr_new",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4351,9 +4201,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L2209",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_sppr_symbolic",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4362,9 +4212,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L2040",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "references",
@@ -4373,9 +4223,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1899",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
-      "target": "pprcalculator_py_dataframe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_dataframe"
     },
     {
       "relation": "calls",
@@ -4384,9 +4234,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L350",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_apply_ecopath_defaults",
-      "target": "pprcalculator_py_series",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_series"
     },
     {
       "relation": "rationale_for",
@@ -4394,9 +4244,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L236",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_236",
-      "target": "pprcalculator_pprcalculator_apply_ecopath_defaults",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_apply_ecopath_defaults"
     },
     {
       "relation": "calls",
@@ -4415,9 +4265,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L392",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_392",
-      "target": "pprcalculator_pprcalculator_apply_lim",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_apply_lim"
     },
     {
       "relation": "references",
@@ -4426,9 +4276,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L590",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_is_model_balanced",
-      "target": "pprcalculator_py_series",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_series"
     },
     {
       "relation": "rationale_for",
@@ -4436,9 +4286,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L591",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_591",
-      "target": "pprcalculator_pprcalculator_is_model_balanced",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_is_model_balanced"
     },
     {
       "relation": "references",
@@ -4447,9 +4297,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1452",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_build_det_bc",
-      "target": "pprcalculator_py_series",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_series"
     },
     {
       "relation": "references",
@@ -4458,9 +4308,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1563",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_collapse_det_scaling",
-      "target": "pprcalculator_py_series",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_series"
     },
     {
       "relation": "references",
@@ -4469,9 +4319,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L942",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_get_ppr",
-      "target": "pprcalculator_py_series",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_series"
     },
     {
       "relation": "references",
@@ -4480,9 +4330,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L991",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_get_ppr2npp_ratio",
-      "target": "pprcalculator_py_series",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_series"
     },
     {
       "relation": "references",
@@ -4491,9 +4341,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L837",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_get_te",
-      "target": "pprcalculator_py_series",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_series"
     },
     {
       "relation": "references",
@@ -4502,9 +4352,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L892",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_get_tl",
-      "target": "pprcalculator_py_series",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_series"
     },
     {
       "relation": "references",
@@ -4513,9 +4363,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L655",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_is_sppr_balanced",
-      "target": "pprcalculator_py_series",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_series"
     },
     {
       "relation": "references",
@@ -4524,9 +4374,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L2552",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_rename_results",
-      "target": "pprcalculator_py_series",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_series"
     },
     {
       "relation": "references",
@@ -4535,9 +4385,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1648",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_solve_det_scaling",
-      "target": "pprcalculator_py_series",
-      "confidence_score": 1.0
+      "target": "pprcalculator_py_series"
     },
     {
       "relation": "calls",
@@ -4556,9 +4406,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L615",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_615",
-      "target": "pprcalculator_pprcalculator_balance_model",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_balance_model"
     },
     {
       "relation": "rationale_for",
@@ -4566,9 +4416,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L656",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_656",
-      "target": "pprcalculator_pprcalculator_is_sppr_balanced",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_is_sppr_balanced"
     },
     {
       "relation": "rationale_for",
@@ -4576,9 +4426,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L722",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_722",
-      "target": "pprcalculator_pprcalculator_get_model",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_get_model"
     },
     {
       "relation": "calls",
@@ -4608,9 +4458,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L734",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_734",
-      "target": "pprcalculator_pprcalculator_get_groups_df",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_get_groups_df"
     },
     {
       "relation": "calls",
@@ -4695,9 +4545,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L742",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_742",
-      "target": "pprcalculator_pprcalculator_get_dc",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_get_dc"
     },
     {
       "relation": "calls",
@@ -4749,9 +4599,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L769",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_769",
-      "target": "pprcalculator_pprcalculator_get_z",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_get_z"
     },
     {
       "relation": "calls",
@@ -4858,9 +4708,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L804",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_804",
-      "target": "pprcalculator_pprcalculator_get_det_seq",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_get_det_seq"
     },
     {
       "relation": "calls",
@@ -4956,9 +4806,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L812",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_812",
-      "target": "pprcalculator_pprcalculator_get_pp_seq",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_get_pp_seq"
     },
     {
       "relation": "calls",
@@ -4999,9 +4849,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L820",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_820",
-      "target": "pprcalculator_pprcalculator_get_regular_seq",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_get_regular_seq"
     },
     {
       "relation": "calls",
@@ -5086,9 +4936,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L828",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_828",
-      "target": "pprcalculator_pprcalculator_get_import_seq",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_get_import_seq"
     },
     {
       "relation": "calls",
@@ -5184,9 +5034,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L838",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_838",
-      "target": "pprcalculator_pprcalculator_get_te",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_get_te"
     },
     {
       "relation": "calls",
@@ -5238,9 +5088,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L893",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_893",
-      "target": "pprcalculator_pprcalculator_get_tl",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_get_tl"
     },
     {
       "relation": "calls",
@@ -5270,9 +5120,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L943",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_943",
-      "target": "pprcalculator_pprcalculator_get_ppr",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_get_ppr"
     },
     {
       "relation": "calls",
@@ -5291,9 +5141,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L972",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_972",
-      "target": "pprcalculator_pprcalculator_get_npp",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_get_npp"
     },
     {
       "relation": "rationale_for",
@@ -5301,9 +5151,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L992",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_992",
-      "target": "pprcalculator_pprcalculator_get_ppr2npp_ratio",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_get_ppr2npp_ratio"
     },
     {
       "relation": "rationale_for",
@@ -5311,9 +5161,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1006",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_1006",
-      "target": "pprcalculator_pprcalculator_sppr_1986",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_sppr_1986"
     },
     {
       "relation": "rationale_for",
@@ -5321,9 +5171,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1024",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_1024",
-      "target": "pprcalculator_pprcalculator_sppr_1995",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_sppr_1995"
     },
     {
       "relation": "rationale_for",
@@ -5331,9 +5181,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1042",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_1042",
-      "target": "pprcalculator_pprcalculator_sppr_1995_tl_fix",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_sppr_1995_tl_fix"
     },
     {
       "relation": "rationale_for",
@@ -5341,9 +5191,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1065",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_1065",
-      "target": "pprcalculator_pprcalculator_sppr_ewe",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_sppr_ewe"
     },
     {
       "relation": "calls",
@@ -5384,9 +5234,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1308",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_1308",
-      "target": "pprcalculator_pprcalculator_sppr_ewe_ido",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_sppr_ewe_ido"
     },
     {
       "relation": "rationale_for",
@@ -5394,9 +5244,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1384",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_1384",
-      "target": "pprcalculator_pprcalculator_sppr_2015",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_sppr_2015"
     },
     {
       "relation": "references",
@@ -5405,9 +5255,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1452",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_build_det_bc",
-      "target": "ndarray",
-      "confidence_score": 1.0
+      "target": "ndarray"
     },
     {
       "relation": "calls",
@@ -5448,9 +5298,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1453",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_1453",
-      "target": "pprcalculator_pprcalculator_build_det_bc",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_build_det_bc"
     },
     {
       "relation": "references",
@@ -5459,9 +5309,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1563",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_collapse_det_scaling",
-      "target": "ndarray",
-      "confidence_score": 1.0
+      "target": "ndarray"
     },
     {
       "relation": "references",
@@ -5470,9 +5320,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L2430",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_monte_carlo_sppr_2",
-      "target": "ndarray",
-      "confidence_score": 1.0
+      "target": "ndarray"
     },
     {
       "relation": "references",
@@ -5481,9 +5331,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1534",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_resolve_det_param",
-      "target": "ndarray",
-      "confidence_score": 1.0
+      "target": "ndarray"
     },
     {
       "relation": "references",
@@ -5492,9 +5342,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1648",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_solve_det_scaling",
-      "target": "ndarray",
-      "confidence_score": 1.0
+      "target": "ndarray"
     },
     {
       "relation": "references",
@@ -5503,9 +5353,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1516",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator_spectral_radius",
-      "target": "ndarray",
-      "confidence_score": 1.0
+      "target": "ndarray"
     },
     {
       "relation": "calls",
@@ -5524,9 +5374,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1517",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_1517",
-      "target": "pprcalculator_pprcalculator_spectral_radius",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_spectral_radius"
     },
     {
       "relation": "calls",
@@ -5556,9 +5406,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1535",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_1535",
-      "target": "pprcalculator_pprcalculator_resolve_det_param",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_resolve_det_param"
     },
     {
       "relation": "calls",
@@ -5610,9 +5460,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1566",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_1566",
-      "target": "pprcalculator_pprcalculator_collapse_det_scaling",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_collapse_det_scaling"
     },
     {
       "relation": "calls",
@@ -5653,9 +5503,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1652",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_1652",
-      "target": "pprcalculator_pprcalculator_solve_det_scaling",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_solve_det_scaling"
     },
     {
       "relation": "calls",
@@ -5718,9 +5568,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1768",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_1768",
-      "target": "pprcalculator_pprcalculator_sppr_new",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_sppr_new"
     },
     {
       "relation": "calls",
@@ -5739,9 +5589,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1902",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_1902",
-      "target": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp"
     },
     {
       "relation": "calls",
@@ -5760,9 +5610,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L2043",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_2043",
-      "target": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc"
     },
     {
       "relation": "calls",
@@ -5781,9 +5631,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L2213",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_2213",
-      "target": "pprcalculator_pprcalculator_sppr_symbolic",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_sppr_symbolic"
     },
     {
       "relation": "rationale_for",
@@ -5791,9 +5641,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L2256",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_2256",
-      "target": "pprcalculator_pprcalculator_sample_sppr_new_forced_balance",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_sample_sppr_new_forced_balance"
     },
     {
       "relation": "rationale_for",
@@ -5801,9 +5651,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L2296",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_2296",
-      "target": "pprcalculator_pprcalculator_monte_carlo_sppr",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_monte_carlo_sppr"
     },
     {
       "relation": "rationale_for",
@@ -5811,9 +5661,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L2434",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_2434",
-      "target": "pprcalculator_pprcalculator_monte_carlo_sppr_2",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_monte_carlo_sppr_2"
     },
     {
       "relation": "rationale_for",
@@ -5821,9 +5671,9 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L2553",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pprcalculator_rationale_2553",
-      "target": "pprcalculator_pprcalculator_rename_results",
-      "confidence_score": 1.0
+      "target": "pprcalculator_pprcalculator_rename_results"
     },
     {
       "relation": "contains",
@@ -6189,9 +6039,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide",
-      "target": "user_guide_user_guide_modeldata_and_pprcalculator",
-      "confidence_score": 1.0
+      "target": "user_guide_user_guide_modeldata_and_pprcalculator"
     },
     {
       "relation": "contains",
@@ -6199,9 +6049,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L596",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_user_guide_modeldata_and_pprcalculator",
-      "target": "user_guide_10_choosing_a_method_rules_of_thumb",
-      "confidence_score": 1.0
+      "target": "user_guide_10_choosing_a_method_rules_of_thumb"
     },
     {
       "relation": "contains",
@@ -6209,9 +6059,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L15",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_user_guide_modeldata_and_pprcalculator",
-      "target": "user_guide_1_background_what_is_ppr_sppr",
-      "confidence_score": 1.0
+      "target": "user_guide_1_background_what_is_ppr_sppr"
     },
     {
       "relation": "contains",
@@ -6219,9 +6069,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L46",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_user_guide_modeldata_and_pprcalculator",
-      "target": "user_guide_2_key_ecological_quantities_and_group_types",
-      "confidence_score": 1.0
+      "target": "user_guide_2_key_ecological_quantities_and_group_types"
     },
     {
       "relation": "contains",
@@ -6229,9 +6079,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L84",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_user_guide_modeldata_and_pprcalculator",
-      "target": "user_guide_3_modeldata_loading_a_model",
-      "confidence_score": 1.0
+      "target": "user_guide_3_modeldata_loading_a_model"
     },
     {
       "relation": "contains",
@@ -6239,9 +6089,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L139",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_user_guide_modeldata_and_pprcalculator",
-      "target": "user_guide_4_pprcalculator_building_it",
-      "confidence_score": 1.0
+      "target": "user_guide_4_pprcalculator_building_it"
     },
     {
       "relation": "contains",
@@ -6249,9 +6099,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L201",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_user_guide_modeldata_and_pprcalculator",
-      "target": "user_guide_5_pprcalculator_inspecting_the_model",
-      "confidence_score": 1.0
+      "target": "user_guide_5_pprcalculator_inspecting_the_model"
     },
     {
       "relation": "contains",
@@ -6259,9 +6109,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L271",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_user_guide_modeldata_and_pprcalculator",
-      "target": "user_guide_6_pprcalculator_sppr_methods",
-      "confidence_score": 1.0
+      "target": "user_guide_6_pprcalculator_sppr_methods"
     },
     {
       "relation": "contains",
@@ -6269,9 +6119,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L525",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_user_guide_modeldata_and_pprcalculator",
-      "target": "user_guide_7_validation_helpers",
-      "confidence_score": 1.0
+      "target": "user_guide_7_validation_helpers"
     },
     {
       "relation": "contains",
@@ -6279,9 +6129,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L546",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_user_guide_modeldata_and_pprcalculator",
-      "target": "user_guide_8_utilities",
-      "confidence_score": 1.0
+      "target": "user_guide_8_utilities"
     },
     {
       "relation": "contains",
@@ -6289,9 +6139,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L559",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_user_guide_modeldata_and_pprcalculator",
-      "target": "user_guide_9_end_to_end_example",
-      "confidence_score": 1.0
+      "target": "user_guide_9_end_to_end_example"
     },
     {
       "relation": "contains",
@@ -6299,9 +6149,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L89",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_3_modeldata_loading_a_model",
-      "target": "user_guide_3_1_constructor",
-      "confidence_score": 1.0
+      "target": "user_guide_3_1_constructor"
     },
     {
       "relation": "contains",
@@ -6309,9 +6159,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L114",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_3_modeldata_loading_a_model",
-      "target": "user_guide_3_2_attributes_available_after_construction",
-      "confidence_score": 1.0
+      "target": "user_guide_3_2_attributes_available_after_construction"
     },
     {
       "relation": "contains",
@@ -6319,9 +6169,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L125",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_3_modeldata_loading_a_model",
-      "target": "user_guide_3_3_useful_methods",
-      "confidence_score": 1.0
+      "target": "user_guide_3_3_useful_methods"
     },
     {
       "relation": "contains",
@@ -6329,9 +6179,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L144",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_4_pprcalculator_building_it",
-      "target": "user_guide_4_1_primary_constructor",
-      "confidence_score": 1.0
+      "target": "user_guide_4_1_primary_constructor"
     },
     {
       "relation": "contains",
@@ -6339,9 +6189,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L169",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_4_pprcalculator_building_it",
-      "target": "user_guide_4_2_alternative_constructors",
-      "confidence_score": 1.0
+      "target": "user_guide_4_2_alternative_constructors"
     },
     {
       "relation": "contains",
@@ -6349,9 +6199,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L221",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_5_pprcalculator_inspecting_the_model",
-      "target": "user_guide_5_1_get_te_and_the_te_option_choices",
-      "confidence_score": 1.0
+      "target": "user_guide_5_1_get_te_and_the_te_option_choices"
     },
     {
       "relation": "contains",
@@ -6359,9 +6209,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L241",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_5_pprcalculator_inspecting_the_model",
-      "target": "user_guide_5_2_get_tl_trophic_levels",
-      "confidence_score": 1.0
+      "target": "user_guide_5_2_get_tl_trophic_levels"
     },
     {
       "relation": "contains",
@@ -6369,9 +6219,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L257",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_5_pprcalculator_inspecting_the_model",
-      "target": "user_guide_5_3_get_ppr_turning_sppr_into_total_ppr",
-      "confidence_score": 1.0
+      "target": "user_guide_5_3_get_ppr_turning_sppr_into_total_ppr"
     },
     {
       "relation": "contains",
@@ -6379,9 +6229,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L276",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_6_pprcalculator_sppr_methods",
-      "target": "user_guide_6_1_quick_reference",
-      "confidence_score": 1.0
+      "target": "user_guide_6_1_quick_reference"
     },
     {
       "relation": "contains",
@@ -6389,9 +6239,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L291",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_6_pprcalculator_sppr_methods",
-      "target": "user_guide_6_2_the_classic_chain_methods",
-      "confidence_score": 1.0
+      "target": "user_guide_6_2_the_classic_chain_methods"
     },
     {
       "relation": "contains",
@@ -6399,9 +6249,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L322",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_6_pprcalculator_sppr_methods",
-      "target": "user_guide_6_3_the_network_methods",
-      "confidence_score": 1.0
+      "target": "user_guide_6_3_the_network_methods"
     },
     {
       "relation": "contains",
@@ -6409,9 +6259,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L363",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_6_pprcalculator_sppr_methods",
-      "target": "user_guide_6_4_sppr_new_the_primary_solver",
-      "confidence_score": 1.0
+      "target": "user_guide_6_4_sppr_new_the_primary_solver"
     },
     {
       "relation": "contains",
@@ -6419,9 +6269,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L399",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_6_pprcalculator_sppr_methods",
-      "target": "user_guide_6_5_the_detritus_knobs_shared_by_sppr_new_sppr_symbolic_the_symbolic_helpers_and_both_monte_carlo_methods",
-      "confidence_score": 1.0
+      "target": "user_guide_6_5_the_detritus_knobs_shared_by_sppr_new_sppr_symbolic_the_symbolic_helpers_and_both_monte_carlo_methods"
     },
     {
       "relation": "contains",
@@ -6429,9 +6279,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L439",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_6_pprcalculator_sppr_methods",
-      "target": "user_guide_6_6_what_the_coupled_detritus_solve_actually_computes_for_the_curious",
-      "confidence_score": 1.0
+      "target": "user_guide_6_6_what_the_coupled_detritus_solve_actually_computes_for_the_curious"
     },
     {
       "relation": "contains",
@@ -6439,9 +6289,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L455",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_6_pprcalculator_sppr_methods",
-      "target": "user_guide_6_7_sppr_symbolic_keeping_imported_diet_explicit",
-      "confidence_score": 1.0
+      "target": "user_guide_6_7_sppr_symbolic_keeping_imported_diet_explicit"
     },
     {
       "relation": "contains",
@@ -6449,149 +6299,9 @@
       "source_file": "USER_GUIDE.md",
       "source_location": "L489",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "user_guide_6_pprcalculator_sppr_methods",
-      "target": "user_guide_6_8_monte_carlo_uncertainty",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "plans_2026_06_14_multi_det_openness",
-      "target": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L25",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_new_public_parameter_surface_identical_across_all_methods"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L745",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_self_review_notes"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L48",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_task_0_capture_full_golden_baseline_regression_oracle"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L717",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_task_10_change_log_cleanup_git_graphify"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L96",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_task_1_add_resolve_det_param_and_spectral_radius_helpers"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L153",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_task_2_add_build_det_bc_numeric_recycling_system_builder"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L231",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_task_3_upgrade_collapse_det_scaling_points_7_openness_return_diagnostics"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L308",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_task_4_add_solve_det_scaling_openness_stability_decision_apply_diagnostics"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L400",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_task_5_rewire_sppr_new_to_use_the_helpers"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L486",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_task_6_rewire_both_sppr_symbolic_helpers_sppr_symbolic"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L583",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_task_7_thread_new_params_through_monte_carlo"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L623",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_task_8_feature_behavior_tests_openness_collapse_modes"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/superpowers/plans/2026-06-14-multi-det-openness.md",
-      "source_location": "L695",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "plans_2026_06_14_multi_det_openness_multi_det_openness_collapse_modes_diagnostics_implementation_plan",
-      "target": "plans_2026_06_14_multi_det_openness_task_9_documentation_pass_over_all_of_pprcalculator_py_subagent"
+      "target": "user_guide_6_8_monte_carlo_uncertainty"
     }
   ],
   "hyperedges": [
@@ -6618,5 +6328,5 @@
       "source_file": "graphify-out/converted/PPRs_59b295f7.md"
     }
   ],
-  "built_at_commit": "71cc7e3fcb0d636ddf001f957634256486c2f4dd"
+  "built_at_commit": "6f82c080a4629797316476916165b3e293fdcd0e"
 }
