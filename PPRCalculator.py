@@ -15,6 +15,9 @@ class PPRCalculator:
 
     # constructors:
     def __init__(self, model_number, underdetermined=False, zero_catch=True, zero_biomass_accum=True, default_gs=True, weight_flow=1.0, weight_guess=1.0):
+        # Primary constructor: build a ModelData from a model number / json filepath,
+        # delegate to from_modeldata to populate all properties, then copy the resulting
+        # instance's attributes onto self (so `PPRCalculator(path)` returns a ready object).
         # load model:
         instance = self.from_modeldata(
             ModelData(model_number),
@@ -29,9 +32,13 @@ class PPRCalculator:
          
     @classmethod
     def from_dict(cls, data_dict, underdetermined=False, zero_catch=True, zero_biomass_accum=True, default_gs=True, weight_flow=1.0, weight_guess=1.0):
+        # Alternative constructor: rebuild an instance directly from a dict of pre-existing
+        # attributes (e.g. a previously serialized state) rather than from a ModelData/file.
+        # Re-runs the Ecopath defaults / LIM / property-filling / sorting pipeline so the
+        # instance is fully consistent.
         instance = cls.__new__(cls)
         instance.__dict__.update(data_dict)
-        
+
         groups_df = deepcopy(instance._groups_df)
         instance.is_underdetermined = underdetermined
 
@@ -56,6 +63,10 @@ class PPRCalculator:
 
     @classmethod
     def from_modeldata(cls, modeldata: ModelData, underdetermined=False, zero_catch=True, zero_biomass_accum=True, default_gs=True, weight_flow=1.0, weight_guess=1.0):
+        # Core constructor used by __init__: take a loaded ModelData, copy out its groups
+        # table, diet-composition (DC) matrix, detritus-fate matrix and name<->seq dicts,
+        # then run the full pipeline: apply_ecopath_defaults -> (optional) apply_lim ->
+        # _fill_properties -> _sort. Groups are kept sorted by descending seq throughout.
         instance = cls.__new__(cls)
         instance._model = modeldata
         instance.is_underdetermined = underdetermined
@@ -98,6 +109,9 @@ class PPRCalculator:
         return instance
 
     def _sort(self):
+        # Normalize ordering of every Series/DataFrame attribute so all vectors and matrices
+        # share a consistent descending-seq index (and descending columns for matrices).
+        # _groups_df is deliberately skipped so it keeps its own ordering.
         for name, value in vars(self).items():
             if isinstance(value, pd.Series):
                 setattr(self, name, value.sort_index(ascending=False))
@@ -106,6 +120,10 @@ class PPRCalculator:
         return self
 
     def _fill_properties(self, groups_df):
+        # Unpack the fully-filled groups table into the individual named vectors the rest of
+        # the class uses (production p, consumption q, catch, predation, growth, migration,
+        # natural mortality M0, respiration, egestion, and the ratios EE/GE/GS/TL), then run
+        # an initial balance check and store a mass-balanced copy of the model.
 
         self._groups_df = groups_df.copy()
 
@@ -459,6 +477,10 @@ class PPRCalculator:
 
     # balancing checks:
     def is_model_balanced(self):
+        # Check the two Ecopath mass-balance identities hold (within tolerance) for the
+        # current vectors: production = catch+predation+growth+net_migration+M0, and
+        # consumption = production+egestion+respiration. Returns (is_balanced, production,
+        # consumption) so callers can inspect the recomputed flows.
 
         # production = catch + predation + growth + net_migration + M0
         production = self.catch + self.predation + self.growth + self.net_migration + self.M0
@@ -499,6 +521,14 @@ class PPRCalculator:
         return balanced_self
     
     def is_sppr_balanced(self, sppr, diet_import_equations=None):
+        """Check an SPPR result is self-consistent: the primary-production inflow into the
+        system equals the production-required outflow implied by the exports
+        (catch + growth + net_migration) weighted by their per-group SPPR.
+
+        Two regimes: the '_old' helper (diet_import_equations is None) treats PP and Import
+        groups as the production basis; the '_new' helper additionally solves the symbolic
+        diet-import equations so imported diet contributes its own DIET_SPPR-weighted inflow.
+        Returns (is_balanced, inflow, outflow)."""
         def _helper_old(sppr):
             sppr = PPRCalculator.rename_results(sppr, self.name2seq)
 
@@ -541,12 +571,15 @@ class PPRCalculator:
             return _helper_new(sppr, diet_import_equations)
     # getters:
     def get_model(self):
+        # Return the underlying ModelData if this instance was built from one (file/model
+        # number), or None for toy/from_dict instances that have no backing model.
         if hasattr(self, "_model"):
             return self._model
         else:
             return None
-    
+
     def get_groups_df(self):
+        # Return a defensive (sorted) copy of the per-group parameter table.
         return self._groups_df.copy().sort_index(ascending=False)
     
     def get_DC(self, DET_as_PP=True, normalize=False):
@@ -593,15 +626,19 @@ class PPRCalculator:
         return Z.sort_index(ascending=False).sort_index(ascending=False, axis=1)
     
     def get_DET_seq(self):
+        # Sorted seq IDs of all detritus (DET) groups.
         return sorted(self._groups_df.index[self._groups_df['trophic_info'] == 'DET'].values)
-    
+
     def get_PP_seq(self):
+        # Sorted seq IDs of all primary producer (PP) groups.
         return sorted(self._groups_df.index[self._groups_df['trophic_info'] == 'PP'].values)
-    
+
     def get_Regular_seq(self):
+        # Sorted seq IDs of all regular (consumer) groups.
         return sorted(self._groups_df.index[self._groups_df['trophic_info'] == 'Regular'].values)
-    
+
     def get_Import_seq(self):
+        # Sorted seq IDs of all imported-diet groups (external production source).
         return sorted(self._groups_df.index[self._groups_df['trophic_info'] == 'Import'].values)
     
     def get_TE(self, TE_option: str, DET_values=1, as_matrix=True, global_TE='mean'):
@@ -646,7 +683,17 @@ class PPRCalculator:
         return te.sort_index(ascending=False)
     
     def get_TL(self, break_cycles: bool, DET_as_PP: bool, TE_option='With Egestion'):
+        """Compute the trophic level of every group via the standard linear-algebra
+        definition TL = (I - DC)^-1 . 1, i.e. one plus the diet-weighted mean TL of prey.
 
+        break_cycles: if True, remove cycles from the flow matrix (Ulanowicz) before
+            building DC so the inversion is well-behaved.
+        DET_as_PP: passed through to get_Z / get_DC (whether detritus is treated as a
+            basal source).
+        TE_option: controls how detritus rows of DC are redefined ('TE' zeroes detritus
+            feeding regular groups; 'GE' rebuilds detritus diet from M0 / det_fate; other
+            options leave DC as-is).
+        """
         DET_seq = self.get_DET_seq()
         Regular_seq = self.get_Regular_seq()
         
@@ -679,6 +726,9 @@ class PPRCalculator:
         return TL
 
     def get_PPR(self, sppr, only_inner=False):
+        # Convert a per-group SPPR (primary production required per unit production) into
+        # total PPR by weighting each group's SPPR by its catch and summing: PPR = catch . SPPR.
+        # only_inner drops the Import columns so only within-system production is counted.
         sppr = sppr.copy().fillna(0) # sppr is an output of an SPPR calculating method from this class.
         sppr = PPRCalculator.rename_results(sppr, self.name2seq)
         sppr = sppr.reindex(self.catch.index, fill_value=0)
@@ -693,18 +743,24 @@ class PPRCalculator:
             return self.catch.dot(sppr)
     
     def get_NPP(self, only_inner=True):
+        # Net primary production of the system = total production p of the PP groups.
+        # Only the within-system case is implemented.
         if only_inner:
             return self.p[self.get_PP_seq()].sum()
         else:
             raise Exception('not implemented yet')
-    
+
     def get_PPR2NPP_ratio(self, sppr):
+        # Fraction of available NPP appropriated by the catch: total PPR / total NPP.
         return self.get_PPR(sppr, only_inner=True).sum(axis=1).sum() / self.get_NPP(only_inner=True)
         
     ##########################################################################################
     ############################## SPPR calculating methods ##################################
     ##########################################################################################
     def SPPR_1986(self):
+        # Pauly & Christensen (1986)-style SPPR: a single catch-weighted mean trophic level
+        # is computed for the whole catch, then SPPR = TE^(1-TL) with a fixed transfer
+        # efficiency TE=0.1. Returns one SPPR value per group (constant for a given model).
         if all(self.catch == 0):
             return pd.DataFrame(0, index=self.GE.index, columns=['sppr'])
         TE = 0.1
@@ -714,7 +770,9 @@ class PPRCalculator:
         return SPPR
     
     def SPPR_1995(self, global_TE=0.1):
-        """
+        """Christensen & Pauly (1995)-style SPPR: per-group SPPR = TE^(1-TL) using each
+        group's own (continuous) trophic level and a single global transfer efficiency.
+
         Args:
             global_TE (float, optional): 'mean' or float. Defaults to 0.1.
         """
@@ -724,6 +782,9 @@ class PPRCalculator:
         return SPPR.to_frame(name='sppr')
     
     def SPPR_1995_TL_fix(self, global_TE=0.1):
+        # Variant of SPPR_1995 that linearly interpolates between the integer trophic levels
+        # bracketing each group's fractional TL: SPPR = (1-frac)*(1/TE)^(TLint-1) + frac*(1/TE)^TLint.
+        # This avoids the discontinuity of raising 1/TE to a non-integer power directly.
         TE = self.get_TE(TE_option='global', global_TE=global_TE, as_matrix=False)
         TL = self.get_TL(break_cycles=True, DET_as_PP=True)  # break cylces in DC and force DET to be of TL=1.
         TL_fraction = TL % 1
@@ -733,6 +794,17 @@ class PPRCalculator:
         return sppr.to_frame(name='sppr')
         
     def SPPR_EwE(self, TE_option: str, use_EE=True, return_paths=True, silent=True):
+        """Path-enumeration SPPR in the style of the Ecopath with Ecosim (EwE) flow-network
+        analysis: enumerate every simple path from each group down to a basal terminal node
+        and sum the product of edge weights (DC/TE) along each path.
+
+        A = DC/TE is the per-edge production-required weight. For each (group, basal-source)
+        pair, SPPR is the sum over all paths of the product of A along the path. If use_EE
+        the rows are scaled by ecotrophic efficiency.
+
+        return_paths selects between the slow implementation that also returns the explicit
+        path lists (_slow_EwE_with_paths) and the fast vectorized one that does not
+        (_fast_EwE_no_paths). Returns (SPPR, A, paths_dict-or-{})."""
         def _get_paths_with_safety_valve(g, start_node, terminal_indices, max_paths=1_000_000):
             """
             Increments depth until either all paths are found
@@ -948,7 +1020,11 @@ class PPRCalculator:
             return _fast_EwE_no_paths(TE_option=TE_option, use_EE=use_EE, silent=silent)
 
     def SPPR_EwE_Ido(self, TE_option: str, global_TE='mean', use_EE=True):
-        """
+        """Ido's matrix (nullspace) reformulation of the EwE path-summation SPPR: instead of
+        enumerating paths, build A = DC/TE with cycles removed, replace producer rows by
+        identity rows, and find the steady state as the nullspace of L = A - I. The basis is
+        RREF-normalized so each column is anchored to one basal source. Returns (SPPR, A, L).
+
         Args:
             TE_option (str): should be one of ['GE', 'TE', 'With Egestion', 'global']. if 'global', global_value must be set.
             global_TE (str or int, optional): global value for TE in case of TE_option == 'global'. 
@@ -1002,6 +1078,11 @@ class PPRCalculator:
         return SPPR, A, L
 
     def SPPR_2015(self, only_pp_det=True):
+        # 2015-method SPPR: a matrix-inversion (Leontief-style) formulation. Detritus columns
+        # are dissolved by reassigning the PP-derived fraction of each detritus flow back onto
+        # the PP groups, leaving only living compartments. The production-normalized transaction
+        # matrix A then yields L = (I - A)^-1, whose PP columns give per-group SPPR; a balancing
+        # detritus SPPR is added back at the end. Returns (SPPR, A, L).
         only_pp_det=True
 
         groups_data = self.get_groups_df()
@@ -1278,6 +1359,12 @@ class PPRCalculator:
     def SPPR_new(self, TE=None, TE_option='GE', DET_TE_vals=1, collapse_det=None,
                  det_collapse_mode='never', det_open_mode='none',
                  det_theta=1.0, det_external_sppr=0.0):
+        # Primary numeric SPPR solver. Builds A = DC/TE, replaces basal (producer) rows with
+        # identity rows, and finds the steady-state SPPR as the nullspace of L = A - I, RREF-
+        # normalized so each column is anchored to one basal source. Detritus columns are then
+        # resolved: 'TE' scales each by its direct PP+Import inflow share; 'GE'/'With Egestion'
+        # build the coupled recycling system (I - B) x = c and solve it (with optional openness
+        # / collapse) via _solve_det_scaling. Returns (SPPR, A, L).
         # Back-compat shim: the old boolean collapse_det maps onto the new enum.
         # collapse_det=False -> 'never' (always solve), True -> 'auto' (pool iff unstable),
         # None -> leave det_collapse_mode as given (defaults to 'never' == old default).
@@ -1367,6 +1454,13 @@ class PPRCalculator:
     def _SPPR_symbolic_helper_diet_import_as_PP(self, TE, TE_option, DET_TE_vals, sppr_det_value,
                                                 det_collapse_mode='never', det_open_mode='none',
                                                 det_theta=1.0, det_external_sppr=0.0):
+        # Symbolic SPPR helper, "diet import as PP" variant: imported diet is treated like an
+        # extra primary-production source (its own free SPPR symbol set to 1). Builds the per-
+        # group SPPR equations A x - x = 0 symbolically, solves the non-detritus block, then the
+        # detritus block, and returns both the symbolic solution and a numeric basis matrix
+        # (sppr_mat). Detritus columns are scaled either by the exact symbolic solution (default
+        # path) or through the shared numeric recycling solver when openness/collapse is requested.
+        # Returns (sppr_symbolic, sppr_mat, equations, variables).
         DET_seq = self.get_DET_seq()
         non_DET_seq = [i for i in self.GE.index if i not in DET_seq]
         Regular_seq = self.get_Regular_seq()
@@ -1473,6 +1567,12 @@ class PPRCalculator:
     def _SPPR_symbolic_helper_diet_import_as_DC(self, TE, TE_option, DET_TE_vals, sppr_det_value,
                                                 det_collapse_mode='never', det_open_mode='none',
                                                 det_theta=1.0, det_external_sppr=0.0):
+        # Symbolic SPPR helper, "diet import as DC" variant: imported diet is kept as a separate
+        # production source whose own SPPR (DIET_SPPR_*) is solved from a second linear system,
+        # so each imported group carries the diet-composition-weighted production it requires.
+        # Solves the non-detritus SPPR block, the detritus block, then the diet-import block,
+        # and folds the DIET_* contributions back into the single Import column of the numeric
+        # basis matrix. Returns (sppr_symbolic, sppr_mat, equations, variables).
         DET_seq = self.get_DET_seq()
         Regular_seq = self.get_Regular_seq()
         Import_seq = self.get_Import_seq()
@@ -1621,6 +1721,10 @@ class PPRCalculator:
             return self._SPPR_symbolic_helper_diet_import_as_DC(**kwargs)
 
     def _sample_SPPR_new_forced_balance(self, TE=None, sppr_det=None):
+        # Run SPPR_new with detritus kept symbolic (a single unknown x = sppr_det), then solve
+        # for the one x that forces the PP inflow to exactly equal the export outflow
+        # (catch+growth+net_migration weighted by SPPR), and scale the detritus columns by it.
+        # Returns (sppr, sppr_det).
         sppr, _, _ = self.SPPR_new(
             DET_modeling='as_PP', DET_TE_vals=1, TE=TE
         )
@@ -1644,7 +1748,13 @@ class PPRCalculator:
                             TE_option='GE', DET_TE_vals=1, kind='new', diet_import_option='as_DC', silent=True,
                             det_collapse_mode='never', det_open_mode='none',
                             det_theta=1.0, det_external_sppr=0.0):
-        """
+        """Monte-Carlo uncertainty propagation over transfer efficiency. Repeatedly resamples
+        the TE matrix from gamma distributions centred on the model TEs (with relative error
+        TE_error_percent and clipped at +/- TE_error_cut_percent), recomputes SPPR via SPPR_new
+        or SPPR_symbolic, discards samples that produce any negative SPPR, and averages the rest.
+
+        Returns (mean_sppr, accepted_samples_array, rejection_fraction, equations, variables);
+        equations/variables are None for kind='new'.
 
         Args:
             n_samples (int, optional): number of sppr samples. Defaults to 1000.
@@ -1661,11 +1771,13 @@ class PPRCalculator:
         else:
             basis_seq = list(PP_seq) + list(Import_seq)
         basis_seq = sorted(basis_seq, reverse=True)
-            
+
         # choose TE matrix:
         TE_means = self.get_TE(TE_option=TE_option, DET_values=DET_TE_vals, as_matrix=False)
 
         def sample_TE(TE_error_percent, TE_error_cut_percent):  # TE samplers as gamma distributions:
+            # Draw one TE matrix: gamma with mean = model TE and CV = TE_error, clipped to the
+            # +/- TE_error_cut_percent band, broadcast to a full matrix, with basal rows pinned to 1.
             # mean = shape * scale = TE
             # variance = shape * scale^2
             # std = sqrt(shape) * scale
@@ -1741,7 +1853,10 @@ class PPRCalculator:
                          TE_option='GE', DET_TE_vals=1, kind='new', silent=True,
                          det_collapse_mode='never', det_open_mode='none',
                          det_theta=1.0, det_external_sppr=0.0):
-        """
+        """Variant of monte_carlo_SPPR supporting only kind='new'. Pre-allocates the sample
+        array from the model's (n_groups x n_PP) shape rather than the first SPPR call, but is
+        otherwise the same gamma-resampling / negative-rejection / averaging loop.
+        Returns (mean_sppr, accepted_samples_array, rejection_fraction).
 
         Args:
             n_samples (int, optional): number of sppr samples. Defaults to 1000.
@@ -1829,6 +1944,9 @@ class PPRCalculator:
     # class methods:
     @classmethod
     def rename_results(cls, results: list, renaming_dict):
+        # Relabel the index (and columns, for DataFrames) of one result or a list of results
+        # using renaming_dict -- typically to map between group seq IDs and group names. Sorts
+        # by descending index/columns first; returns the same type (single object or list) given.
         is_list = isinstance(results, list)
         results = results if isinstance(results, list) else [results]
         for i in range(len(results)):
