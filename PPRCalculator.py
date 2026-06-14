@@ -1635,7 +1635,9 @@ class PPRCalculator:
         return sppr, sppr_det
 
     def monte_carlo_SPPR(self, n_samples=1000, TE_error_percent=10, TE_error_cut_percent=20,
-                            TE_option='GE', DET_TE_vals=1, kind='new', diet_import_option='as_DC', silent=True):
+                            TE_option='GE', DET_TE_vals=1, kind='new', diet_import_option='as_DC', silent=True,
+                            det_collapse_mode='never', det_open_mode='none',
+                            det_theta=1.0, det_external_sppr=0.0):
         """
 
         Args:
@@ -1681,11 +1683,15 @@ class PPRCalculator:
 
             return TE_sample
 
+        # Detritus openness/collapse knobs forwarded unchanged to every SPPR call below.
+        det_kwargs = dict(det_collapse_mode=det_collapse_mode, det_open_mode=det_open_mode,
+                          det_theta=det_theta, det_external_sppr=det_external_sppr)
+
         # initialize collectors:
         if kind == 'new':
-            sppr, _, _ = self.SPPR_new(TE=None, TE_option=TE_option, DET_TE_vals=DET_TE_vals)
+            sppr, _, _ = self.SPPR_new(TE=None, TE_option=TE_option, DET_TE_vals=DET_TE_vals, **det_kwargs)
         elif kind == 'symbolic':
-            _, sppr, e, v = self.SPPR_symbolic(TE=None, TE_option=TE_option, DET_TE_vals=DET_TE_vals, diet_import_option=diet_import_option)
+            _, sppr, e, v = self.SPPR_symbolic(TE=None, TE_option=TE_option, DET_TE_vals=DET_TE_vals, diet_import_option=diet_import_option, **det_kwargs)
         else:
             raise Exception(f'kind = {kind}')
 
@@ -1699,10 +1705,10 @@ class PPRCalculator:
         for i in tqdm(range(n_samples), disable=silent, desc="monte-carlo on TE"):
             TE_sample = sample_TE(TE_error_percent, TE_error_cut_percent)
             if  kind == 'new':
-                sppr, _, _ = self.SPPR_new(TE=TE_sample, TE_option=TE_option, DET_TE_vals=DET_TE_vals)
+                sppr, _, _ = self.SPPR_new(TE=TE_sample, TE_option=TE_option, DET_TE_vals=DET_TE_vals, **det_kwargs)
                 # sppr = sppr.sort_index(ascending=False)
             elif kind == 'symbolic':
-                _, sppr, _, _ = self.SPPR_symbolic(TE=TE_sample, TE_option=TE_option, DET_TE_vals=DET_TE_vals, diet_import_option=diet_import_option)
+                _, sppr, _, _ = self.SPPR_symbolic(TE=TE_sample, TE_option=TE_option, DET_TE_vals=DET_TE_vals, diet_import_option=diet_import_option, **det_kwargs)
             # turn to numpy and collect:
             sppr = sppr.values
             if np.any(sppr < -1e-10):
@@ -1726,7 +1732,9 @@ class PPRCalculator:
             return sppr, sppr_array[counted_rows_array], not_counted_counter/n_samples, e, v
 
     def monte_carlo_SPPR_2(self, n_samples=1000, TE_error_percent=10, TE_error_cut_percent=20,
-                         TE_option='GE', DET_TE_vals=1, kind='new', silent=True):
+                         TE_option='GE', DET_TE_vals=1, kind='new', silent=True,
+                         det_collapse_mode='never', det_open_mode='none',
+                         det_theta=1.0, det_external_sppr=0.0):
         """
 
         Args:
@@ -1772,8 +1780,12 @@ class PPRCalculator:
 
             return TE_sample
 
+        # Detritus openness/collapse knobs forwarded unchanged to every SPPR call below.
+        det_kwargs = dict(det_collapse_mode=det_collapse_mode, det_open_mode=det_open_mode,
+                          det_theta=det_theta, det_external_sppr=det_external_sppr)
+
         # initialize collectors:
-        sppr, _, _ = self.SPPR_new(TE=None, TE_option=TE_option, DET_TE_vals=DET_TE_vals)
+        sppr, _, _ = self.SPPR_new(TE=None, TE_option=TE_option, DET_TE_vals=DET_TE_vals, **det_kwargs)
         index = sppr.index
         columns = sppr.columns
         n_PP = len(columns)
@@ -1786,7 +1798,7 @@ class PPRCalculator:
         for i in tqdm(range(n_samples), disable=silent):
             TE_sample = sample_TE(TE_error_percent, TE_error_cut_percent)
             if  kind == 'new':
-                sppr, _, _ = self.SPPR_new(TE=TE_sample, TE_option=TE_option, DET_TE_vals=DET_TE_vals)
+                sppr, _, _ = self.SPPR_new(TE=TE_sample, TE_option=TE_option, DET_TE_vals=DET_TE_vals, **det_kwargs)
                 # sppr = sppr.sort_index(ascending=False)
             else:
                 raise Exception(f'kind = {kind}')
