@@ -1053,6 +1053,48 @@ class PPRCalculator:
 
         return SPPR, A, L
 
+    def _build_det_BC(self, sppr_basis, non_DET_sppr, DET_seq, DC, TE_option):
+        """Build the detritus recycling system (I - B) x = c for GE / With Egestion.
+
+        x_l        = scaling factor for detritus group l
+        c[l]       = m_eff_l . non_DET_sppr      (production from non-detritus sources)
+        B[l, j]    = m_eff_l . sppr_basis[det_j] (recursive dependence on detritus basis j)
+
+        where m_eff_l = M0*fracs/q_l                          (GE)
+                      = M0*fracs/q_l + DC.T @ (egestion*fracs/q_l)  (With Egestion)
+        and fracs = det_fate[:, det_l] (fraction of each group's flow_to_det reaching det_l).
+
+        Point 6 guard: in a MULTI-DET model, a det_fate matrix that is present but missing
+        a column for det_l means nothing feeds det_l -> fracs = 0 (warn), NOT whole-flow.
+        For single-DET (or no det_fate at all) fracs defaults to 1 (old behavior)."""
+        k = len(DET_seq)
+        det_fate = getattr(self, '_det_fate', None)
+        B = np.zeros((k, k))
+        c = np.zeros(k)
+        for li, det_l in enumerate(DET_seq):
+            q_l = self.q[det_l] if self.q[det_l] > 0 else 1.0
+            if det_fate is not None and det_l in det_fate.columns:
+                fracs = det_fate[det_l].reindex(self.M0.index).fillna(0)
+            elif det_fate is not None and k > 1:
+                warnings.warn(
+                    f"det_fate has no column for DET group {det_l} "
+                    f"({self.seq2name.get(det_l)}); treating its detritus inflow as 0.",
+                    RuntimeWarning,
+                )
+                fracs = pd.Series(0.0, index=self.M0.index)
+            else:
+                fracs = pd.Series(1.0, index=self.M0.index)
+            m_l = (self.M0 * fracs / q_l).fillna(0)
+            if TE_option == 'With Egestion':
+                e_l = (self.egestion * fracs / q_l).fillna(0)
+                m_eff_l = m_l + DC.T @ e_l
+            else:  # GE
+                m_eff_l = m_l
+            c[li] = float(m_eff_l @ non_DET_sppr)
+            for ji, det_j in enumerate(DET_seq):
+                B[li, ji] = float(m_eff_l @ sppr_basis[det_j])
+        return B, c
+
     @staticmethod
     def _spectral_radius(M):
         """Largest absolute eigenvalue of M (0 for empty). Used to test whether the
