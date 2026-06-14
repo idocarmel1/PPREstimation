@@ -5,6 +5,7 @@ from tqdm.notebook import tqdm
 from scipy.stats import gamma
 import igraph as ig
 from scipy.optimize import minimize
+import warnings
 
 from ModelData import ModelData
 from utils import mat_from_np, remove_cycles, move_scattered_identity
@@ -1051,6 +1052,35 @@ class PPRCalculator:
                 SPPR.loc[det_seqs, i] = self.M0.loc[PP_seq][i] / (self.M0 + self.egestion).sum()
 
         return SPPR, A, L
+
+    @staticmethod
+    def _spectral_radius(M):
+        """Largest absolute eigenvalue of M (0 for empty). Used to test whether the
+        detritus recycling matrix B is subcritical (rho < 1 => finite, nonnegative
+        solution to the recycling system (I - B) x = c exists)."""
+        M = np.asarray(M, dtype=float)
+        if M.size == 0:
+            return 0.0
+        return float(np.max(np.abs(np.linalg.eigvals(M))))
+
+    def _resolve_det_param(self, param, DET_seq, default):
+        """Resolve a per-DET parameter into an np.array aligned with DET_seq.
+
+        Accepts a scalar (broadcast to all DET groups) or a dict keyed by DET group
+        seq (int) or DET group name (str). Missing dict keys fall back to `default`.
+        Used to turn the user-facing det_theta / det_external_sppr knobs into per-DET
+        vectors aligned with the detritus columns being scaled."""
+        if param is None:
+            param = default
+        if np.isscalar(param):
+            return np.full(len(DET_seq), float(param), dtype=float)
+        out = np.full(len(DET_seq), float(default), dtype=float)
+        for i, d in enumerate(DET_seq):
+            if d in param:
+                out[i] = float(param[d])
+            elif self.seq2name.get(d) in param:
+                out[i] = float(param[self.seq2name[d]])
+        return out
 
     @staticmethod
     def _collapse_det_scaling(SPPR, DET_seq, non_DET_sppr, M0, egestion, q,
