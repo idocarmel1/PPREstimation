@@ -1187,6 +1187,88 @@ class PPRCalculator:
             SPPR[det_j] *= sppr_det
         return SPPR, sppr_det, a, b
 
+    def _solve_det_scaling(self, B, c_vec, DET_seq, SPPR, non_DET_sppr, DC, TE_option,
+                           det_collapse_mode='never', det_open_mode='none',
+                           det_theta=1.0, det_external_sppr=0.0,
+                           tol=1e-10, cond_threshold=1e10):
+        """Apply openness, decide solve-vs-pool by spectral radius / conditioning, scale the
+        DET columns of SPPR in place, and record self.detritus_resolution_info.
+
+        det_collapse_mode: 'never'  (always solve; may return negatives, never raises -- the
+                                     Monte-Carlo samplers rely on negatives being returned so
+                                     they can reject unstable draws),
+                           'auto'   (pool iff rho>=1-tol or cond>cond_threshold),
+                           'always' (always pool through _collapse_det_scaling).
+        det_open_mode:     'none' | 'recycling_loss' (8A) | 'source_dilution' (8B).
+
+        Openness transform on the recycling system (theta, ext aligned to DET_seq):
+            none            : B_open = B,            c_open = c
+            recycling_loss  : B_open = diag(theta) B, c_open = c
+            source_dilution : B_open = diag(theta) B, c_open = theta*c + ext*(1-theta)
+        With theta=1 / ext=0 all three reduce to the original system (old result kept)."""
+        k = len(DET_seq)
+        theta = self._resolve_det_param(det_theta, DET_seq, 1.0)
+        ext = self._resolve_det_param(det_external_sppr, DET_seq, 0.0)
+
+        if det_open_mode == 'none':
+            B_open, c_open = B.copy(), c_vec.copy()
+        elif det_open_mode == 'recycling_loss':
+            B_open, c_open = np.diag(theta) @ B, c_vec.copy()
+        elif det_open_mode == 'source_dilution':
+            B_open = np.diag(theta) @ B
+            c_open = theta * c_vec + ext * (1.0 - theta)
+        else:
+            raise ValueError("det_open_mode must be 'none', 'recycling_loss', or 'source_dilution'")
+
+        IminusB = np.eye(k) - B_open
+        rho = self._spectral_radius(B_open)
+        try:
+            cond = float(np.linalg.cond(IminusB))
+        except np.linalg.LinAlgError:
+            cond = np.inf
+
+        if det_collapse_mode == 'always':
+            use_collapse, reason = True, 'mode_always'
+        elif det_collapse_mode == 'auto':
+            if rho >= 1.0 - tol:
+                use_collapse, reason = True, 'spectral_radius_ge_1'
+            elif cond > cond_threshold:
+                use_collapse, reason = True, 'ill_conditioned'
+            else:
+                use_collapse, reason = False, None
+        elif det_collapse_mode == 'never':
+            use_collapse, reason = False, None
+        else:
+            raise ValueError("det_collapse_mode must be 'never', 'auto', or 'always'")
+
+        det_fate = getattr(self, '_det_fate', None)
+        flow_to_det = (self.M0 + self.egestion).fillna(0)
+
+        if use_collapse:
+            SPPR, scalar, a_p, b_p = self._collapse_det_scaling(
+                SPPR, DET_seq, non_DET_sppr, self.M0, self.egestion, self.q,
+                flow_to_det, DC, TE_option, det_fate=det_fate,
+                theta=theta, ext=ext, det_open_mode=det_open_mode)
+            self.detritus_resolution_info = {
+                'method': 'pooled_detritus_scaling', 'reason': reason,
+                'rho_B': rho, 'cond_IminusB': cond,
+                'det_seq': list(DET_seq), 'det_names': [self.seq2name[d] for d in DET_seq],
+                'open_mode': det_open_mode, 'theta': theta.tolist(),
+                'collapse_scalar': scalar, 'collapse_a': a_p, 'collapse_b': b_p,
+            }
+        else:
+            x_vec = np.linalg.solve(IminusB, c_open)
+            for i, det_j in enumerate(DET_seq):
+                SPPR[det_j] *= x_vec[i]
+            self.detritus_resolution_info = {
+                'method': 'multi_detritus' if k > 1 else 'single_detritus', 'reason': reason,
+                'rho_B': rho, 'cond_IminusB': cond,
+                'det_seq': list(DET_seq), 'det_names': [self.seq2name[d] for d in DET_seq],
+                'open_mode': det_open_mode, 'theta': theta.tolist(),
+                'x_vec': x_vec.tolist(),
+            }
+        return SPPR
+
     def SPPR_new(self, TE=None, TE_option='GE', DET_TE_vals=1, collapse_det=False):
         # get DC:
         DC = self.get_DC(DET_as_PP=True, normalize=False)
