@@ -1358,7 +1358,9 @@ class PPRCalculator:
 
         return SPPR, A, L
     
-    def _SPPR_symbolic_helper_diet_import_as_PP(self, TE, TE_option, DET_TE_vals, sppr_det_value, collapse_det=False):
+    def _SPPR_symbolic_helper_diet_import_as_PP(self, TE, TE_option, DET_TE_vals, sppr_det_value,
+                                                det_collapse_mode='never', det_open_mode='none',
+                                                det_theta=1.0, det_external_sppr=0.0):
         DET_seq = self.get_DET_seq()
         non_DET_seq = [i for i in self.GE.index if i not in DET_seq]
         Regular_seq = self.get_Regular_seq()
@@ -1442,25 +1444,29 @@ class PPRCalculator:
         sppr_mat = pd.DataFrame(sppr_mat, index=index, columns=target_free_seq)
         if sppr_det_value is not None:
             sppr_mat[DET_seq] *= float(sppr_det_value)
-        elif collapse_det and len(DET_seq) > 1 and TE_option in ('GE', 'With Egestion'):
-            flow_to_det = (self.M0 + self.egestion).fillna(0)
-            non_DET_sppr = sppr_mat.drop(columns=list(DET_seq), errors='ignore').sum(axis=1)
-            sppr_mat = self._collapse_det_scaling(
-                sppr_mat, DET_seq, non_DET_sppr,
-                self.M0, self.egestion, self.q,
-                flow_to_det, DC, TE_option
-            )[0]
-        else:
+        elif det_open_mode == 'none' and det_collapse_mode == 'never':
+            # DEFAULT: keep the proven exact symbolic per-DET scaling (byte-identical to old).
             for det_j in DET_seq:
                 det_sym = sppr_vec.loc[det_j].values.ravel()[0]
                 sppr_mat[det_j] *= float(sol_dict2[det_sym].evalf(subs=subs_dict))
+        else:
+            # Non-default: build the numeric (I-B)x=c from the symbolic basis sppr_mat and
+            # route through the shared openness/stability/collapse solver.
+            non_DET_sppr = sppr_mat.drop(columns=list(DET_seq), errors='ignore').sum(axis=1)
+            B, c_vec = self._build_det_BC(sppr_mat, non_DET_sppr, DET_seq, DC, TE_option)
+            sppr_mat = self._solve_det_scaling(
+                B, c_vec, DET_seq, sppr_mat, non_DET_sppr, DC, TE_option,
+                det_collapse_mode=det_collapse_mode, det_open_mode=det_open_mode,
+                det_theta=det_theta, det_external_sppr=det_external_sppr)
 
         equations = equations.squeeze().tolist()
         variables = ordered_symbols
 
         return sppr_symbolic, sppr_mat, equations, variables
     
-    def _SPPR_symbolic_helper_diet_import_as_DC(self, TE, TE_option, DET_TE_vals, sppr_det_value, collapse_det=False):
+    def _SPPR_symbolic_helper_diet_import_as_DC(self, TE, TE_option, DET_TE_vals, sppr_det_value,
+                                                det_collapse_mode='never', det_open_mode='none',
+                                                det_theta=1.0, det_external_sppr=0.0):
         DET_seq = self.get_DET_seq()
         Regular_seq = self.get_Regular_seq()
         Import_seq = self.get_Import_seq()
@@ -1560,12 +1566,25 @@ class PPRCalculator:
         sppr_mat = sm.lambdify([], sppr_mat, 'numpy')() # Converts SymPy matrix to NumPy
         cols = [f'DIET_{s}'.replace(' ', '_') for s in index] + target_free_seq
         sppr_mat = pd.DataFrame(sppr_mat, index=index, columns=cols)
-        if sppr_det_value is None:
+        if sppr_det_value is not None:
+            sppr_mat[DET_seq] *= float(sppr_det_value)
+        elif det_open_mode == 'none' and det_collapse_mode == 'never':
+            # DEFAULT: keep the proven exact symbolic per-DET scaling (byte-identical to old).
             for det_j in DET_seq:
                 det_sym = sppr_vec.loc[det_j].values.ravel()[0]
                 sppr_mat[det_j] *= float(sol_dict2[det_sym].evalf(subs=subs_dict))
         else:
-            sppr_mat[DET_seq] *= float(sppr_det_value)
+            # Non-default: build the numeric (I-B)x=c from the symbolic basis sppr_mat and
+            # route through the shared openness/stability/collapse solver. DET columns only;
+            # the DIET_* import columns are handled separately below.
+            non_DET_sppr = sppr_mat.drop(
+                columns=list(DET_seq) + [f'DIET_{s}'.replace(' ', '_') for s in index],
+                errors='ignore').sum(axis=1)
+            B, c_vec = self._build_det_BC(sppr_mat, non_DET_sppr, DET_seq, DC, TE_option)
+            sppr_mat = self._solve_det_scaling(
+                B, c_vec, DET_seq, sppr_mat, non_DET_sppr, DC, TE_option,
+                det_collapse_mode=det_collapse_mode, det_open_mode=det_open_mode,
+                det_theta=det_theta, det_external_sppr=det_external_sppr)
         for s in index:
             s_symbol = diet_sppr_vec.loc[s].values[0]
             sppr_mat[f'DIET_{s}'.replace(' ', '_')] *= float(sol_dict3[s_symbol])
@@ -1577,11 +1596,23 @@ class PPRCalculator:
 
         return sppr_symbolic, sppr_mat, equations, variabls
 
-    def SPPR_symbolic(self, TE=None, TE_option='GE', diet_import_option='as_DC', DET_TE_vals=1, sppr_det_value=None):
+    def SPPR_symbolic(self, TE=None, TE_option='GE', diet_import_option='as_DC', DET_TE_vals=1,
+                      sppr_det_value=None, collapse_det=None,
+                      det_collapse_mode='never', det_open_mode='none',
+                      det_theta=1.0, det_external_sppr=0.0):
+        # Same back-compat shim and detritus knobs as SPPR_new, forwarded to whichever
+        # diet-import helper is selected. The default path (open_mode='none', mode='never')
+        # keeps the proven sympy per-DET scaling and is byte-identical to the old output.
+        if collapse_det is not None:
+            det_collapse_mode = 'auto' if collapse_det else 'never'
+        kwargs = dict(TE=TE, TE_option=TE_option, DET_TE_vals=DET_TE_vals,
+                      sppr_det_value=sppr_det_value, det_collapse_mode=det_collapse_mode,
+                      det_open_mode=det_open_mode, det_theta=det_theta,
+                      det_external_sppr=det_external_sppr)
         if diet_import_option == 'as_PP':
-            return self._SPPR_symbolic_helper_diet_import_as_PP(TE=TE, TE_option=TE_option, DET_TE_vals=DET_TE_vals, sppr_det_value=sppr_det_value)
+            return self._SPPR_symbolic_helper_diet_import_as_PP(**kwargs)
         elif diet_import_option == 'as_DC':
-            return self._SPPR_symbolic_helper_diet_import_as_DC(TE=TE, TE_option=TE_option, DET_TE_vals=DET_TE_vals, sppr_det_value=sppr_det_value)
+            return self._SPPR_symbolic_helper_diet_import_as_DC(**kwargs)
 
     def _sample_SPPR_new_forced_balance(self, TE=None, sppr_det=None):
         sppr, _, _ = self.SPPR_new(
