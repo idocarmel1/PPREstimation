@@ -939,7 +939,7 @@ class PPRCalculator:
         TL = pd.Series(TL, index=DC.index).sort_index(ascending=False)
         return TL
 
-    def get_PPR(self, sppr: pd.DataFrame | pd.Series, only_inner: bool = False) -> pd.DataFrame | pd.Series:
+    def get_PPR(self, sppr: pd.DataFrame | pd.Series, only_inner: bool = False, only_pp: bool = False) -> pd.DataFrame | pd.Series:
         """Convert a per-group SPPR into total primary production required (PPR) by the catch.
 
         Weights each group's SPPR (primary production required per unit production) by its
@@ -950,6 +950,8 @@ class PPRCalculator:
             sppr (pd.DataFrame | pd.Series): an SPPR result from one of the SPPR_* methods.
             only_inner (bool, optional): if True, drop the Import columns so only
                 within-system production is counted. Defaults to False.
+            only_pp (bool, optional): if True, drop the Import and Detritus columns so only
+                within-system primary production is counted. Defaults to False.
 
         Returns:
             pd.DataFrame | pd.Series: total PPR per basal source; a 1-row DataFrame if sppr is a
@@ -960,8 +962,15 @@ class PPRCalculator:
         sppr = sppr.reindex(self.catch.index, fill_value=0)
         sppr = sppr.replace(np.inf, 0)
 
+        # only_pp is a stronger option than only_inner
+        if only_pp: only_inner=False
+
         if only_inner and (set(self.get_Import_seq()).issubset(set(sppr.columns))):
             sppr = sppr.drop(columns=self.get_Import_seq())
+        
+        if only_pp and ((set(self.get_Import_seq()) | set(self.get_DET_seq())).issubset(set(sppr.columns))):
+            sppr = sppr.drop(columns=self.get_Import_seq())
+            sppr = sppr.drop(columns=self.get_DET_seq())
 
         if isinstance(sppr, pd.DataFrame):
             return self.catch.dot(sppr).to_frame().T
@@ -988,16 +997,18 @@ class PPRCalculator:
         else:
             raise Exception('not implemented yet')
 
-    def get_PPR2NPP_ratio(self, sppr: pd.DataFrame | pd.Series) -> float:
+    def get_PPR2NPP_ratio(self, sppr: pd.DataFrame | pd.Series, only_pp: bool = False) -> float:
         """Return the fraction of available NPP appropriated by the catch (PPR / NPP).
 
         Args:
             sppr (pd.DataFrame | pd.Series): an SPPR result from one of the SPPR_* methods.
+            only_pp (bool, optional): if True, drop the Import and Detritus columns so only
+                within-system primary production is counted. Defaults to False.
 
         Returns:
             float: total within-system PPR divided by total NPP.
         """
-        return self.get_PPR(sppr, only_inner=True).sum(axis=1).sum() / self.get_NPP(only_inner=True)
+        return self.get_PPR(sppr, only_inner=True, only_pp=only_pp).sum(axis=1).sum() / self.get_NPP(only_inner=True)
         
     ##########################################################################################
     ############################## SPPR calculating methods ##################################

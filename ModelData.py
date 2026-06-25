@@ -244,12 +244,12 @@ class ModelData:
         as if it were an external prey source) into all three structures so that
         downstream PPR computations can treat imports uniformly.
 
-        Filename format: ``{model_number}_{model_name}_{model_years}.json``
-        Example: ``227_Iceland_(1950).json``
+        Filename format: ``{first_number}_{model_number}_{model_name}_{model_years}.json``
+        Example: ``227_227_Iceland_(1950).json`` or ``13_10013_Humboldt_Current_(1980).json``
 
         Args:
             json_filepath (str): Path to the per-model JSON file. Its stem must
-                follow the ``{number}_{name}_({year})`` convention.
+                follow the ``{first_number}_{model_number}_{name}_({year})`` convention.
 
         Returns:
             None: Populates ``self`` attributes in place (``model_number``,
@@ -482,22 +482,28 @@ class ModelData:
     def _parse_filename(filename_no_ext: str) -> tuple[int, str, str]:
         """Parse a model filename stem into (model_number, model_name, model_year).
 
-        Expects the convention ``{model_number}_{model_name}_({model_year})``. The
-        year is taken from the parentheses at the end; the leading token before the
-        first underscore is the numeric model id; everything in between is the name.
+        Expects the convention ``{first_number}_{model_number}_{model_name}_({model_year})``,
+        i.e. two leading numeric tokens. The year is taken from the parentheses at the
+        end; the first token is a grouping/source id and is discarded; the *second*
+        token is the model id; everything after it is the name.
 
-        Example input: ``"227_Iceland_(1950)"`` -> ``(227, "Iceland", "1950")``
+        The second token is used as the model number so a single parser handles both
+        file families uniformly:
+          * Multi-model source files carry a distinct model id in the second token,
+            e.g. ``"13_10013_Humboldt_Current_(1980)"`` -> ``(10013, "Humboldt_Current", "1980")``.
+          * Single-model files repeat their number, so the second token reproduces the
+            original id, e.g. ``"227_227_Iceland_(1950)"`` -> ``(227, "Iceland", "1950")``.
 
         Args:
             filename_no_ext (str): The filename stem (no directory, no ``.json``).
 
         Returns:
             tuple[int, str, str]: ``(model_number, model_name, model_year)`` where
-                ``model_number`` is an int and the other two are strings.
+                ``model_number`` is the second numeric token and the other two are strings.
 
         Raises:
-            ValueError: If the trailing ``(year)`` is missing, or the
-                number/name portion cannot be split into two parts.
+            ValueError: If the trailing ``(year)`` is missing, or the number/name
+                portion cannot be split into the two numbers plus a name.
         """
         # Extract year from parentheses at the end
         year_match = re.search(r'\(([^)]+)\)$', filename_no_ext)
@@ -509,13 +515,15 @@ class ModelData:
         # Remove the year part to get the rest (and trim a trailing underscore separator).
         rest = filename_no_ext[:year_match.start()].rstrip('_')
 
-        # Split by underscore: first is model_number, rest is model_name
-        parts = rest.split('_', 1)  # Split on first underscore only
-        if len(parts) != 2:
-            raise ValueError(f"Could not parse model_number and model_name from: {rest}")
+        # Split off the first two underscore-separated tokens (the two numbers); the
+        # remainder is the model name. Format: {first_number}_{model_number}_{name}.
+        parts = rest.split('_', 2)  # Split on the first two underscores only
+        if len(parts) != 3:
+            raise ValueError(f"Could not parse two numbers and a model_name from: {rest}")
 
-        model_number = int(parts[0])
-        model_name = parts[1]
+        # parts[0] is the grouping/source id (discarded); parts[1] is the model number.
+        model_number = int(parts[1])
+        model_name = parts[2]
 
         return model_number, model_name, model_year
 
