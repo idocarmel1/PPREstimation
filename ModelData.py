@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import json
 import re
+import warnings
 from dataclasses import dataclass
 from typing import Any, Optional
 
@@ -303,13 +304,13 @@ class ModelData:
         self.DC = DC.sort_index(ascending=False).sort_index(axis=1, ascending=False)
 
         det_fate.loc[import_seq] = 0  # add diet_import to det_fate (zero row for the import group)
-        # Drop detritus-fate columns that are all zero (no flow routed to those detritus pools).
-        det_fate = det_fate.loc[:, (det_fate != 0).any(axis=0)]
-        # Identify detritus groups and place an identity block on the detritus<->detritus
-        # sub-matrix so each detritus pool maps to itself by default.
         det_seq = self.groups_data.index[self.groups_data['trophic_info'] == 'DET']
-        det_fate.loc[det_seq, det_seq] = np.eye(len(det_seq))
-        self.det_fate = det_fate.sort_index(ascending=False).sort_index(axis=1, ascending=False)
+        # Normalize orientation, force the detritus self-identity, and default a fully-missing
+        # (degenerate) single-DET matrix to the closed system. See _finalize_det_fate.
+        self.det_fate = ModelData._finalize_det_fate(det_fate, self.groups_data)
+
+        # fix export of detritus groups to be 0:
+        self.groups_data.loc[det_seq, 'catch'] = 0
 
     def _init_from_model_number(self, model_number: int) -> None:
         """Initialize ModelData from a model number using the bundled legacy data.
@@ -473,10 +474,177 @@ class ModelData:
 
         det_fate.loc[import_seq] = 0  # add diet_import to det_fate (zero row)
         det_fate[import_seq] = 0  # add diet_import to det_fate (zero column)
-        # Route the Import group's detritus fate entirely into the detritus group(s):
-        # set the Import-row / DET-column cell(s) to 1.
-        det_fate.loc[self.groups_data['trophic_info']=='Import', self.groups_data['trophic_info']=='DET'] = 1
-        self.det_fate = det_fate.sort_index(ascending=False).sort_index(axis=1, ascending=False)
+        # Normalize orientation, force the detritus self-identity, and default a fully-missing
+        # (degenerate) single-DET matrix to the closed system. See _finalize_det_fate.
+        self.det_fate = ModelData._finalize_det_fate(det_fate, self.groups_data)
+
+    @staticmethod
+    def _finalize_det_fate(det_fate: pd.DataFrame, groups_data: pd.DataFrame, tol: float = 1e-9) -> pd.DataFrame:
+        """Normalize a raw detritus-fate matrix into a clean groups x detritus-pool matrix.
+
+        Takes the per-prey ``detritus_fate`` matrix assembled during loading and turns it into
+        the canonical detritus-fate matrix the rest of the pipeline expects: rows indexed by
+        every group, columns restricted to the detritus (DET) groups, with entry ``[g, d]`` the
+        fraction of group ``g``'s ``flow_to_det`` (= M0 + egestion) routed to detritus pool ``d``.
+
+        The steps are:
+
+        1. Restrict the columns to the DET groups and 0-fill, dropping any spurious non-detritus
+           columns that survived the raw per-prey construction.
+        2. Force the detritus<->detritus sub-block to the identity, so each detritus pool maps to
+           itself by default.
+        3. Zero the Import group's row (the import pseudo-group produces no detritus; its
+           ``flow_to_det`` is 0, so this has no numerical effect but keeps the matrix clean).
+        4. Detect a *fully degenerate* matrix -- one where no living (non-import, non-detritus)
+           group carries any routing at all, which happens when the source data has no detritus
+           fate (e.g. reconstructed models whose raw ``detritus_fate`` is all zero). For a
+           single-DET model this is defaulted to the closed system (every living group routes
+           1.0 to the sole pool); a multi-DET degenerate matrix is left untouched so that
+           :meth:`validate_det_fate` raises (the per-pool split cannot be inferred).
+
+        Partially populated matrices (some rows summing to <1) are left exactly as given: a row
+        summing to less than 1 is treated as legitimate export out of the system and is only
+        flagged, not altered, by :meth:`validate_det_fate`.
+
+        Args:
+            det_fate (pd.DataFrame): the raw detritus-fate matrix (rows = groups, columns =
+                whatever prey carried a ``detritus_fate`` value).
+            groups_data (pd.DataFrame): the per-group table, used for ``trophic_info`` to
+                identify the DET and Import groups.
+            tol (float): magnitude below which a row sum is treated as zero when testing for the
+                fully-degenerate case. Defaults to 1e-9.
+
+        Returns:
+            pd.DataFrame: the cleaned detritus-fate matrix (groups x DET pools), sorted by
+            descending seq on both axes.
+        """
+        det_seq = list(groups_data.index[groups_data['trophic_info'] == 'DET'])
+        import_seq = list(groups_data.index[groups_data['trophic_info'] == 'Import'])
+
+        # Restrict to detritus-pool columns over the full group index, 0-filling everything else.
+        det_fate = det_fate.reindex(index=groups_data.index, columns=det_seq).fillna(0.0)
+
+        # Force the detritus<->detritus identity block.
+        det_fate.loc[det_seq, :] = 0.0
+        if len(det_seq) > 0:
+            det_fate.loc[det_seq, det_seq] = np.eye(len(det_seq))
+
+        # The import pseudo-group routes nothing to detritus.
+        det_fate.loc[import_seq, :] = 0.0
+
+        # Degenerate (no routing data at all) -> default single-DET to the closed system.
+        living = [s for s in groups_data.index if s not in set(det_seq) and s not in set(import_seq)]
+        if living and (det_fate.loc[living].sum(axis=1) <= tol).all():
+            if len(det_seq) == 1:
+                det_fate.loc[living, det_seq[0]] = 1.0
+            # multi-DET degenerate: leave as-is -> validate_det_fate raises.
+
+        return det_fate.sort_index(ascending=False).sort_index(axis=1, ascending=False)
+
+    @staticmethod
+    def validate_det_fate(det_fate: pd.DataFrame, groups_data: pd.DataFrame, tol: float = 1e-3) -> None:
+        """Validate a finalized detritus-fate matrix, raising on inconsistencies.
+
+        Checks that the detritus-fate matrix is usable for an open-system detritus model, where
+        each group routes its ``flow_to_det`` (= M0 + egestion) to the detritus pools and any
+        shortfall (row sum < 1) is treated as export out of the system:
+
+        - **raise** ``ValueError`` if any non-import row sums to more than ``1 + tol`` (an
+          impossible over-allocation -- a group cannot send more than 100% of its dead matter to
+          detritus);
+        - **raise** ``ValueError`` if the matrix is fully degenerate (no living group routes any
+          flow to detritus), which for a multi-DET model means the per-pool split is unknown and
+          cannot be defaulted (single-DET degeneracy is already repaired by
+          :meth:`_finalize_det_fate`);
+        - **warn** (``RuntimeWarning``, listing the offending groups) if any non-import row sums
+          to less than ``1 - tol`` -- this is allowed (the remainder is exported) but flagged so
+          the export is never silent.
+
+        Args:
+            det_fate (pd.DataFrame): a finalized detritus-fate matrix (groups x DET pools), e.g.
+                from :meth:`_finalize_det_fate`.
+            groups_data (pd.DataFrame): the per-group table, used for ``trophic_info`` and group
+                names in the messages.
+            tol (float): tolerance for the row-sum comparisons. Defaults to 1e-3.
+
+        Returns:
+            None.
+
+        Raises:
+            ValueError: on over-allocated rows or a fully-degenerate multi-DET matrix.
+        """
+        det_seq = set(groups_data.index[groups_data['trophic_info'] == 'DET'])
+        import_seq = set(groups_data.index[groups_data['trophic_info'] == 'Import'])
+        names = groups_data['group_name'] if 'group_name' in groups_data.columns else pd.Series(dtype=object)
+
+        non_import = [s for s in det_fate.index if s not in import_seq]
+        rowsums = det_fate.loc[non_import].sum(axis=1)
+
+        def _label(seq_list):
+            return ", ".join(f"{s} ({names.get(s, '?')})" for s in seq_list)
+
+        # Over-allocation: physically impossible.
+        over = [s for s in non_import if rowsums[s] > 1 + tol]
+        if over:
+            raise ValueError(
+                "det_fate has rows summing to more than 1 (over-allocated detritus routing) for "
+                f"group(s): {_label(over)}. Each group can route at most 100% of its flow_to_det."
+            )
+
+        # Fully degenerate: no living group routes anything (multi-DET missing data).
+        living = [s for s in non_import if s not in det_seq]
+        if living and (rowsums.loc[living] <= tol).all():
+            raise ValueError(
+                "det_fate carries no detritus routing for any living group. For a multi-DET model "
+                "the per-pool split cannot be inferred -- supply DetritusFate data for "
+                f"model with detritus groups {sorted(det_seq)}."
+            )
+
+        # Partial rows: legitimate export, but flag.
+        under = [s for s in non_import if rowsums[s] < 1 - tol]
+        if under:
+            warnings.warn(
+                f"{len(under)} group(s) route less than 100% of their flow_to_det to detritus; "
+                f"the remainder is treated as export out of the system: {_label(under)}.",
+                RuntimeWarning,
+            )
+
+    @staticmethod
+    def validate_DC(DC: pd.DataFrame, groups_data: pd.DataFrame, tol: float = 1e-3) -> None:
+        """Validate that every consumer's diet composition sums to 1, raising otherwise.
+
+        Each feeding (Regular) group's diet -- including its imported-diet column -- must sum to
+        1 by the Ecopath definition of a diet composition. Non-feeders (primary producers,
+        detritus and the import pseudo-group) have all-zero diet rows and are exempt.
+
+        Args:
+            DC (pd.DataFrame): the diet-composition matrix (rows = predators, columns = prey,
+                including the imported-diet column).
+            groups_data (pd.DataFrame): the per-group table, used for ``trophic_info`` (to pick
+                the consumer rows) and group names in the message.
+            tol (float): allowed absolute deviation of a consumer row sum from 1; chosen loose
+                enough (1e-3) to absorb the rounding present in published diet matrices.
+                Defaults to 1e-3.
+
+        Returns:
+            None.
+
+        Raises:
+            ValueError: if any consumer (Regular) row sums to a value more than ``tol`` away
+                from 1.
+        """
+        is_regular = groups_data['trophic_info'] == 'Regular'
+        consumer_seq = [s for s in DC.index if s in set(groups_data.index[is_regular])]
+        names = groups_data['group_name'] if 'group_name' in groups_data.columns else pd.Series(dtype=object)
+
+        rowsums = DC.loc[consumer_seq].sum(axis=1)
+        bad = [s for s in consumer_seq if abs(rowsums[s] - 1.0) > tol]
+        if bad:
+            detail = ", ".join(f"{s} ({names.get(s, '?')})={rowsums[s]:.4f}" for s in bad)
+            raise ValueError(
+                f"{len(bad)} consumer group(s) have a diet composition (including diet_import) "
+                f"that does not sum to 1 (tol={tol}): {detail}."
+            )
 
     @staticmethod
     def _parse_filename(filename_no_ext: str) -> tuple[int, str, str]:

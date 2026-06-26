@@ -149,6 +149,12 @@ class PPRCalculator:
         if len(DET_seq) == 0:
             raise Exception('no DET group found')
 
+        # Validate the input matrices before building the model: a diet composition must sum to 1
+        # per consumer (raises otherwise), and detritus routing must be consistent -- a fully
+        # degenerate multi-DET matrix raises, partial rows (legitimate export) only warn.
+        ModelData.validate_DC(instance._DC, instance._groups_df)
+        ModelData.validate_det_fate(instance._det_fate, instance._groups_df)
+
         # define all properties:
         groups_df = instance.apply_ecopath_defaults(
             df=groups_df,
@@ -221,6 +227,9 @@ class PPRCalculator:
         self.M0 = groups_df['M0'].fillna(0).copy()
         self.respiration = groups_df['respiration'].fillna(0).copy()
         self.egestion = groups_df['egestion'].fillna(0).copy()
+        # Per-group flow_to_det (= M0 + egestion) exported out of the system (det_fate row < 1).
+        self.det_export = (groups_df['det_export'] if 'det_export' in groups_df.columns
+                           else pd.Series(0.0, index=groups_df.index)).fillna(0).copy()
         self.EE = groups_df['ee'].fillna(1).copy()
         self.GE = groups_df['ge'].fillna(1).copy()
         self.GS = groups_df['gs'].fillna(0).copy()
@@ -242,7 +251,9 @@ class PPRCalculator:
         missing cell of the consumption equation (q = p + respiration + egestion) and of the
         production equation (p = M0 + catch + predation + net_migration + biomass_accum), and
         sets predation as the column sum of the flow matrix Z. Detritus q (= inflow) is built
-        from each group's flow_to_det = M0 + egestion routed through det_fate.
+        from each group's flow_to_det = M0 + egestion routed through det_fate; the unrouted
+        remainder (det_fate row < 1) is recorded per group in 'det_export' as flow leaving the
+        system.
 
         Args:
             df (pd.DataFrame): per-group parameter table to complete (modified copy returned).
@@ -375,7 +386,11 @@ class PPRCalculator:
         df['ge'] = (df['p'] / df['q'])
         df['flow_to_det'] = df['flow_to_det'].fillna(df['M0'] + df['egestion'])
         det_idx = df.index[is_det]
-        if det_fate is not None and len(det_idx) > 1:
+        # Open-system detritus inflow: each detritus pool receives only the det_fate-routed share
+        # of every group's flow_to_det (single- and multi-DET handled identically). With det_fate
+        # rows summing to 1 this equals the full flow (closed system); rows summing to <1 mean the
+        # shortfall left the system as export (see det_export below).
+        if det_fate is not None:
             for det_j in det_idx:
                 if det_j in det_fate.columns:
                     df.loc[det_j, 'q'] = (df['flow_to_det'] * det_fate[det_j].reindex(df.index).fillna(0)).sum()
@@ -385,6 +400,16 @@ class PPRCalculator:
             df.loc[is_det, 'q'] = df['flow_to_det'].sum()
         df.loc[is_det, 'p'] = df.loc[is_det, 'q']
         df.loc[is_det, 'biomass_accum'] = df.loc[is_det, 'p'] - (df.loc[is_det, 'predation'] + df.loc[is_det, 'net_migration'])
+
+        # det_export: the portion of each group's flow_to_det (= M0 + egestion) that is NOT routed
+        # to any detritus pool, i.e. exported out of the modeled system. Zero in the closed system
+        # (det_fate rows sum to 1) and when det_fate is unavailable; positive for groups whose
+        # det_fate row sums to <1 (e.g. seabirds/mammals/migratory groups dying outside the box).
+        if det_fate is not None:
+            det_fate_rowsum = det_fate.sum(axis=1).reindex(df.index).fillna(1.0)
+            df['det_export'] = ((1.0 - det_fate_rowsum).clip(lower=0.0) * df['flow_to_det']).fillna(0.0)
+        else:
+            df['det_export'] = 0.0
 
         return df
 
@@ -431,20 +456,25 @@ class PPRCalculator:
             # Flow to Detritus
             df_final['flow_to_det'] = df_final['M0'] + df_final['egestion']
 
-            # rebalance DET rows:
+            # rebalance DET rows: each pool receives only the det_fate-routed share of every
+            # group's flow_to_det (single- and multi-DET identical), consistent with the open
+            # system used in apply_ecopath_defaults. det_export is the unrouted remainder.
             det_seqs = self.get_DET_seq()
             det_fate = getattr(self, '_det_fate', None)
-            if det_fate is not None and len(det_seqs) > 1:
+            if det_fate is not None:
                 for det_j in det_seqs:
                     if det_j in det_fate.columns:
                         df_final.loc[det_j, 'q'] = (df_final['flow_to_det'] * det_fate[det_j].reindex(df_final.index).fillna(0)).sum()
                     else:
                         df_final.loc[det_j, 'q'] = df_final['flow_to_det'].sum()
+                det_fate_rowsum = det_fate.sum(axis=1).reindex(df_final.index).fillna(1.0)
+                df_final['det_export'] = ((1.0 - det_fate_rowsum).clip(lower=0.0) * df_final['flow_to_det']).fillna(0.0)
             else:
                 df_final.loc[det_seqs, 'q'] = df_final['flow_to_det'].sum()
+                df_final['det_export'] = 0.0
             df_final.loc[det_seqs, 'p'] = df_final.loc[det_seqs, 'q']
             df_final.loc[det_seqs, 'biomass_accum'] = df_final.loc[det_seqs, 'p'] - (df.loc[det_seqs, 'predation'] + df.loc[det_seqs, 'net_migration'])
-            
+
             return df_final
 
         cols_to_solve = ['q', 'p', 'respiration', 'egestion', 'M0', 'biomass_accum']
@@ -785,7 +815,9 @@ class PPRCalculator:
         if not DET_as_PP:
             flow_to_det = (self.M0 + self.egestion).fillna(0)
             det_fate = getattr(self, '_det_fate', None)
-            if det_fate is not None and len(DET_seq) > 1:
+            # Route each DET row's flow_to_det through det_fate for single- and multi-DET alike
+            # (open system); with det_fate rows summing to 1 this reduces to the full flow.
+            if det_fate is not None:
                 for det_j in DET_seq:
                     if det_j in det_fate.columns:
                         fracs = det_fate[det_j].reindex(flow_to_det.index).fillna(0)
@@ -1918,7 +1950,9 @@ class PPRCalculator:
         and a numeric basis matrix (sppr_mat). Detritus columns are scaled either by the exact
         symbolic solution (default path: det_open_mode='none' and det_collapse_mode='never') or
         through the shared numeric recycling solver (_build_det_BC + _solve_det_scaling) when
-        openness/collapse is requested.
+        openness/collapse is requested. The detritus diet rows are built to mirror SPPR_new's
+        open-system detritus handling (det_fate-weighted inflow normalized by the routed q[det]),
+        so this helper reproduces SPPR_new for matching TE_options.
 
         Args:
             TE (Optional[pd.DataFrame]): explicit TE matrix; if None it is built from TE_option.
@@ -1954,6 +1988,9 @@ class PPRCalculator:
         GE = self.get_TE(TE_option=TE_option, DET_values=DET_TE_vals, as_matrix=True)
         flow2det = (self.M0 + self.egestion).sum()
         if TE_option == 'TE':
+            # The detritus diet row comes from get_DC(DET_as_PP=False) -> get_Z, which routes
+            # flow_to_det through det_fate (open system); here we keep only the PP+Import inflow,
+            # matching SPPR_new's TE scaling.
             DC.loc[DET_seq, Regular_seq] = 0
         elif TE_option == 'GE':
             det_fate_mat = getattr(self, '_det_fate', None)
