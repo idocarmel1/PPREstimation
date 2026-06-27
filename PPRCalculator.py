@@ -1483,7 +1483,8 @@ class PPRCalculator:
         L[seq_to_drop] = 0
         new_index = L.index.union(seq_to_drop)
         L = L.reindex(new_index).fillna(0)
-        L.loc[seq_to_drop, seq_to_drop] = 1
+        for d in seq_to_drop:  # self-basal diagonal only; block assignment leaked SPPR=1 into dropped PP_seq columns
+            L.loc[d, d] = 1
         SPPR = L.loc[PP_seq, :].T
 
         # add back sppr_det that makes model balanced:
