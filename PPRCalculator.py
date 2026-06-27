@@ -794,6 +794,9 @@ class PPRCalculator:
         if normalize:
             DC = DC.div(DC.sum(axis=1), axis=0).fillna(0)
         return DC.sort_index(ascending=False).sort_index(ascending=False, axis=1)
+
+    def get_det_fate(self):
+        return self._det_fate.copy()
     
     def get_Z(self, DET_as_PP: bool = False) -> pd.DataFrame:
         """Return the flow matrix Z = DC * q (consumption-weighted diet), with DET rows redefined.
@@ -1807,7 +1810,8 @@ class PPRCalculator:
 
     def SPPR_new(self, TE: Optional[pd.DataFrame] = None, TE_option: str = 'GE', DET_TE_vals: float = 1, collapse_det: Optional[bool] = None,
                  det_collapse_mode: str = 'never', det_open_mode: str = 'none',
-                 det_theta: float | dict = 1.0, det_external_sppr: float | dict = 0.0) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+                 det_theta: float | dict = 1.0, det_external_sppr: float | dict = 0.0,
+                 fix_EE_0_cases: bool = True) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """Primary numeric SPPR solver via the nullspace of L = A - I.
 
         Builds the per-edge weight matrix A = DC/TE, replaces basal (producer) rows with
@@ -1840,6 +1844,15 @@ class PPRCalculator:
                 reproduces the closed system. Defaults to 1.0.
             det_external_sppr (float | dict): external SPPR assigned to diluted material under
                 'source_dilution'; same scalar-or-dict form as det_theta. Defaults to 0.0.
+            fix_EE_0_cases (bool): if True (default), under TE_option='TE' re-credit the PP
+                consumed by EE=0 dead-end groups (transfer efficiency te=(p-M0)/q == 0 because
+                M0==p, so they are zeroed out of the nullspace) back to the detritus pool, since
+                their production is 100% other-mortality and physically flows to detritus. This
+                closes the global PP balance (inflow == outflow) that those severed groups would
+                otherwise break. Only active for single-DET models under 'TE'; a no-op when no
+                EE=0 groups exist. A RuntimeWarning is emitted whenever EE=0 groups are present.
+                Does NOT address near-singular (0 < EE << 1) groups, which are an inherent
+                singularity of the TE method. Defaults to True.
 
         Returns:
             tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: (SPPR, A, L), the per-group SPPR
@@ -1917,6 +1930,51 @@ class PPRCalculator:
         if TE_option == 'TE':
             PP_Import_seq = list(self.get_PP_seq() + self.get_Import_seq())
             theta = self._resolve_det_param(det_theta, DET_seq, 1.0)
+            # EE=0 dead-ends: consumer groups whose entire TE row is 0 (te=(p-M0)/q == 0 because
+            # M0==p) get zeroed out of the nullspace by A[GE==0]=0, severing their mortality->
+            # detritus recycling. The PP they consume is then neither transferred up (nothing
+            # preys on them) nor returned to detritus, so the global PP budget leaks. Detect them
+            # from the actual TE matrix in use (so a Monte-Carlo TE sample is handled too).
+            deadend_mask = (GE == 0).all(axis=1)
+            deadend_seq = [g for g in deadend_mask.index[deadend_mask]
+                           if g not in PP_Import_seq and g not in list(DET_seq)]
+            if deadend_seq:
+                names = ", ".join(f"{g} ({self.seq2name.get(g, '?')})" for g in deadend_seq)
+                if fix_EE_0_cases and len(DET_seq) == 1:
+                    warnings.warn(
+                        f"{len(deadend_seq)} group(s) have TE=0 because EE=0 (M0=p): {names}. "
+                        f"Their consumed PP is re-credited to detritus (fix_EE_0_cases=True) so "
+                        f"the TE SPPR stays PP-balanced.",
+                        RuntimeWarning,
+                    )
+                else:
+                    reason = (" (multi-DET: re-credit not applied)" if len(DET_seq) > 1
+                              else "; pass fix_EE_0_cases=True to correct")
+                    warnings.warn(
+                        f"{len(deadend_seq)} group(s) have TE=0 because EE=0 (M0=p): {names}. "
+                        f"Their consumed PP is dropped, so the TE SPPR will not balance{reason}.",
+                        RuntimeWarning,
+                    )
+            # Near-singular groups (0 < EE << 1, i.e. te just above 0) are NOT zeroed, but their
+            # SPPR ~ 1/te blows up (an inherent singularity of the TE method). They are not fixed
+            # here; worse, when an EE=0 dead-end feeds on one, the re-credit's detritus-coupling
+            # term (b) inflates and the resulting detritus SPPR can exceed 1 implausibly. Warn so
+            # an inflated sppr_det is explained rather than silent.
+            te_row = GE.iloc[:, 0] if GE.shape[1] else pd.Series(dtype=float)
+            near_singular = [g for g in te_row.index
+                             if g not in PP_Import_seq and g not in list(DET_seq)
+                             and 0 < abs(float(te_row[g])) < 1e-3]
+            if near_singular:
+                names = ", ".join(f"{g} ({self.seq2name.get(g, '?')})" for g in near_singular)
+                warnings.warn(
+                    f"{len(near_singular)} group(s) have near-zero TE (0 < EE << 1): {names}. "
+                    f"Their SPPR is near-singular (inherent to the TE method); the detritus SPPR "
+                    f"may be inflated and is not corrected by fix_EE_0_cases.",
+                    RuntimeWarning,
+                )
+            # Re-credit only makes sense for a single detritus pool (multi-DET pools couple
+            # through det_fate and are out of scope here -- see MULTIDET_TE_DISCREPANCY.md).
+            apply_fix = fix_EE_0_cases and bool(deadend_seq) and len(DET_seq) == 1
             for i, det_l in enumerate(DET_seq):
                 q_l = self.q[det_l] if self.q[det_l] > 0 else flow_to_det.sum()
                 if det_fate is not None and det_l in det_fate.columns:
@@ -1927,7 +1985,20 @@ class PPRCalculator:
                     inflow = 0.0
                 else:
                     inflow = flow_to_det[PP_Import_seq].sum()
-                SPPR[det_l] *= (inflow / q_l) * theta[i]
+                if apply_fix:
+                    # Each dead-end g sends its full production (=M0, since M0=p) to detritus,
+                    # carrying the PP it consumed: q_g * (DC[g] . sppr_tot), where
+                    #   sppr_tot = non_DET_sppr + m * SPPR[:, det_l]   (m = the DET multiplier).
+                    # Splitting the diet dot-product into its PP/Import part (a) and its
+                    # detritus part (b) makes the detritus inflow linear in m, with the
+                    # availability damping theta applied to the final pool SPPR:
+                    #   m = theta * (inflow + a) / (q_l - theta * b).
+                    a = sum(self.q[g] * (DC.loc[g] * non_DET_sppr).sum() for g in deadend_seq)
+                    b = sum(self.q[g] * (DC.loc[g] * SPPR[det_l]).sum() for g in deadend_seq)
+                    m = theta[i] * (inflow + a) / (q_l - theta[i] * b)
+                else:
+                    m = (inflow / q_l) * theta[i]
+                SPPR[det_l] *= m
         elif TE_option in ('GE', 'With Egestion'):
             B, c_vec = self._build_det_BC(SPPR, non_DET_sppr, DET_seq, DC, TE_option)
             SPPR = self._solve_det_scaling(
@@ -2300,7 +2371,7 @@ class PPRCalculator:
         elif diet_import_option == 'as_DC':
             return self._SPPR_symbolic_helper_diet_import_as_DC(**kwargs)
 
-    def _sample_SPPR_new_forced_balance(self, TE: Optional[pd.DataFrame] = None, sppr_det: Optional[float] = None) -> tuple[pd.DataFrame, float]:
+    def _sample_SPPR_new_forced_balance(self, TE_option: str = 'TE', sppr_det: Optional[float] = None) -> tuple[pd.DataFrame, float]:
         """Run SPPR_new and force exact global balance by solving the single detritus SPPR.
 
         Treats the detritus scaling as one symbolic unknown x = sppr_det, then solves the scalar
@@ -2309,8 +2380,8 @@ class PPRCalculator:
         solved value.
 
         Args:
-            TE (Optional[pd.DataFrame]): explicit TE matrix passed through to SPPR_new; if None it
-                is built internally. Defaults to None.
+            TE_option (str): transfer-efficiency mode; one of 'GE', 'TE', 'With Egestion',
+                'global'. Defaults to 'GE'.
             sppr_det (Optional[float]): unused placeholder; the value is solved and returned.
                 Defaults to None.
 
@@ -2319,7 +2390,7 @@ class PPRCalculator:
             single detritus scaling value that achieves balance.
         """
         sppr, _, _ = self.SPPR_new(
-            DET_modeling='as_PP', DET_TE_vals=1, TE=TE
+            TE_option=TE_option
         )
 
         x = sm.symbols('x')  # x = sppr_det
