@@ -2013,7 +2013,8 @@ class PPRCalculator:
     
     def _SPPR_symbolic_helper_diet_import_as_PP(self, TE: Optional[pd.DataFrame], TE_option: str, DET_TE_vals: float, sppr_det_value: Optional[float],
                                                 det_collapse_mode: str = 'never', det_open_mode: str = 'none',
-                                                det_theta: float | dict = 1.0, det_external_sppr: float | dict = 0.0) -> tuple[pd.DataFrame, pd.DataFrame, list, list]:
+                                                det_theta: float | dict = 1.0, det_external_sppr: float | dict = 0.0,
+                                                fix_EE_0_cases: bool = True) -> tuple[pd.DataFrame, pd.DataFrame, list, list]:
         """Symbolic SPPR helper, "diet import as PP" variant.
 
         Imported diet is treated like an extra primary-production source (its own free SPPR
@@ -2039,6 +2040,11 @@ class PPRCalculator:
             det_theta (float | dict): detritus availability/retention; float or dict keyed by
                 DET seq/name. Defaults to 1.0.
             det_external_sppr (float | dict): external SPPR for 'source_dilution'. Defaults to 0.0.
+            fix_EE_0_cases (bool): mirrors SPPR_new's flag. When True (default) and TE_option='TE',
+                single-DET EE=0 dead-end groups have their consumed PP re-credited to the detritus
+                pool (the same (inflow+a)/(q_l-theta*b) factor SPPR_new uses); when False the plain
+                inflow/q_l scalar is used. No effect for GE / With Egestion or for multi-DET.
+                Defaults to True.
 
         Returns:
             tuple[pd.DataFrame, pd.DataFrame, list, list]: (sppr_symbolic, sppr_mat, equations,
@@ -2060,10 +2066,15 @@ class PPRCalculator:
         GE = self.get_TE(TE_option=TE_option, DET_values=DET_TE_vals, as_matrix=True)
         flow2det = (self.M0 + self.egestion).sum()
         if TE_option == 'TE':
-            # The detritus diet row comes from get_DC(DET_as_PP=False) -> get_Z, which routes
-            # flow_to_det through det_fate (open system); here we keep only the PP+Import inflow,
-            # matching SPPR_new's TE scaling.
-            DC.loc[DET_seq, Regular_seq] = 0
+            # Factor-0 TE semantics (see MULTIDET_TE_DISCREPANCY.md): detritus pools are basal
+            # sources, exactly as SPPR_new treats them (DET_as_PP=True). Zero the WHOLE detritus
+            # diet row so every DET pool becomes a free basal symbol; its PP content is assigned
+            # afterwards by SPPR_new's direct PP+Import inflow scalar (the TE branch of the
+            # DET-column scaling below). Zeroing only the Regular columns instead would leave a
+            # consumer-fed (secondary) pool as a free source scaled by 1 -- i.e. treating
+            # secondary detritus as 100% primary production -- which is the multi-DET TE
+            # discrepancy this fixes.
+            DC.loc[DET_seq, :] = 0
         elif TE_option == 'GE':
             det_fate_mat = getattr(self, '_det_fate', None)
             for det_j in DET_seq:
@@ -2137,6 +2148,38 @@ class PPRCalculator:
         sppr_mat = pd.DataFrame(sppr_mat, index=index, columns=target_free_seq)
         if sppr_det_value is not None:
             sppr_mat[DET_seq] *= float(sppr_det_value)
+        elif TE_option == 'TE':
+            # Mirror SPPR_new's TE detritus branch EXACTLY (keep in sync with SPPR_new): the
+            # detritus rows were zeroed above, so the sppr_mat DET columns are the raw basal
+            # bases. Scale each by its direct PP+Import inflow share (inflow/q_l)*theta -- a
+            # secondary pool with no direct PP/Import inflow gets factor 0. Single-DET EE=0
+            # dead-ends get the same re-credit SPPR_new applies, gated by fix_EE_0_cases.
+            DC_pp = self.get_DC(DET_as_PP=True, normalize=False)
+            flow_to_det = (self.M0 + self.egestion).fillna(0)
+            det_fate = getattr(self, '_det_fate', None)
+            PP_Import_seq = list(PP_seq + Import_seq)
+            theta = self._resolve_det_param(det_theta, DET_seq, 1.0)
+            non_DET_sppr = sppr_mat.drop(columns=list(DET_seq), errors='ignore').sum(axis=1)
+            deadend_mask = (GE == 0).all(axis=1)
+            deadend_seq = [g for g in deadend_mask.index[deadend_mask]
+                           if g not in PP_Import_seq and g not in list(DET_seq)]
+            apply_fix = fix_EE_0_cases and bool(deadend_seq) and len(DET_seq) == 1
+            for i, det_l in enumerate(DET_seq):
+                q_l = self.q[det_l] if self.q[det_l] > 0 else flow_to_det.sum()
+                if det_fate is not None and det_l in det_fate.columns:
+                    fr = det_fate[det_l].reindex(flow_to_det.index).fillna(0)
+                    inflow = (flow_to_det[PP_Import_seq] * fr[PP_Import_seq]).sum()
+                elif det_fate is not None and len(DET_seq) > 1:
+                    inflow = 0.0
+                else:
+                    inflow = flow_to_det[PP_Import_seq].sum()
+                if apply_fix:
+                    a = sum(self.q[g] * (DC_pp.loc[g] * non_DET_sppr).sum() for g in deadend_seq)
+                    b = sum(self.q[g] * (DC_pp.loc[g] * sppr_mat[det_l]).sum() for g in deadend_seq)
+                    m = theta[i] * (inflow + a) / (q_l - theta[i] * b)
+                else:
+                    m = (inflow / q_l) * theta[i]
+                sppr_mat[det_l] *= m
         elif det_open_mode == 'none' and det_collapse_mode == 'never':
             # DEFAULT: keep the proven exact symbolic per-DET scaling (byte-identical to old).
             for det_j in DET_seq:
@@ -2159,7 +2202,8 @@ class PPRCalculator:
     
     def _SPPR_symbolic_helper_diet_import_as_DC(self, TE: Optional[pd.DataFrame], TE_option: str, DET_TE_vals: float, sppr_det_value: Optional[float],
                                                 det_collapse_mode: str = 'never', det_open_mode: str = 'none',
-                                                det_theta: float | dict = 1.0, det_external_sppr: float | dict = 0.0) -> tuple[pd.DataFrame, pd.DataFrame, list, list]:
+                                                det_theta: float | dict = 1.0, det_external_sppr: float | dict = 0.0,
+                                                fix_EE_0_cases: bool = True) -> tuple[pd.DataFrame, pd.DataFrame, list, list]:
         """Symbolic SPPR helper, "diet import as DC" variant.
 
         Imported diet is kept as a separate production source whose own SPPR (DIET_SPPR_*) is
@@ -2183,6 +2227,9 @@ class PPRCalculator:
             det_theta (float | dict): detritus availability/retention; float or dict keyed by
                 DET seq/name. Defaults to 1.0.
             det_external_sppr (float | dict): external SPPR for 'source_dilution'. Defaults to 0.0.
+            fix_EE_0_cases (bool): accepted for signature parity with the as_PP helper (SPPR_symbolic
+                forwards a shared kwargs dict to both). The EE=0 re-credit is the as_PP TE factor-0
+                semantics; this variant does not use it. Defaults to True.
 
         Returns:
             tuple[pd.DataFrame, pd.DataFrame, list, list]: (sppr_symbolic, sppr_mat, equations,
@@ -2329,7 +2376,8 @@ class PPRCalculator:
     def SPPR_symbolic(self, TE: Optional[pd.DataFrame] = None, TE_option: str = 'GE', diet_import_option: str = 'as_DC', DET_TE_vals: float = 1,
                       sppr_det_value: Optional[float] = None, collapse_det: Optional[bool] = None,
                       det_collapse_mode: str = 'never', det_open_mode: str = 'none',
-                      det_theta: float | dict = 1.0, det_external_sppr: float | dict = 0.0) -> tuple[pd.DataFrame, pd.DataFrame, list, list]:
+                      det_theta: float | dict = 1.0, det_external_sppr: float | dict = 0.0,
+                      fix_EE_0_cases: bool = True) -> tuple[pd.DataFrame, pd.DataFrame, list, list]:
         """Symbolic SPPR solver: dispatch to the selected diet-import helper.
 
         Applies the same legacy collapse_det shim and detritus knobs as SPPR_new and forwards
@@ -2355,6 +2403,12 @@ class PPRCalculator:
             det_theta (float | dict): detritus availability/retention; float or dict keyed by
                 DET seq/name. Defaults to 1.0.
             det_external_sppr (float | dict): external SPPR for 'source_dilution'. Defaults to 0.0.
+            fix_EE_0_cases (bool): mirrors SPPR_new's flag of the same name. When True (default),
+                the TE / diet_import_option='as_PP' path re-credits the PP consumed by single-DET
+                EE=0 dead-end groups back to the detritus pool, matching SPPR_new exactly. Only
+                consumed by the as_PP TE factor-0 path (see _SPPR_symbolic_helper_diet_import_as_PP);
+                a no-op for GE / With Egestion, for multi-DET, and for the as_DC variant.
+                Defaults to True.
 
         Returns:
             tuple[pd.DataFrame, pd.DataFrame, list, list]: (sppr_symbolic, sppr_mat, equations,
@@ -2366,7 +2420,7 @@ class PPRCalculator:
         kwargs = dict(TE=TE, TE_option=TE_option, DET_TE_vals=DET_TE_vals,
                       sppr_det_value=sppr_det_value, det_collapse_mode=det_collapse_mode,
                       det_open_mode=det_open_mode, det_theta=det_theta,
-                      det_external_sppr=det_external_sppr)
+                      det_external_sppr=det_external_sppr, fix_EE_0_cases=fix_EE_0_cases)
         if diet_import_option == 'as_PP':
             return self._SPPR_symbolic_helper_diet_import_as_PP(**kwargs)
         elif diet_import_option == 'as_DC':
