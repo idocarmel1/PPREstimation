@@ -1,153 +1,135 @@
-# Graph Report - FishEstimationAI  (2026-06-27)
+# Graph Report - .  (2026-06-27)
 
 ## Corpus Check
-- 256 files · ~3,207,559 words
+- 251 files · ~3,207,559 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 228 nodes · 402 edges · 33 communities (12 shown, 21 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 5 edges (avg confidence: 0.5)
-- Token cost: 0 input · 0 output
-
-## Graph Freshness
-- Built from commit: `dbc33515`
-- Run `git rev-parse HEAD` and compare to check if the graph is stale.
-- Run `graphify update .` after code changes (no API cost).
+- 262 nodes · 455 edges · 30 communities (9 shown, 21 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 9 edges (avg confidence: 0.62)
+- Token cost: 49,559 input · 0 output
 
 ## Community Hubs (Navigation)
-- [[_COMMUNITY_PPRCalculator Core Methods|PPRCalculator Core Methods]]
-- [[_COMMUNITY_PPR  NPP Outputs & Balance Checks|PPR / NPP Outputs & Balance Checks]]
-- [[_COMMUNITY_Legacy Model Loading & Accessors|Legacy Model Loading & Accessors]]
-- [[_COMMUNITY_Ecopath Defaults & LIM|Ecopath Defaults & LIM]]
-- [[_COMMUNITY_Excel Export & Entry Points|Excel Export & Entry Points]]
-- [[_COMMUNITY_ModelData Species Groups|ModelData Species Groups]]
-- [[_COMMUNITY_ModelData IO & JSON Loading|ModelData I/O & JSON Loading]]
-- [[_COMMUNITY_Community 8|Community 8]]
-- [[_COMMUNITY_Community 9|Community 9]]
+- [[_COMMUNITY_SPPR Solver Core|SPPR Solver Core]]
+- [[_COMMUNITY_Model Data Loading|Model Data Loading]]
+- [[_COMMUNITY_Model Construction & Balancing|Model Construction & Balancing]]
+- [[_COMMUNITY_User Guide|User Guide]]
+- [[_COMMUNITY_Ecopath Concepts & Detritus|Ecopath Concepts & Detritus]]
+- [[_COMMUNITY_Excel Export & Matrix Utils|Excel Export & Matrix Utils]]
+- [[_COMMUNITY_PPR Concepts & Classic Methods|PPR Concepts & Classic Methods]]
+- [[_COMMUNITY_README  Project Overview|README / Project Overview]]
+- [[_COMMUNITY_Legacy Species Group|Legacy Species Group]]
 - [[_COMMUNITY_Diet Composition Concept|Diet Composition Concept]]
-- [[_COMMUNITY_Ecopath Marine Models|Ecopath Marine Models]]
+- [[_COMMUNITY_Ecopath Models|Ecopath Models]]
 - [[_COMMUNITY_Gross Efficiency Concept|Gross Efficiency Concept]]
 - [[_COMMUNITY_Model Balance Validation|Model Balance Validation]]
 - [[_COMMUNITY_PPRs All Sheet|PPRs All Sheet]]
-- [[_COMMUNITY_PPRs Dataset|PPRs Dataset]]
+- [[_COMMUNITY_PPRs Excel Dataset|PPRs Excel Dataset]]
 - [[_COMMUNITY_PPRs Inner Sheet|PPRs Inner Sheet]]
 - [[_COMMUNITY_SPPR 1986 Method|SPPR 1986 Method]]
 - [[_COMMUNITY_SPPR 1995 mTL Method|SPPR 1995 mTL Method]]
 - [[_COMMUNITY_SPPR 1995 TL2 Method|SPPR 1995 TL2 Method]]
 - [[_COMMUNITY_SPPR 2015 Method|SPPR 2015 Method]]
 - [[_COMMUNITY_SPPR EwE Method|SPPR EwE Method]]
-- [[_COMMUNITY_SPPR Monte Carlo GE|SPPR Monte Carlo GE]]
+- [[_COMMUNITY_SPPR Monte Carlo Method|SPPR Monte Carlo Method]]
 - [[_COMMUNITY_SPPR New 2015 Method|SPPR New 2015 Method]]
 - [[_COMMUNITY_SPPR New Full Method|SPPR New Full Method]]
 - [[_COMMUNITY_SPPR New GE Method|SPPR New GE Method]]
-- [[_COMMUNITY_SPPR Symbolic GE|SPPR Symbolic GE]]
+- [[_COMMUNITY_SPPR Symbolic Methods|SPPR Symbolic Methods]]
 - [[_COMMUNITY_Transfer Efficiency Concept|Transfer Efficiency Concept]]
 - [[_COMMUNITY_Trophic Level Concept|Trophic Level Concept]]
 - [[_COMMUNITY_Global PPR Estimation|Global PPR Estimation]]
 - [[_COMMUNITY_PPR Estimation Project|PPR Estimation Project]]
-- [[_COMMUNITY_Community 31|Community 31]]
-- [[_COMMUNITY_README  Project Overview|README / Project Overview]]
-- [[_COMMUNITY_Transfer Efficiency & SPPR Dispatch|Transfer Efficiency & SPPR Dispatch]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `PPRCalculator` - 47 edges
+1. `PPRCalculator` - 49 edges
 2. `DataFrame` - 28 edges
-3. `ModelData` - 21 edges
+3. `ModelData` - 23 edges
 4. `Series` - 14 edges
 5. `User Guide: `ModelData` and `PPRCalculator`` - 11 edges
 6. `FishEstimationAI` - 9 edges
 7. `6. `PPRCalculator` — SPPR methods` - 9 edges
 8. `DataFrame` - 8 edges
 9. `get_DC()` - 8 edges
-10. `ndarray` - 7 edges
+10. `SPPR (Specific Primary Production Required)` - 8 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `Project Overview` --references--> `ModelData`  [EXTRACTED]
+  CLAUDE.md → ModelData.py
+- `ModelData class (user guide)` --references--> `ModelData`  [EXTRACTED]
+  USER_GUIDE.md → ModelData.py
+- `Project Overview` --references--> `PPRCalculator`  [EXTRACTED]
+  CLAUDE.md → PPRCalculator.py
+- `PPRCalculator class (user guide)` --references--> `PPRCalculator`  [EXTRACTED]
+  USER_GUIDE.md → PPRCalculator.py
 - `ndarray` --uses--> `ModelData`  [INFERRED]
-  PPRCalculator.py → ModelData.py
-- `PPRCalculator` --uses--> `ModelData`  [INFERRED]
-  PPRCalculator.py → ModelData.py
-- `DataFrame` --uses--> `ModelData`  [INFERRED]
-  PPRCalculator.py → ModelData.py
-- `ModelData` --uses--> `ModelData`  [INFERRED]
-  PPRCalculator.py → ModelData.py
-- `Series` --uses--> `ModelData`  [INFERRED]
   PPRCalculator.py → ModelData.py
 
 ## Import Cycles
 - 1-file cycle: `PPRCalculator.py -> PPRCalculator.py`
 
 ## Hyperedges (group relationships)
-- **PPR Estimation Methods Comparison** — converted_pprs_59b295f7_sppr_1986, converted_pprs_59b295f7_sppr_1995_mtl_global_te_01, converted_pprs_59b295f7_sppr_1995_tl2_global_te_01, converted_pprs_59b295f7_sppr_1995_mtl_global_mte, converted_pprs_59b295f7_sppr_ewe, converted_pprs_59b295f7_sppr_2015, converted_pprs_59b295f7_sppr_new_2015, converted_pprs_59b295f7_sppr_new_full, converted_pprs_59b295f7_sppr_new_ge, converted_pprs_59b295f7_sppr_symbolic_ge, converted_pprs_59b295f7_sppr_symbolic_te, converted_pprs_59b295f7_sppr_mc_ge [EXTRACTED 1.00]
+- **SPPR estimation method family** — user_guide_sppr_1986, user_guide_sppr_1995, user_guide_sppr_2015, user_guide_sppr_ewe, user_guide_sppr_new, user_guide_sppr_symbolic, user_guide_monte_carlo_sppr [EXTRACTED 1.00]
+- **Detritus recycling stabilization mechanism** — user_guide_detritus_knobs, user_guide_coupled_detritus_solve, user_guide_det_fate [EXTRACTED 0.85]
+- **Model completion pipeline (defaults to LIM to balance)** — user_guide_apply_ecopath_defaults, user_guide_apply_lim, user_guide_mass_balance [EXTRACTED 0.85]
 
-## Communities (33 total, 21 thin omitted)
+## Communities (30 total, 21 thin omitted)
 
-### Community 0 - "PPRCalculator Core Methods"
-Cohesion: 0.29
-Nodes (4): Build a ``SpeciesGroupLegacy`` from a flat dict of field values.          Factor, Return a human-readable one-line summary of this legacy species group., Convert this legacy group into a single-row DataFrame of its scalar fields., SpeciesGroupLegacy
+### Community 0 - "SPPR Solver Core"
+Cohesion: 0.09
+Nodes (26): ndarray, DataFrame, Series, Return the net primary production (NPP) of the system.          NPP is the tot, Return the fraction of available NPP appropriated by the catch (PPR / NPP)., 2015-method SPPR: a matrix-inversion (Leontief-style) formulation.          De, Build the detritus recycling system (I - B) x = c for the GE / With Egestion mod, Return the spectral radius (largest absolute eigenvalue) of M.          Used t (+18 more)
 
-### Community 1 - "PPR / NPP Outputs & Balance Checks"
-Cohesion: 0.24
-Nodes (7): DataFrame, Series, Return the fraction of available NPP appropriated by the catch (PPR / NPP)., Path-enumeration SPPR in the style of Ecopath with Ecosim (EwE) flow-network ana, Relabel the index (and columns) of one or more SPPR-style results.          Ty, Check an SPPR result is globally self-consistent (inflow == outflow)., Convert a per-group SPPR into total primary production required (PPR) by the cat
+### Community 1 - "Model Data Loading"
+Cohesion: 0.07
+Nodes (33): Any, get_DC(), get_model_data(), get_model_diet_data(), get_model_metadata(), get_seq2name(), load_json_dict(), ModelData (+25 more)
 
-### Community 2 - "Legacy Model Loading & Accessors"
+### Community 2 - "Model Construction & Balancing"
+Cohesion: 0.09
+Nodes (19): PPRCalculator, ModelData, Pauly & Christensen (1986)-style SPPR using a single catch-weighted trophic leve, Core constructor used by __init__: build the calculator from a loaded ModelData., Christensen & Pauly (1995)-style per-group SPPR = TE^(1-TL).          Uses eac, SPPR_1995 variant that linearly interpolates between bracketing integer trophic, Path-enumeration SPPR in the style of Ecopath with Ecosim (EwE) flow-network ana, Normalize the ordering of every Series/DataFrame attribute on the instance. (+11 more)
+
+### Community 3 - "User Guide"
 Cohesion: 0.07
 Nodes (27): 10. Choosing a method (rules of thumb), 1. Background: what is PPR / SPPR?, 2. Key ecological quantities and group types, 3.1 Constructor, 3.2 Attributes available after construction, 3.3 Useful methods, 3. `ModelData` — loading a model, 4.1 Primary constructor (+19 more)
 
-### Community 3 - "Ecopath Defaults & LIM"
-Cohesion: 0.12
-Nodes (11): ModelData, Core constructor used by __init__: build the calculator from a loaded ModelData., Normalize the ordering of every Series/DataFrame attribute on the instance., Unpack the fully-filled groups table into the individual named vectors., Primary constructor: build the calculator directly from a model identifier., Apply standard Ecopath defaults and sync the mass-balance flows with the ratios., Fill missing mass-balance variables via a per-group Linear Inverse Model (SLSQP), Alternative constructor: rebuild an instance from a dict of pre-existing attribu (+3 more)
+### Community 4 - "Ecopath Concepts & Detritus"
+Cohesion: 0.10
+Nodes (27): DC (Diet Composition matrix), Ecopath mass-balance framework, Ecopath JSON model format, LIM (Linear Inverse Modeling), TE / GE (Transfer / Gross Efficiency), TL (Trophic Level), apply_ecopath_defaults (model completion), apply_lim (underdetermined solver) (+19 more)
 
-### Community 4 - "Excel Export & Entry Points"
+### Community 5 - "Excel Export & Matrix Utils"
 Cohesion: 0.18
 Nodes (15): main(), Matrix (nullspace) reformulation of the EwE path-summation SPPR.          Inst, # TODO: change this function so I can decide which subset of parameters stays co, _find_all_cycles(), _get_circuit_probability(), mat_from_np(), move_scattered_identity(), Removes cycles from a flow matrix Z using the Ulanowicz method.     Z[i, j] rep (+7 more)
 
-### Community 5 - "ModelData Species Groups"
-Cohesion: 0.07
-Nodes (34): Any, get_DC(), get_model_data(), get_model_diet_data(), get_model_metadata(), get_seq2name(), load_json_dict(), ModelData (+26 more)
+### Community 6 - "PPR Concepts & Classic Methods"
+Cohesion: 0.19
+Nodes (13): FishEstimationAI — Claude Instructions, graphify, Knowledge Graph, Project Overview, NPP (Net Primary Production), Pauly (1986) citation, Pauly & Christensen (1995) citation, PPR (Primary Production Required) (+5 more)
 
-### Community 6 - "ModelData I/O & JSON Loading"
-Cohesion: 0.40
-Nodes (4): FishEstimationAI — Claude Instructions, graphify, Knowledge Graph, Project Overview
-
-### Community 8 - "Community 8"
-Cohesion: 0.29
-Nodes (5): Primary numeric SPPR solver via the nullspace of L = A - I.          Builds th, Run SPPR_new and force exact global balance by solving the single detritus SPPR., Return the diet-composition (DC) matrix, optionally redefining detritus rows., Return the flow matrix Z = DC * q (consumption-weighted diet), with DET rows red, Return the sorted seq IDs of all detritus (DET) groups.          Returns:
-
-### Community 9 - "Community 9"
-Cohesion: 0.16
-Nodes (7): Return the net primary production (NPP) of the system.          NPP is the tot, 2015-method SPPR: a matrix-inversion (Leontief-style) formulation.          De, Symbolic SPPR solver: dispatch to the selected diet-import helper.          Ap, Monte-Carlo uncertainty propagation over transfer efficiency.          Repeate, Variant of monte_carlo_SPPR supporting only kind='new'.          Pre-allocates, Return the sorted seq IDs of all primary-producer (PP) groups.          Return, Return the sorted seq IDs of all imported-diet (Import) groups.          Impor
-
-### Community 31 - "Community 31"
-Cohesion: 0.18
-Nodes (8): PPRCalculator, Pauly & Christensen (1986)-style SPPR using a single catch-weighted trophic leve, Christensen & Pauly (1995)-style per-group SPPR = TE^(1-TL).          Uses eac, SPPR_1995 variant that linearly interpolates between bracketing integer trophic, Return a defensive (descending-seq sorted) copy of the per-group parameter table, Return the sorted seq IDs of all regular (consumer) groups.          Returns:, Build the per-group transfer-efficiency (TE) vector or matrix.          Args:, Compute the trophic level of every group via the standard linear-algebra definit
-
-### Community 32 - "README / Project Overview"
+### Community 7 - "README / Project Overview"
 Cohesion: 0.18
 Nodes (10): Data, Dependencies, FishEstimationAI, Key Concepts, Notebooks, Overview, Programmatic use, Project Structure (+2 more)
 
-### Community 33 - "Transfer Efficiency & SPPR Dispatch"
-Cohesion: 0.21
-Nodes (8): ndarray, Build the detritus recycling system (I - B) x = c for the GE / With Egestion mod, Return the spectral radius (largest absolute eigenvalue) of M.          Used t, Resolve a per-DET parameter into a float array aligned with DET_seq., Fallback DET scaling: pool all detritus into one compartment and solve a 1-D pro, Resolve the detritus recycling system: apply openness, choose solve-vs-pool, sca, Symbolic SPPR helper, "diet import as PP" variant.          Imported diet is t, Symbolic SPPR helper, "diet import as DC" variant.          Imported diet is k
+### Community 8 - "Legacy Species Group"
+Cohesion: 0.29
+Nodes (4): Build a ``SpeciesGroupLegacy`` from a flat dict of field values.          Factor, Return a human-readable one-line summary of this legacy species group., Convert this legacy group into a single-row DataFrame of its scalar fields., SpeciesGroupLegacy
 
 ## Knowledge Gaps
-- **54 isolated node(s):** `Knowledge Graph`, `Project Overview`, `graphify`, `Overview`, `Project Structure` (+49 more)
+- **58 isolated node(s):** `graphify`, `Overview`, `Project Structure`, `SPPR Methods`, `Data` (+53 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **21 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `ModelData` connect `ModelData Species Groups` to `Transfer Efficiency & SPPR Dispatch`, `PPR / NPP Outputs & Balance Checks`, `Ecopath Defaults & LIM`, `Excel Export & Entry Points`, `Community 31`?**
-  _High betweenness centrality (0.241) - this node is a cross-community bridge._
-- **Why does `PPRCalculator` connect `Community 31` to `Transfer Efficiency & SPPR Dispatch`, `PPR / NPP Outputs & Balance Checks`, `Ecopath Defaults & LIM`, `Excel Export & Entry Points`, `ModelData Species Groups`, `Community 8`, `Community 9`?**
-  _High betweenness centrality (0.219) - this node is a cross-community bridge._
-- **Why does `DataFrame` connect `PPR / NPP Outputs & Balance Checks` to `Transfer Efficiency & SPPR Dispatch`, `Ecopath Defaults & LIM`, `Excel Export & Entry Points`, `ModelData Species Groups`, `Community 8`, `Community 9`, `Community 31`?**
-  _High betweenness centrality (0.072) - this node is a cross-community bridge._
+- **Why does `ModelData` connect `Model Data Loading` to `SPPR Solver Core`, `Model Construction & Balancing`, `Ecopath Concepts & Detritus`, `Excel Export & Matrix Utils`, `PPR Concepts & Classic Methods`?**
+  _High betweenness centrality (0.291) - this node is a cross-community bridge._
+- **Why does `PPRCalculator` connect `Model Construction & Balancing` to `SPPR Solver Core`, `Model Data Loading`, `Ecopath Concepts & Detritus`, `Excel Export & Matrix Utils`, `PPR Concepts & Classic Methods`?**
+  _High betweenness centrality (0.265) - this node is a cross-community bridge._
+- **Why does `ModelData class (user guide)` connect `Ecopath Concepts & Detritus` to `Model Data Loading`?**
+  _High betweenness centrality (0.090) - this node is a cross-community bridge._
 - **Are the 5 inferred relationships involving `ModelData` (e.g. with `ndarray` and `PPRCalculator`) actually correct?**
   _`ModelData` has 5 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `Load a JSON file (relative to this module's directory) and return it as a dict.`, `Build a ``SpeciesGroupLegacy`` from a flat dict of field values.          Factor`, `Return a human-readable one-line summary of this legacy species group.` to the rest of the system?**
   _123 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `Legacy Model Loading & Accessors` be split into smaller, more focused modules?**
-  _Cohesion score 0.07142857142857142 - nodes in this community are weakly interconnected._
-- **Should `Ecopath Defaults & LIM` be split into smaller, more focused modules?**
-  _Cohesion score 0.11904761904761904 - nodes in this community are weakly interconnected._
+- **Should `SPPR Solver Core` be split into smaller, more focused modules?**
+  _Cohesion score 0.09142857142857143 - nodes in this community are weakly interconnected._
+- **Should `Model Data Loading` be split into smaller, more focused modules?**
+  _Cohesion score 0.07092198581560284 - nodes in this community are weakly interconnected._
