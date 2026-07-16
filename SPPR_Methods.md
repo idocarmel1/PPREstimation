@@ -44,19 +44,29 @@ All methods draw on the same underlying quantities, unpacked from the Ecopath mo
 |--------|-----------|--------------------|
 | `p` | production | total production of a group (biomass produced per unit time) |
 | `q` | consumption | total food eaten by a group |
-| `M0` | natural mortality flow | production dying of causes other than predation/fishing → goes to detritus |
-| `egestion` | egestion | unassimilated food (faeces) → goes to detritus |
-| `EE` | ecotrophic efficiency | fraction of production used *within* the system (eaten or exported), the rest is `M0` |
+| `M0` | non-predatory mortality flow | production dying of causes other than predation/fishing → routed to detritus |
+| `egestion` | egestion `U` | unassimilated food (faeces) → routed to detritus |
+| `EE` | ecotrophic efficiency | the fraction of production **not routed to detritus** — i.e. used within the system or exported: eaten by predators, caught, accumulated as biomass, or net-migrated. `EE = (predation + catch + BA + Nm)/p = (p − M0)/p`. Its complement `M0/p` is the fraction that dies non-predatorily to detritus. |
 | `GE` | gross efficiency = `p/q` | how efficiently consumed food becomes production |
-| `catch` | catch | the harvest we are attributing a PPR cost to |
-| `DC` | diet composition | `DC[i,j]` = fraction of predator *i*'s diet made up of prey *j* |
-| `Z` | flow matrix | `Z = DC · q`, absolute flow of biomass from prey to predator |
+| `catch` | catch `C` | the harvest we are attributing a PPR cost to |
+| `BA` | biomass accumulation (`growth`) | net change in standing biomass over the period |
+| `Nm` | net migration | net biomass gained by immigration − emigration |
+| `DC` | diet composition | `DC[i,j]` = fraction of predator *i*'s diet made up of prey *j* (consumer rows sum to 1; PP/Import rows are all zeros) |
+| `Z` | biotic transaction matrix | `Z[i,j] = q_i · DC[i,j]`, absolute predatory flow from prey *j* into predator *i* |
+
+The two Ecopath mass-balance identities tie these together, per group:
+
+$$ q = \text{respiration} + U + p \qquad\qquad p = BA + \text{predation} + C + N_m + M0 $$
+
+so that `EE·p = p − M0 = predation + C + BA + Nm` is exactly the production that leaves a
+group through a route *other* than non-predatory death. This is the quantity `EE` measures, and
+it is what makes `TE = GE·EE` the *fraction transferred up the web* (see below).
 
 ### Trophic categories (`trophic_info`)
 Groups are classified into four kinds, each with its own `get_*_seq()` accessor:
 
 - **PP** (primary producers) — basal autotrophs; the "source" the whole calculation traces back to.
-- **DET** (detritus) — dead organic matter pools; recycled basal sources fed by `M0` + egestion.
+- **DET** (detritus) — dead organic matter pools; recycled basal sources fed by `M0` + `egestion`.
 - **Import** — external production entering the system (diet imported from outside the model boundary).
 - **Regular** — consumers (heterotrophs).
 
@@ -70,7 +80,7 @@ next. It is the single most important ecological assumption in every flow-networ
 | `TE_option` | Formula | Ecological meaning |
 |-------------|---------|--------------------|
 | `'GE'` | `p/q` | **Gross growth efficiency** — production per unit consumed. Ignores that not all production is passed on. This is what the EwE user guide uses. |
-| `'TE'` | `(p/q)·(1 − M0/p)` | Gross efficiency times the **ecotrophic fraction**: only the part of production that is actually consumed/exported counts as "transferred". Production that dies naturally (`M0`) is treated as lost from the up-web pathway. Equivalent to `GE·EE`. |
+| `'TE'` | `(p/q)·(1 − M0/p)` | Gross efficiency times the **ecotrophic fraction**: only the part of production that is actually consumed/exported/accumulated/migrated counts as "transferred". Production that dies naturally (`M0`) is treated as lost from the up-web pathway. Equivalent to `GE·EE`. |
 | `'With Egestion'` | `(p/q)·(q/(q−egestion))` | Efficiency computed on **assimilated** intake rather than gross intake, i.e. faeces are removed from the denominator so they are accounted separately (they flow to detritus, not up the chain). |
 | `'global'` | one scalar for all groups | A single system-wide TE broadcast to every group — the classic "10% rule" assumption. Controlled by `global_TE`. |
 
@@ -84,20 +94,57 @@ next. It is the single most important ecological assumption in every flow-networ
 - **`as_matrix`**: return an *n×n* matrix (per-edge weights) vs a length-*n* vector.
 
 ### `get_TL` — trophic level
-Solves the standard linear-algebra definition `TL = (I − DC)⁻¹ · 1`: each group's trophic
-level is 1 plus the diet-weighted mean TL of its prey. Basal sources sit at TL 1.
-- **`break_cycles`**: remove cycles (Ulanowicz algorithm) before inverting, so recursive
-  loops (e.g. detritus ↔ bacteria) don't make the inversion ill-behaved.
-- **`DET_as_PP`**: treat detritus as a basal production source at TL 1.
-- **`TE_option`**: how detritus diet rows are redefined before inversion.
+Trophic level follows the standard recursive definition: a group's TL is one more than the
+diet-weighted mean TL of its prey,
+
+$$ TL_i = 1 + \sum_j DC_{ij}\,TL_j \quad\Longleftrightarrow\quad \mathbf{TL} = (I - DC)^{-1}\mathbf{1}. $$
+
+Basal sources (with an all-zero diet row) sit at TL 1; the matrix inverse resolves the
+recursive dependencies (including cycles) in one shot.
+
+- **`break_cycles`**: remove cycles (Ulanowicz algorithm) before inverting, so recursive loops
+  (e.g. detritus ↔ bacteria) don't distort the inversion.
+- **`DET_as_PP`**: treat detritus as a basal production source at TL 1 (see below).
+- **`TE_option`** — this decides **how the detritus rows of `DC` are rewritten before the
+  inversion**, and because detritus typically feeds many consumers, that choice ripples up into
+  every TL above it:
+  - `'TE'` — **zero the detritus→consumer entries** (`DC[DET, Regular] = 0`). Detritus becomes
+    a pure basal node at TL 1, and a consumer that eats detritus gets no TL contribution from
+    that part of its diet (as if detritus were TL 0 in the mean). This is the classic Christensen
+    & Pauly (1995) convention: "cycles through detritus are removed by zeroing the detritus rows
+    of `DC`, establishing `TL = 1` for detritus while preserving living cycles."
+  - `'GE'` — **rebuild the detritus diet row from provenance**: `DC[DET, :] = (M0 · fracs)/q_DET`
+    (routed by `det_fate`), i.e. detritus "eats" the groups whose mortality fed it. Detritus then
+    inherits a fractional TL just above the mean TL of the dead matter entering it, and consumers
+    of detritus are pushed up accordingly. Detritus is no longer pinned at TL 1.
+  - other values (e.g. `'With Egestion'`, the default) — leave `DC` as-is, so the detritus row is
+    whatever `get_DC(DET_as_PP=...)` produced.
+
+  Ecologically: under `'TE'` a detritivore is treated as feeding at the very base (its detritus
+  intake adds nothing to its TL), whereas under `'GE'` the detritivore's TL reflects the trophic
+  history of the material in the detritus pool. The two can give visibly different TLs for
+  detritus-based food chains.
 
 ### `DET_as_PP` and `normalize` (in `get_DC` / `get_Z`)
-These control whether **detritus is a source or a recycling loop**:
-- `DET_as_PP=True` — detritus is a basal source (its diet row is treated as terminal). This is
-  what the flow-network SPPR methods use so that detritus becomes one of the "columns" you get
-  an SPPR breakdown against.
+`DET_as_PP` controls whether **detritus is a source or a recycling loop**:
+- `DET_as_PP=True` — detritus is a basal source: its diet row is the stored `DC` (in practice
+  terminal / zero outgoing diet in `get_Z`), so no flow is traced *out* of detritus. This is what
+  the flow-network SPPR methods use, so that detritus becomes one of the basal-source "columns"
+  you get an SPPR breakdown against.
 - `DET_as_PP=False` — the detritus row is rebuilt from where its material actually came from
-  (`M0` + egestion shares, routed by `det_fate`), i.e. detritus recycles back into the web.
+  (`M0` + egestion shares, routed by `det_fate`), i.e. detritus recycles back into the web; the
+  non-detritus rows are rescaled to preserve their original row sums.
+
+`normalize` controls **whether each diet row is forced to sum to 1**:
+- `normalize=False` (default) — rows keep their *original* sums. A consumer whose reported diet
+  does not sum exactly to 1 (rounding, or a diet-import fraction stripped out) keeps that sum, so
+  `Z = DC·q` and `A = DC/TE` preserve the true absolute flows. The SPPR solvers rely on this,
+  because they build `A` from the real diet fractions rather than renormalized ones.
+- `normalize=True` — every row is divided by its own sum (`DC = DC / DC.sum(axis=1)`), forcing
+  each consumer's diet fractions to add to exactly 1. Use this when a downstream calculation
+  needs a strict probability distribution per row (e.g. a clean `(I − DC)⁻¹` TL inversion) and
+  the small deviations from unity would otherwise bias the result. It is *not* used by the SPPR
+  flow solvers, precisely because renormalizing would silently rescale genuine mass flows.
 
 ---
 
@@ -109,6 +156,15 @@ SPPR_1986() -> pd.DataFrame   # single 'sppr' column
 ```
 Computes **one** catch-weighted mean trophic level for the entire catch, then
 `SPPR = TE^(1−TL)` with a **fixed TE = 0.1**. Every group receives the same number.
+
+**Equation.** With a single catch-weighted mean trophic level
+$\overline{TL} = \big(\sum_i C_i\,TL_i\big)/\sum_i C_i$ and fixed `TE = 0.1`,
+
+$$ \mathrm{SPPR}_i = TE^{\,1-\overline{TL}} = \left(\tfrac{1}{TE}\right)^{\overline{TL}-1} = 10^{\,\overline{TL}-1}\quad\text{(same for every }i). $$
+
+This is the original Pauly & Christensen pyramid: each trophic step multiplies the requirement
+by `1/TE = 10`, so a mean-TL-3.5 catch costs `10^{2.5}` units of primary production per unit
+caught.
 
 - **No user flags.** TE is hard-wired to the classic 10% rule; TL is broken-cycle and
   DET-as-PP forced.
@@ -124,6 +180,11 @@ SPPR_1995(global_TE: str | float = 0.1) -> pd.DataFrame
 Same `TE^(1−TL)` form, but uses **each group's own continuous trophic level** rather than one
 catch-average, with a single global TE.
 
+**Equation.** Using each group's own fractional trophic level `TL_i` (from `get_TL`) and one
+global `TE`,
+
+$$ \mathrm{SPPR}_i = TE^{\,1-TL_i} = \left(\tfrac{1}{TE}\right)^{TL_i-1}. $$
+
 - **`global_TE`**: the system-wide transfer efficiency — a float (default `0.1`, the 10% rule)
   or `'mean'` (let the model's own efficiencies set it).
 - **Ecological meaning:** resolves the fact that different harvested groups sit at different
@@ -135,8 +196,16 @@ catch-average, with a single global TE.
 SPPR_1995_TL_fix(global_TE: str | float = 0.1) -> pd.DataFrame
 ```
 A numerical refinement of `SPPR_1995`. Instead of raising `1/TE` to a fractional power
-directly, it **linearly interpolates between the two bracketing integer trophic levels**:
-`SPPR = (1−frac)·(1/TE)^(TLint−1) + frac·(1/TE)^TLint`.
+directly, it **linearly interpolates between the two bracketing integer trophic levels**.
+
+**Equation.** Writing `TL_i = n + f` with integer part `n = ⌊TL_i⌋` and fraction
+`f = TL_i mod 1`,
+
+$$ \mathrm{SPPR}_i = (1-f)\left(\tfrac{1}{TE}\right)^{\,n-1} + f\left(\tfrac{1}{TE}\right)^{\,n}. $$
+
+So a group at `TL = 3.4` is scored as `0.6` of a pure TL-3 feeder plus `0.4` of a pure TL-4
+feeder, instead of `(1/TE)^{2.4}`. The two agree at integer TL but differ in between, because
+`x^{TL}` is convex — the direct fractional exponent sits *below* the straight-line blend.
 
 - **`global_TE`**: as above.
 - **Ecological meaning:** a group at TL 3.4 is treated as a mixture of "40% of a TL-4 feeder
@@ -152,47 +221,136 @@ These trace production back through the diet matrix and return a **matrix**: row
 columns = basal sources (each PP group, each detritus pool, and/or Import). Cell `(i, s)` = the
 production required from basal source *s* per unit of group *i*'s production.
 
+### Mathematical foundation (shared by all flow-network methods)
+
+**The per-edge weight matrix `A`.** Every flow-network method starts from the
+**production-normalized transaction matrix**
+
+$$ A_{ik} = \frac{DC_{ik}}{TE_i} \qquad\text{(equivalently } A_{ik}=\tfrac{Z_{ik}}{P_i\,EE_i}=\tfrac{Z_{ik}}{P_i-M0_i}\text{).} $$
+
+`A_{ik}` is the number of units of prey/source *k*'s production directly required to make one
+unit of consumer *i*'s production: the diet fraction `DC_{ik}` says how much of *i*'s intake is
+*k*, and dividing by the transfer efficiency `TE_i` converts "intake" into "production required"
+(you need `1/TE` units in for one unit out). The `TE_option` (§2) chooses which efficiency sits
+in that denominator.
+
+**Why `A·x = x`.** Let `x_i = SPPR_i` be the source requirement of one unit of group *i*. If the
+system is closed with respect to the chosen basal sources, then the requirement of *i* is just
+the sum of the requirements of everything it directly needs:
+
+$$ x_i = \sum_k A_{ik}\,x_k \qquad\Longleftrightarrow\qquad \mathbf{x} = A\,\mathbf{x} \qquad\Longleftrightarrow\qquad (A - I)\,\mathbf{x} = 0. $$
+
+So the SPPR vector is a fixed point of `A` — an eigenvector with eigenvalue 1 — i.e. it lives in
+the **nullspace of `L = A − I`**. Intuitively, `x = Ax` says "the cost of a group equals the
+summed cost of its diet"; solving it in closed form automatically sums **all** pathways and
+**all** cycles (the geometric series `I + A + A² + …`), which is exactly what path enumeration
+struggles with.
+
+**Terminal sources and the basis columns.** Basal sources (PP, detritus, imports) have no diet
+of their own to trace, so their rows of `A` are replaced by identity rows
+(`Ã_{ii}=1`, `Ã_{ij}=0`). The nullspace of `I − Ã` then has one basis vector per terminal
+source, normalized (via RREF) so that basis vector `s^b` carries a `1` on source `b` and `0` on
+the other sources. Column `b` of the returned SPPR matrix is `s^b`: the units of source `b`
+required, directly and indirectly, to produce one unit of each group. Summing the columns gives
+the aggregated SPPR.
+
+**The balance identity (used to sanity-check every method).** Under mass balance, primary
+production entering the system equals the production leaving it, both measured in SPPR units:
+
+$$ \text{Inflow} = NPP + \text{DietImport} = (\mathbf{N_m} + \mathbf{C} + \mathbf{BA})\cdot\mathbf{SPPR} = \text{Outflow}, $$
+
+which is why `get_PPR2NPP_ratio` computes `C·SPPR / [(Nm+C+BA)·SPPR]`.
+
 ### `SPPR_EwE(TE_option, use_EE=True, return_paths=True, silent=True)`
 ```python
 SPPR_EwE(TE_option, use_EE=True, return_paths=True, silent=True)
     -> (SPPR, A, paths_dict)
 ```
 The classic **path-enumeration** approach of Ecopath with Ecosim. It enumerates *every simple
-path* from each group down to a basal terminal node and sums the product of edge weights along
-each path. The per-edge weight matrix is `A = DC/TE` (diet fraction divided by transfer
-efficiency = production required per unit passed along that link).
+path* from each group down to a basal terminal node and sums the product of the per-edge weights
+`A = DC/TE` along each path.
 
-- **`TE_option`** — `'GE'`, `'TE'`, `'With Egestion'`, or `'global'`. Governs how much basal
-  production each trophic link implies (see §2). The choice of TE is the dominant ecological
-  assumption.
-- **`use_EE`** (default True) — scale each group's row by its ecotrophic efficiency. Biologically
-  this discounts production that never gets eaten (dies to `M0`) so it isn't double-counted as
-  supporting the harvest.
+**Equation.** For focal group *x*,
+
+$$ \mathrm{SPPR}_x = EE_x \!\!\sum_{\mathrm{path}\in\mathcal{P}_x}\ \prod_{(\mathrm{pred},\mathrm{prey})\in\mathrm{path}} \frac{DC_{\mathrm{pred},\mathrm{prey}}}{TE_{\mathrm{pred}}}, $$
+
+where `𝒫_x` is the set of **simple** paths (no node repeated) from *x* down to a basal terminal
+(PP or detritus). Because paths are simple, cannibalism and cycles are **not** expanded into
+repeated loops — this is exactly what the matrix methods below fix.
+
+- **`TE_option`** — `'GE'`, `'TE'`, `'With Egestion'`, or `'global'`. Governs the per-edge weight
+  `DC/TE`, i.e. how much basal production each trophic link implies (see §2). The dominant
+  ecological assumption.
+- **`use_EE`** (default True) — this is the **leading `EE_x` factor** in the equation above, and
+  it multiplies **the whole row of the focal group `x`** (the group whose SPPR is being computed):
+  in code, `SPPR = SPPR.mul(EE, axis='index')`, i.e. row *i* is scaled by `EE_i`.
+
+  Why only the focal group, and why it matters: with `TE = GE·EE`, every edge weight `DC/TE`
+  already contains a `1/EE_pred`. Tracing a chain backward from *x*, the **first** step uses
+  `1/EE_x`; the leading `EE_x` **cancels it**, so the focal group's own step effectively uses
+  gross efficiency `GE_x`, while every downstream predator keeps the full `TE = GE·EE`.
+  Ecologically (per the article's note): a group's production splits into the ecotrophically-used
+  part (eaten/caught/accumulated) and the part that dies to `M0` and drops to detritus. The
+  leading `EE_x` charges the harvest only for the focal group's **useful** production, excluding
+  the `M0`-to-detritus fraction — whereas for the intermediate predators along the chain, the
+  `M0` loss *is* counted, because supporting them required feeding the fraction that later died.
+  Setting `use_EE=False` drops this factor, charging the focal group's full production
+  (including its `M0`) to the requirement.
 - **`return_paths`** (default True) — if True, use the slower implementation that also returns
   the explicit list of food-chain paths (useful for tracing *which* chains dominate the PPR); if
   False, use the fast vectorized implementation (returns an empty paths dict).
 - **`silent`** — suppress progress bars.
 - **Returns** `(SPPR, A, paths_dict)`.
 - **Ecological meaning:** the most literal reading of "trace the energy back". Its weakness is
-  cycles: recycling loops create infinitely many paths, so a depth safety-valve caps
-  enumeration. This is why the matrix reformulations below exist.
+  cycles: recycling loops create infinitely many paths, so only simple paths are kept (and a
+  depth safety-valve caps enumeration). This *undercounts* cyclic contributions — a cannibal
+  group at `TE=0.1` eating 99% PP + 1% itself gets `SPPR = 0.99/TE = 9.9` from the one simple
+  path, whereas the true cycle-summed value is `(0.99/TE)/(1 − 0.01/TE) = 11`. This is why the
+  matrix reformulations below exist.
 
 ### `SPPR_EwE_Ido(TE_option, global_TE='mean', use_EE=True)`
 ```python
 SPPR_EwE_Ido(TE_option, global_TE='mean', use_EE=True) -> (SPPR, A, L)
 ```
-A **matrix (nullspace) reformulation** of `SPPR_EwE` that avoids path enumeration. It builds
-`A = DC/TE` with cycles removed, replaces each basal (producer) row with an identity row, and
-finds the steady-state SPPR as the **nullspace of `L = A − I`** (i.e. `A·x = x`). The nullspace
-is RREF-normalized so each output column is anchored to exactly one basal source.
+A **matrix (nullspace) reformulation** in the spirit of `SPPR_EwE`. It builds `A = DC/TE`,
+**removes cycles first**, replaces each basal (producer) row with an identity row, and finds the
+SPPR as the **nullspace of `L = A − I`** (i.e. `A·x = x`), RREF-normalized so each output column
+is anchored to one basal source.
+
+The cycle handling is the crucial subtlety. It computes `DCNoCyc = remove_cycles(DC)` (Ulanowicz
+weakest-link removal) and then **zeros in the original `DC` exactly the edges that
+`remove_cycles` drove to zero** (`DC[DCNoCyc == 0] = 0`) — *without renormalizing the surviving
+diet fractions*. It then solves the nullspace on that pruned matrix.
 
 - **`TE_option`** — as above.
 - **`global_TE`** — only used when `TE_option='global'`; `'mean'` or a literal float.
-- **`use_EE`** — scale rows by EE.
+- **`use_EE`** — scale each focal group's row by its `EE` (same meaning as in `SPPR_EwE`).
 - **Returns** `(SPPR, A, L)`.
-- **Ecological meaning:** mathematically equivalent to summing all paths (including cycles,
-  handled by cycle removal) but exact and fast. This is the bridge between the EwE path method
-  and the newer numeric solver.
+
+> **`SPPR_EwE_Ido` is *not* mathematically equivalent to `SPPR_EwE` in general — they agree only
+> when the food web has no cycles.** I verified this empirically by generating random 5-group
+> webs and comparing the two on the consumer rows (`TE_option='GE'`, `use_EE=True`):
+>
+> | web has a cycle? | `SPPR_EwE == SPPR_EwE_Ido`? |
+> |---|---|
+> | acyclic | **always equal** (41/41 acyclic draws) |
+> | cyclic | **differ in the large majority** (1971 of 2813 cyclic draws) |
+>
+> Example (a web with cannibalism + mutual predation), aggregated SPPR:
+> a self-feeding group came out **27.2** under `SPPR_EwE` vs **10.5** under `SPPR_EwE_Ido`.
+>
+> **Why.** When the graph is acyclic, `remove_cycles` is a no-op, so both methods operate on the
+> same `A`; and on an acyclic graph the nullspace sum equals the simple-path sum — hence
+> identical. When cycles exist the two diverge because they handle them differently and neither
+> equals the true cycle-summed (Leontief) answer:
+> - `SPPR_EwE` keeps **all simple paths at their full diet weights**, but drops any path that
+>   would repeat a node (so it undercounts cyclic recycling).
+> - `SPPR_EwE_Ido` **deletes the weakest-link edges** of each cycle and keeps the survivors at
+>   full weight *without renormalizing*, so the pruned consumer's diet no longer sums to 1 — it
+>   loses mass, and its nullspace SPPR is generally *lower* than the simple-path sum.
+>
+> So this method is best read as a fast, cycle-pruned matrix cousin of `SPPR_EwE`, **not** as the
+> exact all-cycles nullspace. For that, use `SPPR_new` / `SPPR_2015`, which count cycles fully.
 
 ### `SPPR_2015(only_pp_det=True)` — the 2015 method
 ```python
@@ -203,6 +361,27 @@ the PP-derived fraction of each detritus flow is reassigned back onto the PP gro
 only living compartments. The production-normalized transaction matrix `A` then yields the
 production-requirement matrix `L = (I − A)⁻¹`, whose PP columns give the per-group SPPR. A
 balancing detritus SPPR is added back at the end.
+
+**Equation.** In this method the code builds `A` directly from flows and living production,
+
+$$ A_{ij} = \frac{Z_{ij}}{P_i}, \qquad L = (I - A)^{-1}, \qquad \mathrm{SPPR}_i = L_{i,\mathrm{PP}}, $$
+
+where `P_i` here is the **living/useful production** `P_i − M0_i` (production net of
+non-predatory mortality). The code computes this as `P[non_PP] = p·EE` for consumers and then
+`A = Zᵀ / P`.
+
+**Why `A = Z/P` is the same matrix as `A = DC/TE`.** These two constructions are algebraically
+identical, which is what makes `SPPR_2015` the same underlying calculation as the other
+flow-network methods. Substituting the definitions `Z_{ij} = q_i·DC_{ij}`,
+`P_i − M0_i = p_i·EE_i`, `GE_i = p_i/q_i` and `TE_i = GE_i·EE_i`:
+
+$$ A_{ij} = \frac{Z_{ij}}{P_i - M0_i} = \frac{q_i\,DC_{ij}}{p_i\,EE_i} = \frac{DC_{ij}}{(p_i/q_i)\,EE_i} = \frac{DC_{ij}}{GE_i\,EE_i} = \frac{DC_{ij}}{TE_i}. $$
+
+So dividing the absolute prey flow by the group's *useful* production is exactly the same as
+dividing the diet fraction by the ecotrophic transfer efficiency `TE = GE·EE`. The powers of `A`
+then enumerate paths: `[A^k]_{i,\mathrm{PP}}` is the PP required through all length-`k` chains,
+and `L = (I−A)⁻¹ = I + A + A² + …` sums every path length — **cycles included** — provided the
+spectral radius of `A` is `< 1` (the standard Leontief convergence condition).
 
 - **`only_pp_det`** — nominally whether to reassign only the PP-derived fraction of detritus
   back onto PP (the article's choice). **Note: the body forces this to `True`**, so it is
@@ -221,21 +400,101 @@ SPPR_new(TE=None, TE_option='GE', DET_TE_vals=1, collapse_det=None,
          det_theta=1.0, det_external_sppr=0.0, fix_EE_0_cases=True)
     -> (SPPR, A, L)
 ```
-The main, most general numeric SPPR method. Like `SPPR_EwE_Ido` it builds `A = DC/TE`, replaces
-basal rows with identity rows, and solves the nullspace of `L = A − I`, RREF-normalized to one
-column per basal source. Its novelty is **explicit, tunable detritus handling** — how recycled
+The main, most general numeric SPPR method. It builds `A = DC/TE` (with detritus treated as a
+basal source, `DET_as_PP=True`), replaces basal rows with identity rows, and solves the
+**nullspace of `L = A − I`** (the shared foundation above), RREF-normalized to one column per
+basal source. Unlike `SPPR_EwE_Ido` it does **not** prune cycles, so the living-network solution
+counts all cycles exactly. Its novelty is **explicit, tunable detritus handling** — how recycled
 dead organic matter is credited as a basal source.
+
+#### The core calculation, step by step (single detritus, `det_collapse_mode='never'`)
+
+This is the simplest and default case; start here. Take a model with one detritus pool `DET`.
+
+1. **Solve the living network as if detritus were a free basal source.** The nullspace of
+   `L = A − I` gives, for every group *i*, a raw SPPR split into one column per basal source. Two
+   kinds of column matter here: the primary-producer / import columns, and the detritus column.
+   Write `nonDET_sppr_i` for the summed PP+Import part and `basis_i[DET]` for the raw detritus
+   column (the units of detritus required per unit of *i*, treating one unit of detritus as
+   "1" for now). At this stage detritus is just another source; one unit of it is worth one unit
+   of itself.
+
+2. **Find what one unit of detritus is actually worth in primary-production units.** Detritus is
+   not a true primary source — its value is the flow-weighted average SPPR of everything dying
+   into it (the article's `SPPR_DET = Σ_k F_{k→DET}·SPPR_k / Σ_k F_{k→DET}`). Let `q_DET` be the
+   total inflow to the pool and, for `TE_option='GE'`, define the per-group inflow share
+
+   $$ m_k = \frac{M0_k}{q_{DET}} \quad\text{(the fraction of the detritus pool supplied by group }k\text{'s non-predatory death).} $$
+
+   Each dying group `k` carries its *own* SPPR into the pool, and that SPPR itself has a
+   primary-producer part and a detritus part:
+   `SPPR_k = nonDET_sppr_k + sppr_det · basis_k[DET]`, where `sppr_det` is the unknown value of
+   one detritus unit. Averaging over the inflow gives a single scalar self-consistency equation:
+
+   $$ \mathrm{sppr\_det} = \underbrace{\sum_k m_k\,\mathrm{nonDET\_sppr}_k}_{a\ \text{(PP-origin material entering DET)}} + \underbrace{\Big(\sum_k m_k\,\mathrm{basis}_k[DET]\Big)}_{b\ \text{(recycled DET-origin material)}}\cdot \mathrm{sppr\_det}. $$
+
+   This is exactly the cannibal-cycle logic from `SPPR_EwE` above, now applied to the whole
+   detritus pool: detritus feeds consumers, whose death feeds detritus again, so its value
+   depends on itself. Solving the scalar fixed point,
+
+   $$ \boxed{\ \mathrm{sppr\_det} = \dfrac{a}{1-b}\ } \qquad (b<1\text{ required for a finite, positive value).} $$
+
+3. **Scale the detritus column** of the SPPR matrix by `sppr_det` and add it to the PP/Import
+   columns. `'never'` means step 2 is always solved directly (never pooled), so if `b ≥ 1`
+   (recycling so strong it diverges) the result may go negative rather than raise.
+
+   *Worked check (a model where A eats detritus, B eats PP+A, and PP mortality feeds detritus):*
+   `q_DET = 102`, `a = 0.9804·1 + 0.0098·19.09 = 1.168`, `b = 0.0098·4.167 + 0.0098·3.788 = 0.078`,
+   giving `sppr_det = 1.168 / (1 − 0.078) = 1.266` — matching the code's output to 3 decimals,
+   and `> 1` because detritus here carries mostly PP-origin mortality.
+
+   For `TE_option='With Egestion'`, `m_k` gains a term routing egestion through the diet,
+   `m_k = M0_k/q_DET + (DCᵀ · (egestion·fracs/q_DET))_k`, because faeces carry the SPPR of what
+   was eaten. For `TE_option='TE'`, there is no recycling matrix at all: each detritus column is
+   simply scaled by its direct PP+Import inflow share (times `det_theta`).
+
+#### The coupled recycling system `(I − B)x = c` (multiple detritus pools)
+
+With more than one detritus pool the single scalar becomes a **vector** `x = (sppr_det₁, …,
+sppr_det_k)`, because pools feed each other: a consumer eating pool *j* can die into pool *l*, so
+pool *l*'s value depends on pool *j*'s value. Repeating step 2 per pool `l`:
+
+$$ x_l = \underbrace{\sum_k m^{(l)}_k\,\mathrm{nonDET\_sppr}_k}_{c_l} + \sum_{j} \underbrace{\Big(\sum_k m^{(l)}_k\,\mathrm{basis}_k[DET_j]\Big)}_{B_{lj}}\, x_j, $$
+
+which in matrix form is the linear system `_build_det_BC` assembles and `_solve_det_scaling`
+solves:
+
+$$ \mathbf{x} = \mathbf{c} + B\,\mathbf{x} \qquad\Longleftrightarrow\qquad (I - B)\,\mathbf{x} = \mathbf{c}. $$
+
+Reading the pieces (all defined per pool `l`, with `m^{(l)}_k` the fraction of pool `l`'s inflow
+supplied by group `k`, routed by `det_fate`):
+
+- **`c_l`** = the primary-production-origin SPPR entering pool `l` (mortality/egestion of PP and
+  of the PP-derived part of consumers) — the "new" material.
+- **`B_{lj}`** = how much of pool `l`'s value comes from pool `j`'s value, via consumers that eat
+  pool `j` and then die into pool `l`. This is the **recycling coupling**, and it is where `DC`
+  and `A` enter: `basis_k[DET_j]` comes straight from the living-network nullspace of `A = DC/TE`
+  (how much of pool `j` each group needs), and `m^{(l)}_k` comes from the mortality/egestion
+  flows into pool `l`. So `B` is the composition "trace pool `j` up through the diet
+  (`A`/nullspace), then back down into pool `l` through death (`M0`, egestion)".
+- **`(I − B)⁻¹ = I + B + B² + …`** is again a Leontief sum: `I` is the direct PP-origin input,
+  `B` is one recycling loop through the detritus system, `B²` two loops, and so on. It converges
+  when the spectral radius of `B` is `< 1` (recycling loses mass each pass). The single-detritus
+  `a/(1−b)` above is exactly this with a 1×1 `B = [b]` and `c = [a]`.
+
+So the detritus resolution is a **second linear solve layered on top of the living-network
+nullspace**: the nullspace (from `A = DC/TE`) fixes how much of each detritus pool every group
+needs; the `(I − B)x = c` system then converts those pools from "one unit of themselves" into
+primary-production-equivalent values by closing the death→detritus→consumption→death loop.
 
 **Core inputs:**
 - **`TE`** — supply an explicit TE matrix (e.g. a Monte-Carlo sample). If `None`, built from
   `TE_option`.
-- **`TE_option`** — `'GE'` (default), `'TE'`, `'With Egestion'`, `'global'` (see §2). This also
-  selects how detritus is resolved:
-  - `'TE'`: each detritus column is scaled by its **direct PP+Import inflow share** (detritus
-    treated as a pass-through of the primary production that fell into it).
-  - `'GE'` / `'With Egestion'`: build the **coupled recycling system** `(I − B)x = c` (via
-    `_build_det_BC`) and solve it (via `_solve_det_scaling`). This captures that detritus feeds
-    consumers whose mortality feeds detritus again — a genuine recycling loop.
+- **`TE_option`** — `'GE'` (default), `'TE'`, `'With Egestion'`, `'global'` (see §2). Beyond
+  setting the per-edge weights `A = DC/TE`, it also selects the detritus resolution described
+  above: `'TE'` scales each detritus column by its direct PP+Import inflow share (no recycling
+  matrix), while `'GE'` / `'With Egestion'` build and solve the coupled recycling system
+  `(I − B)x = c`.
 - **`DET_TE_vals`** (default 1) — TE for detritus rows when building the TE matrix.
 
 **Detritus recycling knobs** (the ecological heart of the method):
@@ -283,15 +542,25 @@ solution and a numeric basis matrix. It shares all of `SPPR_new`'s detritus knob
 (`collapse_det`, `det_collapse_mode`, `det_open_mode`, `det_theta`, `det_external_sppr`,
 `fix_EE_0_cases`) with identical meaning.
 
-Its distinctive input is **how imported diet is treated**:
+Its distinctive input is **how imported diet is treated**. Imported food crosses the model
+boundary, so one cannot automatically say one unit of it equals one unit of internal primary
+production. The two options answer different accounting questions:
 - **`diet_import_option`**:
   - `'as_DC'` (default): imported diet is kept as a **separate production source** with its own
-    `DIET_SPPR` solved from a second linear system. Each imported group carries the
-    diet-composition-weighted production it requires — i.e. imported food is costed by what it,
-    in turn, was made of. Ecologically the most faithful treatment of cross-boundary subsidies.
-  - `'as_PP'`: imported diet is treated as **just another primary-production source** (its own
-    free SPPR symbol fixed to 1). Simpler; treats external food as if it were free basal
-    production entering the system.
+    `DIET_SPPR`, solved from a second linear system. After the internal SPPRs are known, the
+    import value for consumer *i* is inferred as the **weighted mean SPPR of that consumer's
+    non-import diet**:
+
+    $$ (1-DC_{i,DI})\,\mathrm{DIET\_SPPR}_i = \sum_{k\in\mathcal{X}} DC_{ik}\,\mathrm{SPPR}_k \;\Longrightarrow\; \mathrm{DIET\_SPPR}_i = \frac{\sum_{k\in\mathcal{X}} DC_{ik}\,\mathrm{SPPR}_k}{\sum_{k\in\mathcal{X}} DC_{ik}}, $$
+
+    where `𝒳` is the set of internal (regular/detritus/PP) compartments and `DI` the import node.
+    So imported food is costed by what the consumer's *internal* diet is made of — the most
+    faithful treatment of cross-boundary subsidies.
+  - `'as_PP'`: imported diet is treated as **just another primary-production source** — its row
+    of `A` becomes an identity row and its own SPPR symbol is fixed to 1, exactly like a primary
+    producer. Simpler and transparent, but makes one unit of imported food directly comparable to
+    one unit of internal primary production (so the import contribution should be reported
+    separately).
 - **`sppr_det_value`** — if set, every detritus column is scaled by this fixed value instead of
   being solved. Useful to impose an externally-determined detritus SPPR.
 - Other args (`TE`, `TE_option`, `DET_TE_vals`, and the detritus knobs) match `SPPR_new`.
@@ -317,17 +586,30 @@ Its distinctive input is **how imported diet is treated**:
   into per-detritus arrays.
 
 ### `_sample_SPPR_new_forced_balance(TE_option='TE', sppr_det=None)`
-Runs `SPPR_new` and then solves the single detritus scaling value that forces **exact global
-mass balance** (PP inflow = export outflow of catch + growth + net migration weighted by SPPR).
-Returns `(sppr, sppr_det)`. Ecologically, it pins the one free recycling degree of freedom so
-that total primary production in equals total exported production out.
+Runs `SPPR_new`, then treats the detritus scaling as a single unknown `x = sppr_det` and solves
+the scalar equation that forces **exact global mass balance** — PP inflow equals the export
+outflow (catch + growth + net migration) weighted by SPPR:
+
+$$ \sum_{i\in PP} p_i \;=\; \sum_i (C_i + BA_i + N_{m,i})\big(\mathrm{SPPR}^{PP}_i + x\cdot\mathrm{SPPR}^{DET}_i\big), $$
+
+which is linear in `x`, so it is solved directly; the detritus columns are then scaled by the
+solved `x`. Returns `(sppr, sppr_det)`. Ecologically, it pins the one free recycling degree of
+freedom so that total primary production in equals total exported production out.
 
 ### `monte_carlo_SPPR(...)` / `monte_carlo_SPPR_2(...)`
-Uncertainty propagation: resample the TE matrix from gamma distributions centred on the model's
-TEs, recompute SPPR (via `SPPR_new` or `SPPR_symbolic`) many times, discard non-physical
-(negative-SPPR) draws, and average. Key knobs: `n_samples`, `TE_error_percent` (the CV of the
-TE prior), `TE_error_cut_percent` (clip band), plus all the detritus knobs. Ecologically this
-propagates the well-known uncertainty in transfer efficiency into an uncertainty band on PPR.
+Uncertainty propagation over transfer efficiency. Each per-group TE is resampled from a gamma
+distribution centred on the model value `\overline{TE}_i`, with shape and scale set so the mean
+is preserved and the coefficient of variation is `η` (= `TE_error_percent`):
+
+$$ \widetilde{TE}_i \sim \mathrm{Gamma}(\alpha,\theta_i),\qquad \alpha=\frac{1}{\eta^2},\qquad \theta_i=\overline{TE}_i\,\eta^2, $$
+
+then clipped to `[\overline{TE}_i(1-\delta),\ \overline{TE}_i(1+\delta)]` (`δ` =
+`TE_error_cut_percent`). SPPR is recomputed (via `SPPR_new` or `SPPR_symbolic`) on each sampled
+matrix, non-physical (negative-SPPR) draws are discarded, and the accepted draws are averaged.
+This matters ecologically because `A = DC/TE` depends on `1/TE`, which is convex, so
+`E[1/TE] ≥ 1/E[TE]` (Jensen): sampling *before* the nonlinear solve gives a higher, less biased
+expected PPR than plugging in the mean TE. Key knobs: `n_samples`, `TE_error_percent`,
+`TE_error_cut_percent`, plus all the detritus knobs.
 
 ---
 
@@ -337,9 +619,13 @@ propagates the well-known uncertainty in transfer efficiency into an uncertainty
 ```python
 get_PPR(sppr, only_inner=False, only_pp=False) -> pd.DataFrame | pd.Series
 ```
-Converts a **per-group SPPR** into the **total primary production required by the catch**:
-`PPR = catch · SPPR`. Each group's SPPR is weighted by how much of it we actually harvest and
-summed. The input SPPR is relabelled to seq, reindexed onto the catch, and infinities zeroed.
+Converts a **per-group SPPR** into the **total primary production required by the catch**. Each
+group's SPPR is weighted by how much of it we actually harvest and summed — an inner product
+with the catch vector, per basal source *s*:
+
+$$ PPR_s = \mathbf{C}\cdot\mathbf{SPPR}_s = \sum_i C_i\,(\mathrm{SPPR}_s)_i, \qquad PPR = \sum_{s\in\text{sources}} PPR_s. $$
+
+The input SPPR is relabelled to seq, reindexed onto the catch, and infinities zeroed.
 
 - **`only_inner`** — drop the Import columns, so only production generated *inside* the system is
   counted (exclude subsidies imported across the boundary).
@@ -364,7 +650,14 @@ get_PPR2NPP_ratio(sppr, only_pp=False) -> float
 ```
 The **fraction of available net primary production appropriated by the catch**: within-system
 `PPR / NPP`. This is the classic "%PPR" indicator (à la Pauly & Christensen) — what share of the
-sea's primary production the fishery consumes.
+sea's primary production the fishery consumes. Using the balance identity (§4), the denominator
+can be read as the total production leaving the system, so
+
+$$ \frac{PPR}{NPP} = \frac{\mathbf{C}\cdot\mathbf{SPPR}}{(\mathbf{N_m}+\mathbf{C}+\mathbf{BA})\cdot\mathbf{SPPR}}. $$
+
+With `Nm = 0` (the usual case), the ratio can exceed 1 when biomass is being depleted
+(`BA·SPPR < 0`), and falls below 1 when large outflows (mostly detrital) absorb part of the
+primary production.
 
 - **`only_pp`** — if True, count only within-system primary production in the numerator (drop
   Import and Detritus columns) for a like-for-like PP/PP comparison.
@@ -381,8 +674,8 @@ sea's primary production the fishery consumes.
 | A one-line classic estimate | `SPPR_1986` |
 | Per-group classic estimate | `SPPR_1995` / `SPPR_1995_TL_fix` |
 | Explicit food-chain paths | `SPPR_EwE` (`return_paths=True`) |
-| Fast EwE-equivalent | `SPPR_EwE_Ido` |
-| The 2015 input–output method | `SPPR_2015` |
+| Fast cycle-pruned matrix cousin of EwE (≠ EwE when cycles exist) | `SPPR_EwE_Ido` |
+| The 2015 input–output method (full cycles) | `SPPR_2015` |
 | General numeric solver with detritus control | `SPPR_new` |
 | Exact symbolic solution / import-cost detail | `SPPR_symbolic` |
 | Uncertainty bands | `monte_carlo_SPPR` |
