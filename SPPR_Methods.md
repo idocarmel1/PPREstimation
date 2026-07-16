@@ -416,14 +416,26 @@ This is the simplest and default case; start here. Take a model with one detritu
 
 $$ m_k = \frac{M0_k}{q_{DET}} \quad\text{(the fraction of the detritus pool supplied by group }k\text{'s non-predatory death).} $$
 
-   Each dying group `k` carries its *own* SPPR into the pool, and that SPPR itself has a
-   primary-producer part and a detritus part:
-   `SPPR_k = nonDET_sppr_k + sppr_det · basis_k[DET]`, where `sppr_det` is the unknown value of
-   one detritus unit. Averaging over the inflow gives a single scalar self-consistency equation:
+   By definition, one unit of detritus is worth the inflow-weighted average of the SPPR of
+   everything dying into it. Because the weights `m_k` sum to 1 (the inflows add up to the total
+   `q_DET`), this is a genuine average:
+
+$$ \mathrm{sppr\_det} = \sum_k m_k\cdot\mathrm{SPPR}_k. $$
+
+   The catch is that each `SPPR_k` on the right is not a fixed number: from step 1 it splits into a
+   **known** primary-producer/import part and an **unknown** detritus part,
+
+$$ \mathrm{SPPR}_k = \mathrm{nonDET\_sppr}_k + \mathrm{sppr\_det}\cdot\mathrm{basis}_k[DET], $$
+
+   whose only unknown is `sppr_det` itself — the value of one detritus unit we are solving for. So
+   detritus's value depends on the groups dying into it, but their SPPRs depend on detritus's value
+   (they ate detritus while alive). Substituting this split into the average and factoring the
+   common `sppr_det` out of the detritus term collapses all the groups `k` into one scalar equation
+   in which `sppr_det` appears on **both** sides — a self-consistency (fixed-point) equation:
 
 $$ \mathrm{sppr\_det} = \underbrace{\sum_k m_k\cdot\mathrm{nonDET\_sppr}_k}_{a\ \text{(PP-origin material entering DET)}} + \underbrace{\Big(\sum_k m_k\cdot\mathrm{basis}_k[DET]\Big)}_{b\ \text{(recycled DET-origin material)}}\cdot \mathrm{sppr\_det}. $$
 
-   This is exactly the cannibal-cycle logic from `SPPR_EwE` above, now applied to the whole
+   This is exactly the cannibal-cycle logic from above, now applied to the whole
    detritus pool: detritus feeds consumers, whose death feeds detritus again, so its value
    depends on itself. Solving the scalar fixed point,
 
@@ -432,11 +444,6 @@ $$ \boxed{\ \mathrm{sppr\_det} = \dfrac{a}{1-b}\ } \qquad (b<1\text{ required fo
 3. **Scale the detritus column** of the SPPR matrix by `sppr_det` and add it to the PP/Import
    columns. `'never'` means step 2 is always solved directly (never pooled), so if `b ≥ 1`
    (recycling so strong it diverges) the result may go negative rather than raise.
-
-   *Worked check (a model where A eats detritus, B eats PP+A, and PP mortality feeds detritus):*
-   `q_DET = 102`, `a = 0.9804·1 + 0.0098·19.09 = 1.168`, `b = 0.0098·4.167 + 0.0098·3.788 = 0.078`,
-   giving `sppr_det = 1.168 / (1 − 0.078) = 1.266` — matching the code's output to 3 decimals,
-   and `> 1` because detritus here carries mostly PP-origin mortality.
 
    For `TE_option='With Egestion'`, `m_k` gains a term routing egestion through the diet,
    `m_k = M0_k/q_DET + (DCᵀ · (egestion·fracs/q_DET))_k`, because faeces carry the SPPR of what
