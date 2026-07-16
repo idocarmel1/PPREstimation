@@ -426,8 +426,7 @@ $$ \mathrm{sppr\_det} = \sum_k m_k\cdot\mathrm{SPPR}_k. $$
    sum to `ΣM0/q_DET ≤ 1`, **not** to 1: the egestion share of the inflow carries no SPPR under the
    GE convention, so it dilutes `q_DET` without contributing to the sum. (Under `'With Egestion'`
    the egestion inflow is instead credited with the SPPR of the food it came from — the extra `DCᵀ`
-   term noted below — which restores the effective weights to ≈ 1, matching the article's fully
-   normalized flow-weighted average.)
+   term noted below — which restores the effective weights to ≈ 1)
 
    The catch is that each `SPPR_k` on the right is not a fixed number: from step 1 it splits into a
    **known** primary-producer/import part and an **unknown** detritus part,
@@ -452,10 +451,41 @@ $$ \boxed{\ \mathrm{sppr\_det} = \dfrac{a}{1-b}\ } \qquad (b<1\text{ required fo
    columns. `'never'` means step 2 is always solved directly (never pooled), so if `b ≥ 1`
    (recycling so strong it diverges) the result may go negative rather than raise.
 
-   For `TE_option='With Egestion'`, `m_k` gains a term routing egestion through the diet,
-   `m_k = M0_k/q_DET + (DCᵀ · (egestion·fracs/q_DET))_k`, because faeces carry the SPPR of what
-   was eaten. For `TE_option='TE'`, there is no recycling matrix at all: each detritus column is
-   simply scaled by its direct PP+Import inflow share (times `det_theta`).
+   The other two `TE_option`s change what seeds the detritus value.
+
+   **`'With Egestion'`.** Now *both* routes into detritus carry SPPR, so the weight on group `k`
+   gains a second term (write `fracs` for the `det_fate` share reaching the pool; `fracs = 1` for a
+   single pool):
+
+$$ m_k = \underbrace{\frac{M0_k\cdot\mathrm{fracs}_k}{q_{DET}}}_{k\text{'s own dead body}} \;+\; \underbrace{\sum_j DC_{jk}\cdot\frac{\mathrm{egestion}_j\cdot\mathrm{fracs}_j}{q_{DET}}}_{\text{prey }k\text{ egested undigested by consumers }j} \;=\; \frac{M0_k\cdot\mathrm{fracs}_k}{q_{DET}} + \Big(DC^{\mathsf{T}}\big(\mathrm{egestion}\cdot\mathrm{fracs}/q_{DET}\big)\Big)_k. $$
+
+   The first term is the mortality route from GE: `k`'s carcass carries `k`'s own SPPR. The second
+   term handles faeces, which are *not* the egesting consumer's production — they are food that
+   passed through `j` undigested — so they must **not** be charged `SPPR_j`. Instead the diet row
+   `DC[j, ·]` says what `j` ate: a fraction `DC[j,k]` of `j`'s intake (and hence of `j`'s faeces)
+   was prey `k`, so that faecal flow carries `SPPR_k`. Summing each egesting consumer `j`'s faeces
+   over the prey that composed them is exactly the matrix–vector product `DCᵀ · (egestion/q_DET)`:
+   the transpose "un-mixes" every consumer's faeces back into its prey species and credits detritus
+   the *prey's* SPPR, not the consumer's — matching the physical fact that faeces are undigested
+   food. As a bonus this closes the accounting gap noted above: the consumer diet rows sum to 1, so
+   the egestion term sums to `Σegestion/q_DET`; added to the mortality term's `ΣM0/q_DET` the
+   weights now total `(ΣM0 + Σegestion)/q_DET = 1`, the fully normalized flow-weighted average that
+   GE was missing.
+
+   **`'TE'`.** Here the per-edge efficiency already folds in the ecotrophic factor `EE = (p−M0)/p`,
+   so production lost to non-predatory death `M0` is treated as *gone* — it carries no SPPR onward.
+   Dead consumer bodies therefore do **not** re-seed detritus with recycled SPPR: there is no
+   detritus→consumer→detritus loop, hence **no recycling matrix and no fixed point** to solve. Each
+   detritus column is simply scaled by the share of the pool's inflow arriving *directly* from
+   primary producers and imports:
+
+$$ \mathrm{sppr\_det} = \theta\cdot\frac{\sum_{k\in PP\cup Import} F_{k\to DET}}{q_{DET}}, $$
+
+   i.e. detritus is credited only with the genuinely primary material that fell into it, while all
+   consumer-derived inflow is uncounted because the `'TE'` convention has already written it off as
+   lost. Here `θ = det_theta` is the availability/retention damping. (The one exception is `EE=0`
+   dead-end groups, whose `TE=0` severs them from the nullspace and leaks the PP they consumed;
+   `fix_EE_0_cases` re-credits that leak to detritus with a small linear correction.)
 
 #### The coupled recycling system `(I − B)x = c` (multiple detritus pools)
 
