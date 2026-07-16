@@ -1,17 +1,2 @@
-Read contents of the article file "C:\Users\idoca\Desktop\אישי\אקדמיה\תואר שני\מחקר\BTN\גרסאות\Tex files\PPR_Estimation\main.md".
-focus on the chapters 1 (definitions), 2 (previous methods), 4 (new method). summerize it for yourself so you can get back to the summary instead of reading the whole file again. 
-
 I updated the SPPR_Methods.md file a bit. I have a few more requests regarding it:
-1. EE is not the part used within the system - it is the part not routed to detritus, and it also includes biomass accumulation and net migration. fix parts of the file that refer to it.
-2. in get_TL, explain TE_option a bit more. how does each option affect DC, and how does it matter to the calculation of TL?
-3. explain 'normalize' option in get_DC/get_Z - you currently left that blank.
-4. for each function that performs mathematical calculation, explain the equations used in mathematical writing style. you can refer to relevant sections in the article file "C:\Users\idoca\Desktop\אישי\אקדמיה\תואר שני\מחקר\BTN\גרסאות\Tex files\PPR_Estimation\main.md" to understand the formulas and their ecological meanings. for example, it should be clear why A*x=x is a matrix equation we want to solve to get the sppr vector.
-5. in SPPR_EwE, explain the use_EE option better. check the article file to see my note on it. which rows are scaled by EE?
-6. SPPR_EwE_Ido is not mathematically equivalent to SPPR_EwE - it is True only when there are no cycles. run a few toy model examples to verify and understand.
-7. SPPR_2015 - explain why A=Z/P is equivalent to A=DC/TE. the proof is written in the article file.
-8. in SPPR_new, focus on exlaining the calculation process for the simple case of a single detritus group, with det_collapse_mode='never'. this should be the first option described in the article file. later, explain the meaning of the coupled recycling system (I − B)x = c because I still don't get it. how does it connect to DC and A? what are the exact equations?
-
-This is not the end of my requests, but we will start with these.
-
-
-9. 
+1. 
