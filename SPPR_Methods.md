@@ -107,7 +107,7 @@ recursive dependencies (including cycles) in one shot.
 - **`DET_as_PP`** — sets the **base** detritus diet row, before `TE_option` (below) optionally
   rewrites it:
   - `DET_as_PP=True` — use the stored `DC`, whose detritus row is **all zeros** (detritus is a
-    basal source that "eats" nothing). With a zero diet row, `TL_DET = 1 + Σ_j 0·TL_j = 1`, so
+    basal source that "eats" nothing). With a zero diet row, $$ TL_DET = 1 + Σ_j 0·TL_j = 1 $$, so
     detritus sits at TL 1. **This is the Christensen & Pauly (1995) convention** ("cycles through
     detritus are removed by zeroing the detritus rows of `DC`, establishing `TL = 1` for
     detritus while preserving living cycles"), and it is the combination the code actually uses
