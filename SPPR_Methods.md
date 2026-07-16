@@ -104,66 +104,29 @@ recursive dependencies (including cycles) in one shot.
 
 - **`break_cycles`**: remove cycles (Ulanowicz algorithm) before inverting, so recursive loops
   (e.g. detritus ↔ bacteria) don't distort the inversion.
-- **`DET_as_PP`** — sets the **base** detritus diet row, before `TE_option` (below) optionally
-  rewrites it:
-  - `DET_as_PP=True` — use the stored `DC`, whose detritus row is **all zeros** (detritus is a
-    basal source that "eats" nothing). With a zero diet row, `TL_DET = 1 + Σ_j 0·TL_j = 1`, so
-    detritus sits at TL 1. **This is the Christensen & Pauly (1995) convention** ("cycles through
-    detritus are removed by zeroing the detritus rows of `DC`, establishing `TL = 1` for
-    detritus while preserving living cycles"), and it is the combination the code actually uses
-    everywhere: `SPPR_1986`/`SPPR_1995`/`SPPR_1995_TL_fix` all call
-    `get_TL(break_cycles=True, DET_as_PP=True)` with the default `TE_option`, giving `TL_DET=1`.
-  - `DET_as_PP=False` — rebuild the detritus row from **provenance**: detritus "eats" the groups
-    whose death fed it. In the single-detritus case this row is `(M0 + egestion)/flow2det`
-    (see `'With Egestion'` below), so detritus is no longer at TL 1.
-- **`TE_option`** — rewrites the detritus rows of `DC` *after* `DET_as_PP` has set the base, and
-  because detritus feeds many consumers this ripples up into every TL above it. Two flow
-  quantities appear:
-  - **`flow2det`** `= Σ_k (M0_k + egestion_k)` — the total flow of dead matter into the detritus
-    system, summed over all source groups `k`.
-  - **`fracs`** `= det_fate[:, det_j]` — the fraction of each source group's flow-to-detritus
-    that is routed to detritus pool `det_j` (the detritus-fate matrix). With a single detritus
-    pool `fracs = 1` for every source (all dead matter goes to the one pool).
-  - **`q_DET`** — the total inflow into detritus pool `det_j`. Single-DET: `q_DET = flow2det`.
-    Multi-DET: `flow2det` is *partitioned* among the pools by `det_fate`, and `q_DET` is the
-    share reaching this particular pool (the code takes the actual routed inflow when
-    `DET_as_PP=False`, and an equal split `flow2det/n_DET` when `DET_as_PP=True`).
-
-  The three options:
-  - `'TE'` — **zero the detritus→consumer entries** (`DC[DET, Regular] = 0`), so detritus retains
-    only its primary-producer ancestry and no consumer-derived (secondary) contribution. This is
-    **not** the 1995 convention; it is the **detritus-as-pure-basal convention behind `SPPR_2015`**
-    — the one `SPPR_new(TE_option='TE')` uses to recreate `SPPR_2015`. Verified on the trusted
-    `comp0426` models (227, 240, 242): the aggregated per-group SPPR (summed over all basal
-    sources) of `SPPR_new(TE_option='TE')` equals `SPPR_2015` **exactly** (max relative difference
-    `0.0000`). The two differ only in the *split*, not the total — `SPPR_2015` folds the
-    detritus-origin requirement into the PP column, whereas `SPPR_new` reports a separate detritus
-    column — and on a few models (e.g. 413, 487) the totals diverge only because of EE=0 dead-end
-    / near-singular groups (the `fix_EE_0_cases` situations), not the convention itself. Note:
-    when `DET_as_PP=True` the detritus row is *already* all zeros, so `'TE'` is a no-op there and
-    detritus stays at TL 1; the option only bites when `DET_as_PP=False` (a non-empty detritus
-    row), where zeroing the consumer columns leaves just the PP fraction and gives `TL_DET ≈ 2`.
-  - `'GE'` — **rebuild the detritus diet row from mortality provenance**:
-    `DC[DET, :] = (M0 · fracs)/q_DET`. In the single-detritus case (`fracs = 1`, `q_DET = flow2det`)
-    this is simply `DC[DET, k] = M0_k / flow2det` — detritus "eats" each group in proportion to
-    the non-predatory mortality it contributes. (Only `M0` is in the numerator, so the row sums to
-    `< 1` when egestion is present; egestion is not credited under gross efficiency.) In the
-    multi-DET case the numerator is routed by `fracs` and normalised by that pool's own inflow
-    `q_DET`. Detritus inherits a fractional TL just above the mean TL of the dead matter entering
-    it, pushing detritivores up accordingly.
-  - `'With Egestion'` (**default**) — **leave `DC` exactly as `DET_as_PP` built it**. With
-    `DET_as_PP=True` the detritus row is the stored zero row → `TL_DET = 1`. With `DET_as_PP=False`
-    (single detritus) the row is the assimilation-corrected provenance
-    `DC[DET, k] = (M0_k + egestion_k)/flow2det` — both mortality *and* egested material carry
-    trophic ancestry into detritus (the convention of Supplementary C, Toy Model 1, Method 3 in
-    the article). Verified numerically on Toy Model 1: with `M0_PP=100`, `M0_A=5`, `U_A=5`,
-    `flow2det=110`, the detritus row is `{PP: 100/110 = 0.909, A: 10/110 = 0.091}`.
-
-  Ecologically: `DET_as_PP=True` (the 1995 convention, and what the code uses) treats detritus as
-  a base source at TL 1, so a detritivore's detritus intake adds nothing to its TL. `'GE'` and
-  `'With Egestion'` with `DET_as_PP=False` instead let the detritivore's TL reflect the trophic
-  history of the material in the pool (mortality only, or mortality + egestion respectively),
-  which can shift detritus-based food chains up by roughly a full trophic level.
+- **`DET_as_PP`** — sets the **base** detritus diet row, which `TE_option` (below) may then
+  overwrite:
+  - `DET_as_PP=True` — detritus has an all-zero diet row (it "eats" nothing), so `TL_DET = 1`.
+    This is the **Christensen & Pauly (1995) convention** — zero the detritus rows so detritus
+    sits at the base — and it is what the code actually uses: `SPPR_1986`/`SPPR_1995`/
+    `SPPR_1995_TL_fix` all call `get_TL(break_cycles=True, DET_as_PP=True)`.
+  - `DET_as_PP=False` — the detritus row is rebuilt from the groups whose death fed it, so
+    detritus rises above TL 1 (single-detritus row `= (M0 + egestion)/flow2det`).
+- **`TE_option`** — rewrites the detritus diet row before the inversion; since detritus feeds
+  many consumers, this shifts every TL above it. The rows use two flow quantities:
+  `flow2det = Σ_k (M0_k + egestion_k)` (total dead matter reaching detritus) and, per detritus
+  pool, its own inflow `q_DET` routed by the `det_fate` fractions `fracs` (with one detritus pool,
+  `fracs = 1` and `q_DET = flow2det`).
+  - `'TE'` — zero the detritus→consumer entries, leaving detritus with only its primary-producer
+    ancestry (no consumer-derived contribution). Combined with `DET_as_PP=True` the row is already
+    zero, so detritus stays at TL 1.
+  - `'GE'` — rebuild the detritus row from **mortality** provenance: `DC[DET, :] = (M0·fracs)/q_DET`,
+    i.e. single-detritus `DC[DET, k] = M0_k/flow2det`. Detritus "eats" each group in proportion to
+    its non-predatory mortality, and inherits a fractional TL just above the mean TL of that dead
+    matter.
+  - `'With Egestion'` (**default**) — leave the row as `DET_as_PP` built it. With `DET_as_PP=False`
+    (single detritus) that row is `(M0_k + egestion_k)/flow2det`, so both mortality and egested
+    material carry trophic ancestry into detritus.
 
 ### `DET_as_PP` and `normalize` (in `get_DC` / `get_Z`)
 `DET_as_PP` controls whether **detritus is a source or a recycling loop**:
