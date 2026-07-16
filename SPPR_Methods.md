@@ -229,7 +229,7 @@ production required from basal source *s* per unit of group *i*'s production.
 **The per-edge weight matrix `A`.** Every flow-network method starts from the
 **production-normalized transaction matrix**
 
-$$ A_{ik} = \frac{DC_{ik}}{TE_i} \qquad\text{(equivalently } A_{ik}=\tfrac{Z_{ik}}{P_i\,EE_i}=\tfrac{Z_{ik}}{P_i-M0_i}\text{).} $$
+$$ A_{ik} = \frac{DC_{ik}}{TE_i} \qquad\text{(equivalently } A_{ik}=\tfrac{Z_{ik}}{P_i\cdot EE_i}=\tfrac{Z_{ik}}{P_i-M0_i}\text{).} $$
 
 `A_{ik}` is the number of units of prey/source *k*'s production directly required to make one
 unit of consumer *i*'s production: the diet fraction `DC_{ik}` says how much of *i*'s intake is
@@ -241,7 +241,7 @@ in that denominator.
 system is closed with respect to the chosen basal sources, then the requirement of *i* is just
 the sum of the requirements of everything it directly needs:
 
-$$ x_i = \sum_k A_{ik}\,x_k \qquad\Longleftrightarrow\qquad \mathbf{x} = A\,\mathbf{x} \qquad\Longleftrightarrow\qquad (A - I)\,\mathbf{x} = 0. $$
+$$ x_i = \sum_k A_{ik}\cdot x_k \qquad\Longleftrightarrow\qquad \mathbf{x} = A\cdot\mathbf{x} \qquad\Longleftrightarrow\qquad (A - I)\cdot\mathbf{x} = 0. $$
 
 So the SPPR vector is a fixed point of `A` — an eigenvector with eigenvalue 1 — i.e. it lives in
 the **nullspace of `L = A − I`**. Intuitively, `x = Ax` says "the cost of a group equals the
@@ -378,7 +378,7 @@ identical, which is what makes `SPPR_2015` the same underlying calculation as th
 flow-network methods. Substituting the definitions `Z_{ij} = q_i·DC_{ij}`,
 `P_i − M0_i = p_i·EE_i`, `GE_i = p_i/q_i` and `TE_i = GE_i·EE_i`:
 
-$$ A_{ij} = \frac{Z_{ij}}{P_i - M0_i} = \frac{q_i\,DC_{ij}}{p_i\,EE_i} = \frac{DC_{ij}}{(p_i/q_i)\,EE_i} = \frac{DC_{ij}}{GE_i\,EE_i} = \frac{DC_{ij}}{TE_i}. $$
+$$ A_{ij} = \frac{Z_{ij}}{P_i - M0_i} = \frac{q_i\cdot DC_{ij}}{p_i\cdot EE_i} = \frac{DC_{ij}}{(p_i/q_i)\cdot EE_i} = \frac{DC_{ij}}{GE_i\cdot EE_i} = \frac{DC_{ij}}{TE_i}. $$
 
 So dividing the absolute prey flow by the group's *useful* production is exactly the same as
 dividing the diet fraction by the ecotrophic transfer efficiency `TE = GE·EE`. The powers of `A`
@@ -434,7 +434,7 @@ This is the simplest and default case; start here. Take a model with one detritu
    `SPPR_k = nonDET_sppr_k + sppr_det · basis_k[DET]`, where `sppr_det` is the unknown value of
    one detritus unit. Averaging over the inflow gives a single scalar self-consistency equation:
 
-   $$ \mathrm{sppr\_det} = \underbrace{\sum_k m_k\,\mathrm{nonDET\_sppr}_k}_{a\ \text{(PP-origin material entering DET)}} + \underbrace{\Big(\sum_k m_k\,\mathrm{basis}_k[DET]\Big)}_{b\ \text{(recycled DET-origin material)}}\cdot \mathrm{sppr\_det}. $$
+   $$ \mathrm{sppr\_det} = \underbrace{\sum_k m_k\cdot\mathrm{nonDET\_sppr}_k}_{a\ \text{(PP-origin material entering DET)}} + \underbrace{\Big(\sum_k m_k\cdot\mathrm{basis}_k[DET]\Big)}_{b\ \text{(recycled DET-origin material)}}\cdot \mathrm{sppr\_det}. $$
 
    This is exactly the cannibal-cycle logic from `SPPR_EwE` above, now applied to the whole
    detritus pool: detritus feeds consumers, whose death feeds detritus again, so its value
@@ -462,12 +462,12 @@ With more than one detritus pool the single scalar becomes a **vector** `x = (sp
 sppr_det_k)`, because pools feed each other: a consumer eating pool *j* can die into pool *l*, so
 pool *l*'s value depends on pool *j*'s value. Repeating step 2 per pool `l`:
 
-$$ x_l = \underbrace{\sum_k m^{(l)}_k\,\mathrm{nonDET\_sppr}_k}_{c_l} + \sum_{j} \underbrace{\Big(\sum_k m^{(l)}_k\,\mathrm{basis}_k[DET_j]\Big)}_{B_{lj}}\, x_j, $$
+$$ x_l = \underbrace{\sum_k m^{(l)}_k\cdot\mathrm{nonDET\_sppr}_k}_{c_l} + \sum_{j} \underbrace{\Big(\sum_k m^{(l)}_k\cdot\mathrm{basis}_k[DET_j]\Big)}_{B_{lj}}\cdot x_j, $$
 
 which in matrix form is the linear system `_build_det_BC` assembles and `_solve_det_scaling`
 solves:
 
-$$ \mathbf{x} = \mathbf{c} + B\,\mathbf{x} \qquad\Longleftrightarrow\qquad (I - B)\,\mathbf{x} = \mathbf{c}. $$
+$$ \mathbf{x} = \mathbf{c} + B\cdot\mathbf{x} \qquad\Longleftrightarrow\qquad (I - B)\cdot\mathbf{x} = \mathbf{c}. $$
 
 Reading the pieces (all defined per pool `l`, with `m^{(l)}_k` the fraction of pool `l`'s inflow
 supplied by group `k`, routed by `det_fate`):
@@ -554,7 +554,7 @@ production. The two options answer different accounting questions:
     import value for consumer *i* is inferred as the **weighted mean SPPR of that consumer's
     non-import diet**:
 
-    $$ (1-DC_{i,DI})\,\mathrm{DIET\_SPPR}_i = \sum_{k\in\mathcal{X}} DC_{ik}\,\mathrm{SPPR}_k \;\Longrightarrow\; \mathrm{DIET\_SPPR}_i = \frac{\sum_{k\in\mathcal{X}} DC_{ik}\,\mathrm{SPPR}_k}{\sum_{k\in\mathcal{X}} DC_{ik}}, $$
+    $$ (1-DC_{i,DI})\cdot\mathrm{DIET\_SPPR}_i = \sum_{k\in\mathcal{X}} DC_{ik}\cdot\mathrm{SPPR}_k \;\Longrightarrow\; \mathrm{DIET\_SPPR}_i = \frac{\sum_{k\in\mathcal{X}} DC_{ik}\cdot\mathrm{SPPR}_k}{\sum_{k\in\mathcal{X}} DC_{ik}}, $$
 
     where `𝒳` is the set of internal (regular/detritus/PP) compartments and `DI` the import node.
     So imported food is costed by what the consumer's *internal* diet is made of — the most
@@ -604,7 +604,7 @@ Uncertainty propagation over transfer efficiency. Each per-group TE is resampled
 distribution centred on the model value `\overline{TE}_i`, with shape and scale set so the mean
 is preserved and the coefficient of variation is `η` (= `TE_error_percent`):
 
-$$ \widetilde{TE}_i \sim \mathrm{Gamma}(\alpha,\theta_i),\qquad \alpha=\frac{1}{\eta^2},\qquad \theta_i=\overline{TE}_i\,\eta^2, $$
+$$ \widetilde{TE}_i \sim \mathrm{Gamma}(\alpha,\theta_i),\qquad \alpha=\frac{1}{\eta^2},\qquad \theta_i=\overline{TE}_i\cdot\eta^2, $$
 
 then clipped to `[\overline{TE}_i(1-\delta),\ \overline{TE}_i(1+\delta)]` (`δ` =
 `TE_error_cut_percent`). SPPR is recomputed (via `SPPR_new` or `SPPR_symbolic`) on each sampled
@@ -626,7 +626,7 @@ Converts a **per-group SPPR** into the **total primary production required by th
 group's SPPR is weighted by how much of it we actually harvest and summed — an inner product
 with the catch vector, per basal source *s*:
 
-$$ PPR_s = \mathbf{C}\cdot\mathbf{SPPR}_s = \sum_i C_i\,(\mathrm{SPPR}_s)_i, \qquad PPR = \sum_{s\in\text{sources}} PPR_s. $$
+$$ PPR_s = \mathbf{C}\cdot\mathbf{SPPR}_s = \sum_i C_i\cdot(\mathrm{SPPR}_s)_i, \qquad PPR = \sum_{s\in\text{sources}} PPR_s. $$
 
 The input SPPR is relabelled to seq, reindexed onto the catch, and infinities zeroed.
 
