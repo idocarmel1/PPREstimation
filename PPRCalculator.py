@@ -1426,7 +1426,7 @@ class PPRCalculator:
 
         return SPPR, A, L
 
-    def SPPR_2015(self, only_pp_det: bool = True) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    def SPPR_2015(self) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """2015-method SPPR: a matrix-inversion (Leontief-style) formulation.
 
         Detritus columns are dissolved by reassigning the PP-derived fraction of each detritus
@@ -1434,18 +1434,11 @@ class PPRCalculator:
         transaction matrix A then yields the production-requirement matrix L = (I - A)^-1, whose
         PP columns give the per-group SPPR; a balancing detritus SPPR is added back at the end.
 
-        Args:
-            only_pp_det (bool, optional): whether to reassign only the PP-derived fraction of
-                each detritus flow back onto PP (the article's choice). Note: the body forces
-                this to True, so it is effectively always True. Defaults to True.
-
         Returns:
             tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: (SPPR, A, L), the per-group SPPR
             (groups x PP+Import sources), the production-normalized transaction matrix A, and
             the production-requirement matrix L = (I - A)^-1.
         """
-        only_pp_det=True
-
         groups_data = self.get_groups_df()
         production = self.p.copy()
         PP_seq = list(self.get_Import_seq()) + list(self.get_PP_seq())
@@ -1457,11 +1450,8 @@ class PPRCalculator:
         for det_j in DET_seqs:
             det_row_total = Z_without_DET.loc[det_j, :].sum()
             percent_of_det_that_is_PP = (Z_without_DET.loc[det_j, PP_seq] / det_row_total).fillna(0)
-            if only_pp_det:  # this is what is implemented in the article
-                for i in PP_seq:
-                    Z_without_DET.loc[:, i] += percent_of_det_that_is_PP[i] * Z_without_DET.loc[:, det_j]
-            else:
-                Z_without_DET.loc[:, PP_seq] += Z_without_DET.loc[:, det_j]
+            for i in PP_seq: # this is what is implemented in the article
+                Z_without_DET.loc[:, i] += percent_of_det_that_is_PP[i] * Z_without_DET.loc[:, det_j]
         Z_without_DET = Z_without_DET.drop(index=DET_seqs, columns=DET_seqs)
 
         # production of living compartments:

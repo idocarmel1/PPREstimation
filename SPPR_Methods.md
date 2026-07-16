@@ -275,7 +275,7 @@ path* from each group down to a basal terminal node and sums the product of the 
 
 **Equation.** For focal group *x*,
 
-$$ \mathrm{SPPR}_x = EE_x \!\!\sum_{\mathrm{path}\in\mathcal{P}_x}\ \prod_{(\mathrm{pred},\mathrm{prey})\in\mathrm{path}} \frac{DC_{\mathrm{pred},\mathrm{prey}}}{TE_{\mathrm{pred}}}, $$
+$$ \mathrm{SPPR}_x = EE_x \!\! \sum_{\mathrm{path}\in\mathcal{P}_x}\ \prod_{(\mathrm{pred},\mathrm{prey})\in\mathrm{path}} \frac{DC_{\mathrm{pred},\mathrm{prey}}}{TE_{\mathrm{pred}}}, $$
 
 where `𝒫_x` is the set of **simple** paths (no node repeated) from *x* down to a basal terminal
 (PP or detritus). Because paths are simple, cannibalism and cycles are **not** expanded into
@@ -283,7 +283,7 @@ repeated loops — this is exactly what the matrix methods below fix.
 
 - **`TE_option`** — `'GE'`, `'TE'`, `'With Egestion'`, or `'global'`. Governs the per-edge weight
   `DC/TE`, i.e. how much basal production each trophic link implies (see §2). The dominant
-  ecological assumption.
+  ecological assumption. EwE's software uses `'TE'`.
 - **`use_EE`** (default True) — this is the **leading `EE_x` factor** in the equation above, and
   it multiplies **the whole row of the focal group `x`** (the group whose SPPR is being computed):
   in code, `SPPR = SPPR.mul(EE, axis='index')`, i.e. row *i* is scaled by `EE_i`.
@@ -292,10 +292,10 @@ repeated loops — this is exactly what the matrix methods below fix.
   already contains a `1/EE_pred`. Tracing a chain backward from *x*, the **first** step uses
   `1/EE_x`; the leading `EE_x` **cancels it**, so the focal group's own step effectively uses
   gross efficiency `GE_x`, while every downstream predator keeps the full `TE = GE·EE`.
-  Ecologically (per the article's note): a group's production splits into the ecotrophically-used
-  part (eaten/caught/accumulated) and the part that dies to `M0` and drops to detritus. The
+  Ecologically: a group's production splits into the ecotrophically-used
+  part (eaten/caught/accumulated/migrated) and the part that dies to `M0` and drops to detritus. The
   leading `EE_x` charges the harvest only for the focal group's **useful** production, excluding
-  the `M0`-to-detritus fraction — whereas for the intermediate predators along the chain, the
+  the M0-to-detritus fraction — whereas for the intermediate predators along the chain, the
   `M0` loss *is* counted, because supporting them required feeding the fraction that later died.
   Setting `use_EE=False` drops this factor, charging the focal group's full production
   (including its `M0`) to the requirement.
@@ -331,16 +331,7 @@ diet fractions*. It then solves the nullspace on that pruned matrix.
 - **Returns** `(SPPR, A, L)`.
 
 > **`SPPR_EwE_Ido` is *not* mathematically equivalent to `SPPR_EwE` in general — they agree only
-> when the food web has no cycles.** I verified this empirically by generating random 5-group
-> webs and comparing the two on the consumer rows (`TE_option='GE'`, `use_EE=True`):
->
-> | web has a cycle? | `SPPR_EwE == SPPR_EwE_Ido`? |
-> |---|---|
-> | acyclic | **always equal** (41/41 acyclic draws) |
-> | cyclic | **differ in the large majority** (1971 of 2813 cyclic draws) |
->
-> Example (a web with cannibalism + mutual predation), aggregated SPPR:
-> a self-feeding group came out **27.2** under `SPPR_EwE` vs **10.5** under `SPPR_EwE_Ido`.
+> when the food web has no cycles.**
 >
 > **Why.** When the graph is acyclic, `remove_cycles` is a no-op, so both methods operate on the
 > same `A`; and on an acyclic graph the nullspace sum equals the simple-path sum — hence
@@ -355,9 +346,9 @@ diet fractions*. It then solves the nullspace on that pruned matrix.
 > So this method is best read as a fast, cycle-pruned matrix cousin of `SPPR_EwE`, **not** as the
 > exact all-cycles nullspace. For that, use `SPPR_new` / `SPPR_2015`, which count cycles fully.
 
-### `SPPR_2015(only_pp_det=True)` — the 2015 method
+### `SPPR_2015()` — the 2015 method
 ```python
-SPPR_2015(only_pp_det=True) -> (SPPR, A, L)
+SPPR_2015() -> (SPPR, A, L)
 ```
 A **Leontief input–output** formulation (matrix inversion). Detritus columns are *dissolved*:
 the PP-derived fraction of each detritus flow is reassigned back onto the PP groups, leaving
@@ -386,9 +377,6 @@ then enumerate paths: `[A^k]_{i,\mathrm{PP}}` is the PP required through all len
 and `L = (I−A)⁻¹ = I + A + A² + …` sums every path length — **cycles included** — provided the
 spectral radius of `A` is `< 1` (the standard Leontief convergence condition).
 
-- **`only_pp_det`** — nominally whether to reassign only the PP-derived fraction of detritus
-  back onto PP (the article's choice). **Note: the body forces this to `True`**, so it is
-  effectively always on.
 - **Returns** `(SPPR, A, L)`.
 - **Ecological meaning:** treats the ecosystem like an economy where each group's production
   "requires" inputs from the groups it eats; `(I − A)⁻¹` sums the full direct + indirect
