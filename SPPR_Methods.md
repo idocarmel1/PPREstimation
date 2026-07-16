@@ -79,9 +79,9 @@ next. It is the single most important ecological assumption in every flow-networ
 
 | `TE_option` | Formula | Ecological meaning |
 |-------------|---------|--------------------|
-| `'GE'` | `p/q` | **Gross growth efficiency** — production per unit consumed. Ignores that not all production is passed on. This is what the EwE user guide uses. |
+| `'GE'` | `p/q` | **Gross growth efficiency** — production per unit consumed. Ignores that not all production is passed on. |
 | `'TE'` | `(p/q)·(1 − M0/p)` | Gross efficiency times the **ecotrophic fraction**: only the part of production that is actually consumed/exported/accumulated/migrated counts as "transferred". Production that dies naturally (`M0`) is treated as lost from the up-web pathway. Equivalent to `GE·EE`. |
-| `'With Egestion'` | `(p/q)·(q/(q−egestion))` | Efficiency computed on **assimilated** intake rather than gross intake, i.e. faeces are removed from the denominator so they are accounted separately (they flow to detritus, not up the chain). |
+| `'With Egestion'` | `(p/q)·(q/(q−egestion))` | Efficiency computed on **assimilated** intake rather than gross intake, i.e. feces are removed from the denominator so they are accounted separately (they flow to detritus, not up the chain). |
 | `'global'` | one scalar for all groups | A single system-wide TE broadcast to every group — the classic "10% rule" assumption. Controlled by `global_TE`. |
 
 - **`global_TE`** (only used when `TE_option='global'`): either a literal float (e.g. `0.1`)
@@ -97,7 +97,7 @@ next. It is the single most important ecological assumption in every flow-networ
 Trophic level follows the standard recursive definition: a group's TL is one more than the
 diet-weighted mean TL of its prey,
 
-$$ TL_i = 1 + \sum_j DC_{ij}\,TL_j \quad\Longleftrightarrow\quad \mathbf{TL} = (I - DC)^{-1}\mathbf{1}. $$
+$$ TL_i = 1 + \sum_j DC_{ij} \cdot TL_j \quad\Longleftrightarrow\quad \mathbf{TL} = (I - DC)^{-1}\mathbf{1}. $$
 
 Basal sources (with an all-zero diet row) sit at TL 1; the matrix inverse resolves the
 recursive dependencies (including cycles) in one shot.
