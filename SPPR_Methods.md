@@ -416,11 +416,18 @@ This is the simplest and default case; start here. Take a model with one detritu
 
 $$ m_k = \frac{M0_k}{q_{DET}} \quad\text{(the fraction of the detritus pool supplied by group }k\text{'s non-predatory death).} $$
 
-   By definition, one unit of detritus is worth the inflow-weighted average of the SPPR of
-   everything dying into it. Because the weights `m_k` sum to 1 (the inflows add up to the total
-   `q_DET`), this is a genuine average:
+   By definition, one unit of detritus is worth the inflow-weighted sum of the SPPR of the material
+   flowing into it, using the per-group inflow shares `m_k`:
 
 $$ \mathrm{sppr\_det} = \sum_k m_k\cdot\mathrm{SPPR}_k. $$
+
+   A subtlety on those weights: `q_DET` is the pool's *total* inflow — `(M0 + egestion)` summed —
+   but the GE weight `m_k = M0_k/q_DET` counts only the non-predatory-mortality inflow. So the `m_k`
+   sum to `ΣM0/q_DET ≤ 1`, **not** to 1: the egestion share of the inflow carries no SPPR under the
+   GE convention, so it dilutes `q_DET` without contributing to the sum. (Under `'With Egestion'`
+   the egestion inflow is instead credited with the SPPR of the food it came from — the extra `DCᵀ`
+   term noted below — which restores the effective weights to ≈ 1, matching the article's fully
+   normalized flow-weighted average.)
 
    The catch is that each `SPPR_k` on the right is not a fixed number: from step 1 it splits into a
    **known** primary-producer/import part and an **unknown** detritus part,
