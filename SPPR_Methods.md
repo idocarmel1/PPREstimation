@@ -161,7 +161,7 @@ Computes **one** catch-weighted mean trophic level for the entire catch, then
 `SPPR = TE^(1−TL)` with a **fixed TE = 0.1**. Every group receives the same number.
 
 **Equation.** With a single catch-weighted mean trophic level
-$\overline{TL} = \big(\sum_i C_i\,TL_i\big)/\sum_i C_i$ and fixed `TE = 0.1`,
+$\overline{TL} = \big(\sum_i C_i TL_i\big)/\sum_i C_i$ and fixed `TE = 0.1`,
 
 $$ \mathrm{SPPR}_i = TE^{\,1-\overline{TL}} = \left(\tfrac{1}{TE}\right)^{\overline{TL}-1} = 10^{\,\overline{TL}-1}\quad\text{(same for every }i). $$
 
