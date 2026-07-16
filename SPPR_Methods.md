@@ -97,7 +97,7 @@ next. It is the single most important ecological assumption in every flow-networ
 Trophic level follows the standard recursive definition: a group's TL is one more than the
 diet-weighted mean TL of its prey,
 
-$$ TL_i = 1 + \sum_j DC_{ij} \cdot TL_j \quad\Longleftrightarrow\quad \mathbf{TL} = (I - DC)^{-1}\mathbf{1}. $$
+$$ TL_i = 1 + \sum_j DC_{ij} \cdot TL_j \quad\Longleftrightarrow\quad \mathbf{TL} = (\mathbf{1} + \mathbf{DC} \cdot \mathbf{TL})\quad\Longleftrightarrow\quad \mathbf{TL} = (I - DC)^{-1}\mathbf{1} $$
 
 Basal sources (with an all-zero diet row) sit at TL 1; the matrix inverse resolves the
 recursive dependencies (including cycles) in one shot.
