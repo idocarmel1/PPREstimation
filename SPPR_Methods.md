@@ -381,8 +381,7 @@ spectral radius of `A` is `< 1` (the standard Leontief convergence condition).
 - **Ecological meaning:** treats the ecosystem like an economy where each group's production
   "requires" inputs from the groups it eats; `(I − A)⁻¹` sums the full direct + indirect
   requirement chain. Consistent, closed-form, and the reference implementation of the 2015
-  paper. **Caveat (see project memory):** `SPPR_2015` should *not* be used as an oracle to
-  validate multi-detritus methods — argue correctness from the equations instead.
+  paper
 
 ### `SPPR_new(...)` — primary numeric solver
 ```python
@@ -415,20 +414,20 @@ This is the simplest and default case; start here. Take a model with one detritu
    into it (the article's `SPPR_DET = Σ_k F_{k→DET}·SPPR_k / Σ_k F_{k→DET}`). Let `q_DET` be the
    total inflow to the pool and, for `TE_option='GE'`, define the per-group inflow share
 
-   $$ m_k = \frac{M0_k}{q_{DET}} \quad\text{(the fraction of the detritus pool supplied by group }k\text{'s non-predatory death).} $$
+$$ m_k = \frac{M0_k}{q_{DET}} \quad\text{(the fraction of the detritus pool supplied by group }k\text{'s non-predatory death).} $$
 
    Each dying group `k` carries its *own* SPPR into the pool, and that SPPR itself has a
    primary-producer part and a detritus part:
    `SPPR_k = nonDET_sppr_k + sppr_det · basis_k[DET]`, where `sppr_det` is the unknown value of
    one detritus unit. Averaging over the inflow gives a single scalar self-consistency equation:
 
-   $$ \mathrm{sppr\_det} = \underbrace{\sum_k m_k\cdot\mathrm{nonDET\_sppr}_k}_{a\ \text{(PP-origin material entering DET)}} + \underbrace{\Big(\sum_k m_k\cdot\mathrm{basis}_k[DET]\Big)}_{b\ \text{(recycled DET-origin material)}}\cdot \mathrm{sppr\_det}. $$
+$$ \mathrm{sppr\_det} = \underbrace{\sum_k m_k\cdot\mathrm{nonDET\_sppr}_k}_{a\ \text{(PP-origin material entering DET)}} + \underbrace{\Big(\sum_k m_k\cdot\mathrm{basis}_k[DET]\Big)}_{b\ \text{(recycled DET-origin material)}}\cdot \mathrm{sppr\_det}. $$
 
    This is exactly the cannibal-cycle logic from `SPPR_EwE` above, now applied to the whole
    detritus pool: detritus feeds consumers, whose death feeds detritus again, so its value
    depends on itself. Solving the scalar fixed point,
 
-   $$ \boxed{\ \mathrm{sppr\_det} = \dfrac{a}{1-b}\ } \qquad (b<1\text{ required for a finite, positive value).} $$
+$$ \boxed{\ \mathrm{sppr\_det} = \dfrac{a}{1-b}\ } \qquad (b<1\text{ required for a finite, positive value).} $$
 
 3. **Scale the detritus column** of the SPPR matrix by `sppr_det` and add it to the PP/Import
    columns. `'never'` means step 2 is always solved directly (never pooled), so if `b ≥ 1`
@@ -542,7 +541,7 @@ production. The two options answer different accounting questions:
     import value for consumer *i* is inferred as the **weighted mean SPPR of that consumer's
     non-import diet**:
 
-    $$ (1-DC_{i,DI})\cdot\mathrm{DIET\_SPPR}_i = \sum_{k\in\mathcal{X}} DC_{ik}\cdot\mathrm{SPPR}_k \;\Longrightarrow\; \mathrm{DIET\_SPPR}_i = \frac{\sum_{k\in\mathcal{X}} DC_{ik}\cdot\mathrm{SPPR}_k}{\sum_{k\in\mathcal{X}} DC_{ik}}, $$
+$$ (1-DC_{i,DI})\cdot\mathrm{DIET\_SPPR}_i = \sum_{k\in\mathcal{X}} DC_{ik}\cdot\mathrm{SPPR}_k \;\Longrightarrow\; \mathrm{DIET\_SPPR}_i = \frac{\sum_{k\in\mathcal{X}} DC_{ik}\cdot\mathrm{SPPR}_k}{\sum_{k\in\mathcal{X}} DC_{ik}}, $$
 
     where `𝒳` is the set of internal (regular/detritus/PP) compartments and `DI` the import node.
     So imported food is costed by what the consumer's *internal* diet is made of — the most
