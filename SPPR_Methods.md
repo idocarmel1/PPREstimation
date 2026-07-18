@@ -411,8 +411,11 @@ This is the simplest and default case; start here. Take a model with one detritu
 
 2. **Find what one unit of detritus is actually worth in primary-production units.** Detritus is
    not a true primary source — its value is the flow-weighted average SPPR of everything dying
-   into it (the article's `SPPR_DET = Σ_k F_{k→DET}·SPPR_k / Σ_k F_{k→DET}`). Let `q_DET` be the
-   total inflow to the pool and, for `TE_option='GE'`, define the per-group inflow share
+   into it: 
+
+   $$SPPR_{DET} = \frac{\sum_{k} F_{k \to DET} \cdot SPPR_{k}}{\sum_{k} F_{k \to DET}}$$
+
+   Let `q_DET` be the total inflow to the pool and, for `TE_option='GE'`, define the per-group inflow share
 
 $$ m_k = \frac{M0_k}{q_{DET}} \quad\text{(the fraction of the detritus pool supplied by group }k\text{'s non-predatory death).} $$
 
@@ -441,7 +444,7 @@ $$ \mathrm{SPPR}_k = \mathrm{nonDET\_sppr}_k + \mathrm{sppr\_det}\cdot\mathrm{ba
 
 $$ \mathrm{sppr\_det} = \underbrace{\sum_k m_k\cdot\mathrm{nonDET\_sppr}_k}_{a\ \text{(PP-origin material entering DET)}} + \underbrace{\Big(\sum_k m_k\cdot\mathrm{basis}_k[DET]\Big)}_{b\ \text{(recycled DET-origin material)}}\cdot \mathrm{sppr\_det}. $$
 
-   This is exactly the cannibal-cycle logic from above, now applied to the whole
+   This is exactly the cannibal-cycle logic, now applied to the whole
    detritus pool: detritus feeds consumers, whose death feeds detritus again, so its value
    depends on itself. Solving the scalar fixed point,
 
@@ -479,17 +482,17 @@ $$ m_k = \underbrace{\frac{M0_k\cdot\mathrm{fracs}_k}{q_{DET}}}_{k\text{'s own d
    detritus column is simply scaled by the share of the pool's inflow arriving *directly* from
    primary producers and imports:
 
-$$ \mathrm{sppr\_det} = \theta\cdot\frac{\sum_{k\in PP\cup Import} F_{k\to DET}}{q_{DET}}, $$
+$$ \mathrm{sppr_{det}} = \theta\cdot\frac{\sum_{k\in PP\cup Import} F_{k\to DET}}{q_{DET}}, $$
 
    i.e. detritus is credited only with the genuinely primary material that fell into it, while all
    consumer-derived inflow is uncounted because the `'TE'` convention has already written it off as
-   lost. Here `θ = det_theta` is the availability/retention damping. (The one exception is `EE=0`
+   lost. Note that in this convention, `SPPR_det` is always $\leq$ 1. Here `θ = det_theta` is the availability/retention damping. (The one exception is `EE=0`
    dead-end groups, whose `TE=0` severs them from the nullspace and leaks the PP they consumed;
    `fix_EE_0_cases` re-credits that leak to detritus with a small linear correction.)
 
 #### The coupled recycling system `(I − B)x = c` (multiple detritus pools)
 
-With more than one detritus pool the single scalar becomes a **vector** `x = (sppr_det₁, …,
+With more than one detritus pool the single scalar becomes a **vector** `x = (sppr_det_1, …,
 sppr_det_k)`, because pools feed each other: a consumer eating pool *j* can die into pool *l*, so
 pool *l*'s value depends on pool *j*'s value. Repeating step 2 per pool `l`:
 
@@ -500,8 +503,15 @@ solves:
 
 $$ \mathbf{x} = \mathbf{c} + B\cdot\mathbf{x} \qquad\Longleftrightarrow\qquad (I - B)\cdot\mathbf{x} = \mathbf{c}. $$
 
-Reading the pieces (all defined per pool `l`, with `m^{(l)}_k` the fraction of pool `l`'s inflow
-supplied by group `k`, routed by `det_fate`):
+The inflow share `m^{(l)}_k` — the fraction of pool `l`'s inflow supplied by group `k`, routed by
+`det_fate` — is the multi-pool version of the single-detritus weight from step 2:
+
+$$ m^{(l)}_k = \frac{M0_k\cdot\mathrm{fracs}^{(l)}_k}{q_l} \;+\; \underbrace{\Big(DC^{\mathsf{T}}\big(\mathrm{egestion}\cdot\mathrm{fracs}^{(l)}/q_l\big)\Big)_k}_{\text{egestion route ('With Egestion' only)}}, $$
+
+where `q_l` is pool `l`'s total inflow and the routing weight `fracs^{(l)}_k = det_fate[k, l]` is the
+fraction of group `k`'s flow-to-detritus that reaches pool `l` (with a single pool `fracs^{(l)} = 1`,
+recovering the scalar `m_k`). The egestion term is present only for `TE_option='With Egestion'`;
+`'GE'` keeps just the mortality term. Reading the remaining pieces (all defined per pool `l`):
 
 - **`c_l`** = the primary-production-origin SPPR entering pool `l` (mortality/egestion of PP and
   of the PP-derived part of consumers) — the "new" material.
