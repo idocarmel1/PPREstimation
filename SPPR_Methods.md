@@ -795,7 +795,9 @@ $$ \frac{PPR}{NPP} = \frac{\mathbf{C}\cdot\mathbf{SPPR}_{\text{inner}}}{\sum_{i\
 
 **How it relates to the inflow–outflow balance (§4).** Under mass balance, all basal production
 entering the system leaves it, both sides measured in SPPR units. The inner form of that identity is:
+
 $$NPP = (\mathbf{N_m}+\mathbf{C}+\mathbf{BA})\cdot\mathbf{SPPR}_{\text{inner}}$$
+
 the net primary production equals the total *inner outflow* (catch + biomass accumulation + net migration, each
 weighted by the basal production it required). So the denominator $\sum_{i\in PP} p_i$ **is** that
 total outflow, and the numerator $\mathbf{C}\cdot\mathbf{SPPR}_{\text{inner}}$ is precisely the
