@@ -1,0 +1,6 @@
+I'm currently reading into the method SPPR_new. I have a few things I want you to do:
+1. the parameter "collapse_det" - get rid of it, use only "det_collapse_mode". update all places in the code that use this parameter, and edit the relevant part of "SPPR_Methods.md" accordingly.
+2. int SPPR_Methods.md, re-edit the "det_collapse_mode" part so that it is clear what the ecological meaning of each option is.
+3. do the same for "det_open_mode", and connect the explenation to other relevant parameters such as det_theta or det_external_sppr. after you introduce those, show how they modify the equations mentioned above.
+4. explain "fix_EE_0_cases" in a different paragraph, so it is not part of the list titled "Detritus recycling knobs".
+note that I've updated SPPR_Methods.md between our convesations.

@@ -385,7 +385,7 @@ spectral radius of `A` is `< 1` (the standard Leontief convergence condition).
 
 ### `SPPR_new(...)` — primary numeric solver
 ```python
-SPPR_new(TE=None, TE_option='GE', DET_TE_vals=1, collapse_det=None,
+SPPR_new(TE=None, TE_option='GE', DET_TE_vals=1,
          det_collapse_mode='never', det_open_mode='none',
          det_theta=1.0, det_external_sppr=0.0, fix_EE_0_cases=True)
     -> (SPPR, A, L)
@@ -503,8 +503,7 @@ solves:
 $$ \mathbf{x} = \mathbf{c} + B\cdot\mathbf{x} \qquad\Longleftrightarrow\qquad (I - B)\cdot\mathbf{x} = \mathbf{c}. $$
 
 The inflow share `m^{(l)}_k` — the fraction of pool `l`'s inflow supplied by group `k`, routed by
-`det_fate` — is the multi-pool version of the single-detritus weight from step 2 (write `fracs` for the `det_fate` share reaching the pool; `fracs = 1` for a
-single pool):
+`det_fate` — is the multi-pool version of the single-detritus weight from step 2:
 
 $$ m^{(l)}_k = \frac{M0_k\cdot\mathrm{fracs}^{(l)}_k}{q_l} \;+\; \underbrace{\Big(DC^{\mathsf{T}}\big(\mathrm{egestion}\cdot\mathrm{fracs}^{(l)}/q_l\big)\Big)_k}_{\text{egestion route ('With Egestion' only)}}, $$
 
@@ -541,50 +540,81 @@ primary-production-equivalent values by closing the death→detritus→consumpti
   `(I − B)x = c`.
 - **`DET_TE_vals`** (default 1) — TE for detritus rows when building the TE matrix.
 
-**Detritus recycling knobs** (the ecological heart of the method):
-- **`collapse_det`** — legacy boolean, mapped onto `det_collapse_mode`: `False`→`'never'`,
-  `True`→`'auto'`, `None`→leave as given.
-- **`det_collapse_mode`** — solve-vs-pool strategy when recycling is strong:
-  - `'never'` (default): always solve the coupled system; may return negative SPPR but never raises.
-  - `'auto'`: pool all detritus into one compartment only if the coupled system is unstable
-    (spectral radius ≥ 1, i.e. recycling would "blow up", or ill-conditioned).
+**Detritus recycling knobs** (the ecological heart of the method): these all act on the recycling
+system from the previous section — the single-pool fixed point `sppr_det = a/(1−b)` and its
+multi-pool form `(I − B)x = c`, where `b` (the spectral radius of `B`) measures recycling
+strength: how much detritus one unit of detritus regenerates via the death→detritus→consumption→death
+loop.
+
+- **`det_collapse_mode`** — what to do when that loop is **too strong to invert**. A finite,
+  non-negative solution exists only while `b < 1`; once `b ≥ 1` each unit of detritus regenerates
+  ≥ 1 unit and the closed system diverges (`1 − b ≤ 0`). This flag chooses the response:
+  - `'never'` (default): always solve the coupled system directly, even at `b ≥ 1`. The answer may
+    come out **negative** — a clear signal that recycling diverged — but the call never raises.
+    This is the default because the Monte-Carlo samplers solve thousands of TE draws and simply
+    discard the non-physical (negative) ones.
+  - `'auto'`: solve directly **unless** the system is unstable (`b ≥ 1`, or `(I − B)`
+    ill-conditioned), in which case fall back to pooling. The safe, self-correcting choice.
   - `'always'`: always pool.
-  - *Ecological meaning:* if detritus recycling is too strong (each unit regenerates ≥1 unit),
-    the closed system has no finite solution; pooling merges detritus pools so the combined
-    denominator tames the loop.
-- **`det_open_mode`** — how "open" detritus recycling is:
-  - `'none'` (default): closed recycling (all dead matter is reprocessed within the system).
-  - `'recycling_loss'`: damp the recycling matrix `B` by `diag(theta)` — a fraction of detritus
-    is lost (buried, exported) rather than recycled.
-  - `'source_dilution'`: damp `B` **and** dilute the source toward an external SPPR — detritus
-    is partly supplied from outside the modelled system.
-- **`det_theta`** (default 1.0) — detritus **availability / retention fraction**. `1.0` = the
-  closed system; lower values mean less detritus is actually available to consumers (the rest is
-  buried/exported). A float (all pools) or a dict keyed by DET seq or name.
-- **`det_external_sppr`** (default 0.0) — the SPPR assigned to externally-sourced detritus under
-  `'source_dilution'`. Float or dict.
-- **`fix_EE_0_cases`** (default True) — a mass-balance correction for the `'TE'` option. Groups
-  with `EE=0` (all their production dies naturally, `M0=p`) get transfer efficiency 0 and are
-  severed from the nullspace, which **leaks the primary production they consumed** (it goes
-  neither up the web nor back to detritus). When True, that consumed PP is **re-credited to the
-  detritus pool**, closing the global PP balance. Only active for **single-detritus** models
-  under `'TE'`; a `RuntimeWarning` is emitted whenever EE=0 groups are present. It does *not* fix
-  near-singular `0 < EE ≪ 1` groups, whose `SPPR ~ 1/te` blows up (an inherent singularity of the
-  TE method — a separate warning is raised).
+  - *What "pooling" does, ecologically:* it merges all detritus pools into **one** combined
+    compartment and solves a single scalar `sppr_det = a/(1−b)`. Because the combined pool's inflow
+    `q_combined` is the sum of every pool's inflow, it is far larger than any single `q_l`, and the
+    bigger denominator drives `b` back below 1 — taming an otherwise runaway loop at the cost of
+    resolution (every detritus pool then shares one blended value).
+
+- **`det_open_mode`** — whether detritus recycling is **closed** (all dead matter is reprocessed
+  inside the system) or **open** (some escapes, or some is supplied from outside). It works by
+  transforming `(B, c)` *before* the solve, using the retention fraction `θ = det_theta` and the
+  external value `ext = det_external_sppr` (both defined below):
+  - `'none'` (default): closed recycling — `B` and `c` are used unchanged, so the equations above
+    are solved as-is.
+  - `'recycling_loss'`: a fraction `1 − θ` of the dead matter entering detritus is permanently lost
+    (buried in sediment, exported off the shelf) instead of recycled. Only the **recycling term** is
+    damped: `B → diag(θ)·B`, `c` unchanged, so the scalar becomes `sppr_det = a/(1 − θ·b)`. Each pass
+    through detritus loses mass, shrinking the recycled contribution — and rescuing divergent
+    (`b ≥ 1`) cases, since `θ·b` can fall below 1.
+  - `'source_dilution'`: the same damping **plus** the lost fraction of the inflow is replaced by
+    detritus supplied from *outside* the model, carrying a fixed SPPR `ext`. Now **both** terms
+    change: `B → diag(θ)·B` and `c → θ·c + ext·(1 − θ)`, giving
+    `sppr_det = (θ·a + ext·(1 − θ)) / (1 − θ·b)`. Ecologically, detritus becomes a partly-subsidized
+    basal source: a blend of internally-recycled material (weight `θ`) and imported dead matter of
+    value `ext` (weight `1 − θ`).
+
+- **`det_theta`** (`θ`, default 1.0) — the detritus **availability / retention fraction**: the share
+  of dead matter actually recycled within the system. `1.0` recovers the closed system (making
+  `det_open_mode` a no-op); lower values mean more is buried/exported/lost. It is exactly the
+  `diag(θ)` in the transforms above. A float (all pools) or a dict keyed by DET seq or name (a
+  per-pool `θ`).
+- **`det_external_sppr`** (`ext`, default 0.0) — the SPPR charged to the externally-supplied
+  detritus under `'source_dilution'` (the `ext` in `c → θ·c + ext·(1 − θ)`). `0.0` treats the
+  imported dead matter as free primary production; a positive value gives it a cost. Same float-or-
+  dict form as `det_theta`.
+
 - **Returns** `(SPPR, A, L)`.
+
+**The `fix_EE_0_cases` correction (default True).** This is *not* a recycling knob but a
+mass-balance fix specific to `TE_option='TE'`. Groups with `EE=0` (all their production dies
+naturally, `M0=p`) get transfer efficiency 0 and are severed from the nullspace, which **leaks the
+primary production they consumed** — it goes neither up the web nor back to detritus, so the global
+PP balance breaks. When True, that consumed PP is **re-credited to the detritus pool**, since a
+group whose production is 100% non-predatory mortality physically flows to detritus; this restores
+inflow = outflow. It is only active for **single-detritus** models under `'TE'` (a no-op otherwise),
+and emits a `RuntimeWarning` whenever `EE=0` groups are present. It does *not* fix near-singular
+`0 < EE ≪ 1` groups, whose `SPPR ~ 1/te` blows up — an inherent singularity of the TE method that
+raises a separate warning.
 
 ### `SPPR_symbolic(...)` — symbolic solver
 ```python
 SPPR_symbolic(TE=None, TE_option='GE', diet_import_option='as_DC', DET_TE_vals=1,
-              sppr_det_value=None, collapse_det=None, det_collapse_mode='never',
+              sppr_det_value=None, det_collapse_mode='never',
               det_open_mode='none', det_theta=1.0, det_external_sppr=0.0,
               fix_EE_0_cases=True) -> (sppr_symbolic, sppr_mat, equations, variables)
 ```
 A **symbolic (SymPy)** counterpart to `SPPR_new`. It writes the per-group SPPR balance
 equations `A·x − x = 0` symbolically and solves them exactly, returning both the symbolic
 solution and a numeric basis matrix. It shares all of `SPPR_new`'s detritus knobs
-(`collapse_det`, `det_collapse_mode`, `det_open_mode`, `det_theta`, `det_external_sppr`,
-`fix_EE_0_cases`) with identical meaning.
+(`det_collapse_mode`, `det_open_mode`, `det_theta`, `det_external_sppr`, `fix_EE_0_cases`) with
+identical meaning.
 
 Its distinctive input is **how imported diet is treated**. Imported food crosses the model
 boundary, so one cannot automatically say one unit of it equals one unit of internal primary

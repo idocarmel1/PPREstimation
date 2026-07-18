@@ -1673,7 +1673,7 @@ class PPRCalculator:
 
         if b >= 1.0:
             raise ValueError(
-                f"collapse_det fallback also diverges (b={b:.4f} >= 1). "
+                f"pooled-detritus fallback also diverges (b={b:.4f} >= 1). "
                 "Detrital cycling is too strong for SPPR_new."
             )
 
@@ -1799,7 +1799,7 @@ class PPRCalculator:
             }
         return SPPR
 
-    def SPPR_new(self, TE: Optional[pd.DataFrame] = None, TE_option: str = 'GE', DET_TE_vals: float = 1, collapse_det: Optional[bool] = None,
+    def SPPR_new(self, TE: Optional[pd.DataFrame] = None, TE_option: str = 'GE', DET_TE_vals: float = 1,
                  det_collapse_mode: str = 'never', det_open_mode: str = 'none',
                  det_theta: float | dict = 1.0, det_external_sppr: float | dict = 0.0,
                  fix_EE_0_cases: bool = True) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
@@ -1820,9 +1820,6 @@ class PPRCalculator:
                 'With Egestion', 'global'. Defaults to 'GE'.
             DET_TE_vals (float): TE assigned to detritus rows when building the TE matrix.
                 Defaults to 1.
-            collapse_det (Optional[bool]): legacy boolean retained for backward compatibility:
-                False maps to det_collapse_mode='never', True maps to 'auto', None leaves
-                det_collapse_mode as given. Defaults to None.
             det_collapse_mode (str): detritus solve-vs-pool strategy: 'never' (always solve the
                 coupled system; may return negative SPPR but never raises), 'auto' (pool only if
                 unstable -- spectral radius >= 1 or ill-conditioned), or 'always' (always pool).
@@ -1853,11 +1850,6 @@ class PPRCalculator:
             ValueError: if L has an empty nullspace (no steady-state solution).
             Exception: if TE_option is not one of the supported strings.
         """
-        # Back-compat shim: the old boolean collapse_det maps onto the new enum.
-        # collapse_det=False -> 'never' (always solve), True -> 'auto' (pool iff unstable),
-        # None -> leave det_collapse_mode as given (defaults to 'never' == old default).
-        if collapse_det is not None:
-            det_collapse_mode = 'auto' if collapse_det else 'never'
         # get DC:
         DC = self.get_DC(DET_as_PP=True, normalize=False)
         
@@ -2364,15 +2356,15 @@ class PPRCalculator:
         return sppr_symbolic, sppr_mat, equations, variabls
 
     def SPPR_symbolic(self, TE: Optional[pd.DataFrame] = None, TE_option: str = 'GE', diet_import_option: str = 'as_DC', DET_TE_vals: float = 1,
-                      sppr_det_value: Optional[float] = None, collapse_det: Optional[bool] = None,
+                      sppr_det_value: Optional[float] = None,
                       det_collapse_mode: str = 'never', det_open_mode: str = 'none',
                       det_theta: float | dict = 1.0, det_external_sppr: float | dict = 0.0,
                       fix_EE_0_cases: bool = True) -> tuple[pd.DataFrame, pd.DataFrame, list, list]:
         """Symbolic SPPR solver: dispatch to the selected diet-import helper.
 
-        Applies the same legacy collapse_det shim and detritus knobs as SPPR_new and forwards
-        them to whichever diet-import helper is chosen. The default path (det_open_mode='none',
-        det_collapse_mode='never') keeps the exact sympy per-DET scaling.
+        Applies the same detritus knobs as SPPR_new and forwards them to whichever diet-import
+        helper is chosen. The default path (det_open_mode='none', det_collapse_mode='never')
+        keeps the exact sympy per-DET scaling.
 
         Args:
             TE (Optional[pd.DataFrame]): explicit TE matrix; if None it is built from TE_option.
@@ -2385,8 +2377,6 @@ class PPRCalculator:
             DET_TE_vals (float): TE assigned to detritus rows. Defaults to 1.
             sppr_det_value (Optional[float]): if set, detritus columns are scaled by this fixed
                 value instead of being solved. Defaults to None.
-            collapse_det (Optional[bool]): legacy boolean: False -> 'never', True -> 'auto',
-                None -> leave det_collapse_mode as given. Defaults to None.
             det_collapse_mode (str): 'never', 'auto', or 'always' (see SPPR_new). Defaults to 'never'.
             det_open_mode (str): 'none', 'recycling_loss', or 'source_dilution' (see SPPR_new).
                 Defaults to 'none'.
@@ -2405,8 +2395,6 @@ class PPRCalculator:
             variables) from the selected helper (see _SPPR_symbolic_helper_diet_import_as_DC /
             _as_PP).
         """
-        if collapse_det is not None:
-            det_collapse_mode = 'auto' if collapse_det else 'never'
         kwargs = dict(TE=TE, TE_option=TE_option, DET_TE_vals=DET_TE_vals,
                       sppr_det_value=sppr_det_value, det_collapse_mode=det_collapse_mode,
                       det_open_mode=det_open_mode, det_theta=det_theta,
