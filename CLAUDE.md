@@ -2,12 +2,18 @@
 
 ## Knowledge Graph
 
-This project has a pre-built knowledge graph in `graphify-out/graph.json` (144 nodes, 287 edges).
+This project has a knowledge graph at `graphify-out/` with god nodes, community structure, and cross-file relationships.
 
 **Before answering any question about the codebase or making any code change, you MUST:**
 
 1. Run `graphify query "<your question>"` to orient yourself using the graph.
 2. Read only the specific files the graph points to — do not scan the whole project.
+
+Rules:
+- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost). do not waste tokens on verifying the output - trust the graphify program to do its job.
 
 Use the saved Python interpreter:
 ```powershell
@@ -51,13 +57,3 @@ Key files (all SPPR logic lives in `PPRCalculator.py` — there are no separate 
   every public method) with an end-to-end example; it references `SPPR_Methods.md` for the deep math.
 
 When changing SPPR behavior, keep the code, `SPPR_Methods.md`, and `USER_GUIDE.md` in sync.
-
-## graphify
-
-This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
-
-Rules:
-- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
-- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
-- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
-- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
