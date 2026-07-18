@@ -457,8 +457,7 @@ $$ \boxed{\ \mathrm{sppr\_det} = \dfrac{a}{1-b}\ } \qquad (b<1\text{ required fo
    The other two `TE_option`s change what seeds the detritus value.
 
    **`'With Egestion'`.** Now *both* routes into detritus carry SPPR, so the weight on group `k`
-   gains a second term (write `fracs` for the `det_fate` share reaching the pool; `fracs = 1` for a
-   single pool):
+   gains a second term:
 
 $$ m_k = \underbrace{\frac{M0_k}{q_{DET}}}_{k\text{'s own dead body}} \;+\; \underbrace{\sum_j DC_{jk}\cdot\frac{\mathrm{egestion}_j}{q_{DET}}}_{\text{prey }k\text{ egested undigested by consumers }j} \;=\; \frac{M0_k}{q_{DET}} + \Big(DC^{\mathsf{T}}\big(\mathrm{egestion}/q_{DET}\big)\Big)_k. $$
 
@@ -504,7 +503,8 @@ solves:
 $$ \mathbf{x} = \mathbf{c} + B\cdot\mathbf{x} \qquad\Longleftrightarrow\qquad (I - B)\cdot\mathbf{x} = \mathbf{c}. $$
 
 The inflow share `m^{(l)}_k` — the fraction of pool `l`'s inflow supplied by group `k`, routed by
-`det_fate` — is the multi-pool version of the single-detritus weight from step 2:
+`det_fate` — is the multi-pool version of the single-detritus weight from step 2 (write `fracs` for the `det_fate` share reaching the pool; `fracs = 1` for a
+single pool):
 
 $$ m^{(l)}_k = \frac{M0_k\cdot\mathrm{fracs}^{(l)}_k}{q_l} \;+\; \underbrace{\Big(DC^{\mathsf{T}}\big(\mathrm{egestion}\cdot\mathrm{fracs}^{(l)}/q_l\big)\Big)_k}_{\text{egestion route ('With Egestion' only)}}, $$
 
