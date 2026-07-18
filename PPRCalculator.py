@@ -974,23 +974,31 @@ class PPRCalculator:
         TL = pd.Series(TL, index=DC.index).sort_index(ascending=False)
         return TL
 
-    def get_PPR(self, sppr: pd.DataFrame | pd.Series, only_inner: bool = False, only_pp: bool = False) -> pd.DataFrame | pd.Series:
+    def get_PPR(self, sppr: pd.DataFrame | pd.Series, only_inner: bool = False, only_pp: bool = False) -> pd.DataFrame:
         """Convert a per-group SPPR into total primary production required (PPR) by the catch.
 
         Weights each group's SPPR (primary production required per unit production) by its
         catch and sums: PPR = catch . SPPR. The SPPR input is relabeled to seq, reindexed onto
         the catch index, and infinities are zeroed first.
 
+        Always returns a **1-row DataFrame** so the output type is consistent regardless of input:
+        a per-basal-source DataFrame input yields one column per basal source (PP / detritus /
+        import), while an already-aggregated Series input yields a single 'PPR' column. Get the
+        scalar total with ``.sum(axis=1).sum()`` in either case.
+
         Args:
-            sppr (pd.DataFrame | pd.Series): an SPPR result from one of the SPPR_* methods.
+            sppr (pd.DataFrame | pd.Series): an SPPR result from one of the SPPR_* methods. A
+                DataFrame is per-basal-source (groups x sources); a Series is an aggregated
+                per-group SPPR (already summed over sources).
             only_inner (bool, optional): if True, drop the Import columns so only
-                within-system production is counted. Defaults to False.
+                within-system production is counted. Only affects DataFrame input. Defaults to False.
             only_pp (bool, optional): if True, drop the Import and Detritus columns so only
-                within-system primary production is counted. Defaults to False.
+                within-system primary production is counted. Only affects DataFrame input.
+                Defaults to False.
 
         Returns:
-            pd.DataFrame | pd.Series: total PPR per basal source; a 1-row DataFrame if sppr is a
-            DataFrame, else a Series.
+            pd.DataFrame: a 1-row DataFrame of total PPR. Columns are the basal sources for a
+            DataFrame input, or a single 'PPR' column for a Series input.
         """
         sppr = sppr.copy().fillna(0) # sppr is an output of an SPPR calculating method from this class.
         sppr = PPRCalculator.rename_results(sppr, self.name2seq)
@@ -1000,17 +1008,20 @@ class PPRCalculator:
         # only_pp is a stronger option than only_inner
         if only_pp: only_inner=False
 
-        if only_inner and (set(self.get_Import_seq()).issubset(set(sppr.columns))):
-            sppr = sppr.drop(columns=self.get_Import_seq())
-        
-        if only_pp and ((set(self.get_Import_seq()) | set(self.get_DET_seq())).issubset(set(sppr.columns))):
-            sppr = sppr.drop(columns=self.get_Import_seq())
-            sppr = sppr.drop(columns=self.get_DET_seq())
-
+        # Column dropping only applies to a per-source DataFrame; a Series is already aggregated
+        # over basal sources, so there are no source columns to drop.
         if isinstance(sppr, pd.DataFrame):
+            if only_inner and (set(self.get_Import_seq()).issubset(set(sppr.columns))):
+                sppr = sppr.drop(columns=self.get_Import_seq())
+
+            if only_pp and ((set(self.get_Import_seq()) | set(self.get_DET_seq())).issubset(set(sppr.columns))):
+                sppr = sppr.drop(columns=self.get_Import_seq())
+                sppr = sppr.drop(columns=self.get_DET_seq())
+
             return self.catch.dot(sppr).to_frame().T
         else:
-            return self.catch.dot(sppr)
+            # Series input: already aggregated over basal sources -> one total PPR value.
+            return pd.DataFrame({'PPR': [self.catch.dot(sppr)]})
     
     def get_NPP(self, only_inner: bool = True) -> float:
         """Return the net primary production (NPP) of the system.
@@ -2579,126 +2590,6 @@ class PPRCalculator:
         else:
             return sppr, sppr_array[counted_rows_array], not_counted_counter/n_samples, e, v
 
-    def monte_carlo_SPPR_2(self, n_samples: int = 1000, TE_error_percent: float = 10, TE_error_cut_percent: float = 20,
-                         TE_option: str = 'GE', DET_TE_vals: float = 1, kind: str = 'new', silent: bool = True,
-                         det_collapse_mode: str = 'never', det_open_mode: str = 'none',
-                         det_theta: float | dict = 1.0, det_external_sppr: float | dict = 0.0) -> tuple[pd.DataFrame, np.ndarray, float]:
-        """Variant of monte_carlo_SPPR supporting only kind='new'.
-
-        Pre-allocates the sample array from the model's (n_groups x n_PP) shape rather than from
-        the first SPPR call, but is otherwise the same gamma-resampling / negative-rejection /
-        averaging loop as monte_carlo_SPPR.
-
-        Args:
-            n_samples (int, optional): number of SPPR samples to draw. Defaults to 1000.
-            TE_error_percent (float, optional): TE standard deviation as a percentage of its mean
-                (the gamma CV). Defaults to 10.
-            TE_error_cut_percent (float, optional): clip band for each TE sample as a percentage
-                of its mean. Defaults to 20.
-            TE_option (str, optional): transfer-efficiency mode; one of 'GE', 'TE',
-                'With Egestion', 'global'. Defaults to 'GE'.
-            DET_TE_vals (float, optional): TE assigned to detritus rows. Defaults to 1.
-            kind (str, optional): must be 'new'. Defaults to 'new'.
-            silent (bool, optional): suppress progress bars / prints. Defaults to True.
-            det_collapse_mode (str, optional): 'never', 'auto', or 'always' (see SPPR_new).
-                Defaults to 'never'.
-            det_open_mode (str, optional): 'none', 'recycling_loss', or 'source_dilution' (see
-                SPPR_new). Defaults to 'none'.
-            det_theta (float | dict, optional): detritus availability/retention; float or dict
-                keyed by DET seq/name. Defaults to 1.0.
-            det_external_sppr (float | dict, optional): external SPPR for 'source_dilution'.
-                Defaults to 0.0.
-
-        Returns:
-            tuple[pd.DataFrame, np.ndarray, float]: (mean_sppr, accepted_samples_array,
-            rejection_fraction), the per-group SPPR averaged over accepted samples, the array of
-            accepted SPPR samples, and the share of discarded samples.
-
-        Raises:
-            Exception: if kind is not 'new'.
-        """
-
-        # define basis sequence:
-        PP_seq = self.get_PP_seq()
-        Import_seq = self.get_Import_seq()
-        DET_seq = self.get_DET_seq()
-        if TE_option == 'GE':
-            basis_seq = list(PP_seq) + list(DET_seq) + list(Import_seq)
-        else:
-            basis_seq = list(PP_seq) + list(Import_seq)
-        basis_seq = sorted(basis_seq, reverse=True)
-            
-        # choose TE matrix:
-        TE_means = self.get_TE(TE_option=TE_option, DET_values=DET_TE_vals, as_matrix=False)
-
-        def sample_TE(TE_error_percent, TE_error_cut_percent):  # TE samplers as gamma distributions:
-            # mean = shape * scale = TE
-            # variance = shape * scale^2
-            # std = sqrt(shape) * scale
-            # std / mean = 1/sqrt(shape) = TE_error (given)
-            # shape = 1/(TE_error^2)
-            # scale = TE / shape = TE * TE_error^2
-            TE_error = TE_error_percent / 100
-            shape = 1/(TE_error**2)
-
-            # Gamma keeps the sampled TE strictly positive with the requested mean and CV.
-            sampler = lambda: gamma.rvs(a=shape, scale=TE_means/shape)
-            TE_sample = sampler()
-
-            # Clip each TE to the +/- TE_error_cut_percent band to drop extreme tail draws.
-            TE_high = (TE_means * (1 + TE_error_cut_percent/100)).values
-            TE_low = (TE_means * (1 - TE_error_cut_percent/100)).values
-            TE_sample[TE_sample >= TE_high] = TE_high[TE_sample >= TE_high]
-            TE_sample[TE_sample <= TE_low] = TE_low[TE_sample <= TE_low]
-
-            # Broadcast the per-group TE vector into a full matrix, then pin basal rows to 1.
-            TE_sample = pd.DataFrame([TE_sample]*n_groups, index=TE_means.index, columns=TE_means.index).T
-
-            TE_sample.loc[basis_seq, :] = 1
-
-            return TE_sample
-
-        # Detritus openness/collapse knobs forwarded unchanged to every SPPR call below.
-        det_kwargs = dict(det_collapse_mode=det_collapse_mode, det_open_mode=det_open_mode,
-                          det_theta=det_theta, det_external_sppr=det_external_sppr)
-
-        # initialize collectors:
-        sppr, _, _ = self.SPPR_new(TE=None, TE_option=TE_option, DET_TE_vals=DET_TE_vals, **det_kwargs)
-        index = sppr.index
-        columns = sppr.columns
-        n_PP = len(columns)
-        n_groups = self.n_groups
-        sppr_array = np.zeros((n_samples, n_groups, n_PP))
-        not_counted_counter = 0
-        counted_rows_array = np.ones(n_samples).astype(bool)
-
-        # perform monte-carlo:
-        for i in tqdm(range(n_samples), disable=silent):
-            TE_sample = sample_TE(TE_error_percent, TE_error_cut_percent)
-            if  kind == 'new':
-                sppr, _, _ = self.SPPR_new(TE=TE_sample, TE_option=TE_option, DET_TE_vals=DET_TE_vals, **det_kwargs)
-                # sppr = sppr.sort_index(ascending=False)
-            else:
-                raise Exception(f'kind = {kind}')
-            # turn to numpy and collect:
-            sppr = sppr.values
-            # Reject negative (unstable / non-physical) draws so they don't bias the mean.
-            if np.any(sppr < -1e-10):
-                not_counted_counter += 1
-                counted_rows_array[i] = False
-                continue
-            sppr_array[i, :, :] = sppr
-
-        # take average SPPR over the accepted (non-rejected) samples only:
-        sppr = np.mean(sppr_array[counted_rows_array], axis=0)
-
-        if not silent:
-            print(f'    proportion of un-counted calculations: {not_counted_counter}/{n_samples}')
-
-        # back to dataframe:
-        sppr = pd.DataFrame(sppr, index=index, columns=columns)
-        return sppr, sppr_array[counted_rows_array], not_counted_counter/n_samples
-    
     # class methods:
     @classmethod
     def rename_results(cls, results: list | pd.DataFrame | pd.Series, renaming_dict: dict) -> list | pd.DataFrame | pd.Series:

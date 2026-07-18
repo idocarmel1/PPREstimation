@@ -1,6 +1,8 @@
-I'm currently reading into the method SPPR_new. I have a few things I want you to do:
-1. the parameter "collapse_det" - get rid of it, use only "det_collapse_mode". update all places in the code that use this parameter, and edit the relevant part of "SPPR_Methods.md" accordingly.
-2. int SPPR_Methods.md, re-edit the "det_collapse_mode" part so that it is clear what the ecological meaning of each option is.
-3. do the same for "det_open_mode", and connect the explenation to other relevant parameters such as det_theta or det_external_sppr. after you introduce those, show how they modify the equations mentioned above.
-4. explain "fix_EE_0_cases" in a different paragraph, so it is not part of the list titled "Detritus recycling knobs".
-note that I've updated SPPR_Methods.md between our convesations.
+to finalize your work for this session, here is a set of instructions:
+1. I want get_PPR() to always return the same output type (series or DataFrame). choose which one is better for the uses of it in my code (including notebooks) and make the edit. change places in the code that use method, and update SPPR_Methods.md. make sure none of the code breakes after these changes, especially in the notebooks.
+2. in the explenation of get_PR2NPP_ratio, also show the exact calculations done in the code and then explain how it relates to the inflow-outflow analysis like you did.
+3. make the last section "Quick chooser" a bit more detailed.
+4. the file "USER_GUIDE.md" is outdated, and SPPR_Methods.md is the most updated version. update the user guide, make sure everythink written in it is correct and exact, and reference the SPPR_Methods.md file whereever necessary.
+5. write a short README.md file for this project.
+6. update graphify.
+you may use agents.

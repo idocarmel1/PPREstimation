@@ -99,7 +99,7 @@ md = ModelData(model_input)
 | Parameter | Type | Meaning |
 |-----------|------|---------|
 | `model_input` | `int` | **Legacy API**: a model number; data is pulled from the bundled `real_models/SpeciesGroups.json` / diet data. |
-| `model_input` | `str` | **New API**: a path to a per-model JSON file, e.g. `"real_models/EwE_jsons/227_Iceland_(1950).json"`. The filename must follow `{number}_{name}_({year}).json`. |
+| `model_input` | `str` | **New API**: a path to a per-model JSON file, e.g. `"real_models/EwE_jsons/227_227_Iceland_(1950).json"`. The filename stem must follow `{first_number}_{model_number}_{name}_({year})` — **two** leading numeric tokens (the first is a source/grouping id and is discarded; the second is the model id). For single-model files the two numbers are the same (`227_227_...`); for multi-model source files they differ (`13_10013_Humboldt_Current_(1980)`). |
 
 > **Where the files live:** real EwE models are JSON files under `real_models/EwE_jsons/`; small
 > hand-built toy models (used in the test notebooks) are under `real_models/ToyModels/`.
@@ -147,7 +147,7 @@ the SPPR methods. There are three constructors.
 from PPRCalculator import PPRCalculator
 
 model = PPRCalculator(model_number)        # e.g. PPRCalculator(227)
-model = PPRCalculator("real_models/227_Iceland_(1950).json")
+model = PPRCalculator("real_models/EwE_jsons/227_227_Iceland_(1950).json")
 ```
 
 **`PPRCalculator(model_number, underdetermined=False, zero_catch=True, zero_biomass_accum=True,
@@ -173,7 +173,7 @@ default_gs=True, weight_flow=1.0, weight_guess=1.0)`**
 
   ```python
   from ModelData import ModelData
-  md = ModelData("real_models/EwE_jsons/10013_Humboldt_Current_(1995-2004).json")
+  md = ModelData("real_models/EwE_jsons/13_10013_Humboldt_Current_(1995-2004).json")
   model = PPRCalculator.from_modeldata(md)
   ```
 
@@ -214,9 +214,9 @@ These getters expose the completed model. All are cheap and return copies / fres
 | `get_Import_seq()` | `list` | Seq IDs of imported-diet groups. |
 | `get_TE(TE_option, DET_values=1, as_matrix=True, global_TE='mean')` | `pd.DataFrame \| pd.Series` | Transfer-efficiency vector/matrix (see §5.1). |
 | `get_TL(break_cycles, DET_as_PP, TE_option='With Egestion')` | `pd.Series` | Trophic level per group (see §5.2). |
-| `get_NPP(only_inner=True)` | `float` | Net primary production = total production of PP groups. |
-| `get_PPR(sppr, only_inner=False)` | `pd.DataFrame \| pd.Series` | Total PPR = `catch · SPPR` (see §5.3). |
-| `get_PPR2NPP_ratio(sppr)` | `float` | Fraction of NPP appropriated by the catch = PPR / NPP. |
+| `get_NPP(only_inner=True)` | `float` | Net primary production = total production of PP groups (`only_inner=False` raises). |
+| `get_PPR(sppr, only_inner=False, only_pp=False)` | `pd.DataFrame` | Total PPR = `catch · SPPR`, **always a 1-row DataFrame** (see §5.3). |
+| `get_PPR2NPP_ratio(sppr, only_pp=False)` | `float` | Fraction of NPP appropriated by the catch = PPR / NPP. |
 
 ### 5.1 `get_TE` and the `TE_option` choices
 
@@ -257,14 +257,24 @@ i.e. each group's TL is one plus the diet-weighted mean TL of its prey; basal so
 ### 5.3 `get_PPR` — turning SPPR into total PPR
 
 ```python
-sppr = model.SPPR_new()[0]          # per-group SPPR
-ppr  = model.get_PPR(sppr)          # total PPR weighted by catch
+sppr = model.SPPR_new()[0]                 # per-group SPPR (DataFrame: groups × basal sources)
+ppr_df = model.get_PPR(sppr)               # 1-row DataFrame of PPR per basal source
+ppr_total = ppr_df.sum(axis=1).sum()       # scalar total PPR
 ```
 
-`only_inner=True` drops the `Import` columns so only **within-system** primary production is counted (food
-that came in pre-made from outside is excluded). `get_PPR2NPP_ratio` then expresses that as a fraction of
-the system's own NPP — a number > 1 means the catch demands more primary production than the system makes
-internally (i.e. it relies on imports).
+**`get_PPR(sppr, only_inner=False, only_pp=False)` → `pd.DataFrame` (always a 1-row DataFrame).**
+The return type no longer depends on the input: a per-source **DataFrame** input yields one column per
+basal source (PP / detritus / import); an already-aggregated **Series** input yields a single `'PPR'`
+column. Get the scalar total with `.sum(axis=1).sum()` in either case.
+
+- `only_inner=True` drops the `Import` columns so only **within-system** production is counted (food that
+  came in pre-made from outside is excluded).
+- `only_pp=True` drops **both** Import and Detritus columns, counting only genuine within-system
+  **primary** production. `only_pp` is stronger than `only_inner` and overrides it. The `only_*` flags only
+  affect a per-source DataFrame input (a Series is already aggregated over sources).
+
+`get_PPR2NPP_ratio(sppr, only_pp=False)` expresses within-system PPR as a fraction of the system's own NPP.
+See `SPPR_Methods.md` §5 for the full inflow/outflow balance interpretation of this ratio.
 
 ---
 
@@ -273,6 +283,11 @@ internally (i.e. it relies on imports).
 All SPPR methods return a `pd.DataFrame` (or `Series`) of SPPR values. The matrix-based methods return a
 **tuple** whose first element is the SPPR table; unpack accordingly.
 
+> **Deep reference:** this section is a practical API/usage guide. For the full derivations — the
+> nullspace foundation, the detritus recycling fixed point `sppr_det = a/(1−b)` and its multi-pool
+> `(I − B)x = c` form, the openness transforms, and per-method equations — see `SPPR_Methods.md`
+> (§4 covers the flow-network methods and detritus handling in depth).
+
 ### 6.1 Quick reference
 
 | Method | Returns | One-line description |
@@ -280,13 +295,12 @@ All SPPR methods return a `pd.DataFrame` (or `Series`) of SPPR values. The matri
 | `SPPR_1986()` | `DataFrame` | Single catch-weighted mean TL, `TE=0.1`, `SPPR = TE^(1−TL)`. |
 | `SPPR_1995(global_TE=0.1)` | `DataFrame` | Per-group `SPPR = TE^(1−TL)` with continuous TL. |
 | `SPPR_1995_TL_fix(global_TE=0.1)` | `DataFrame` | 1995 with linear interpolation between integer TLs. |
-| `SPPR_2015(only_pp_det=True)` | `(SPPR, A, L)` | Leontief matrix-inversion formulation. |
+| `SPPR_2015()` | `(SPPR, A, L)` | Leontief matrix-inversion formulation. |
 | `SPPR_EwE(TE_option, use_EE=True, return_paths=True, silent=True)` | `(SPPR, A, paths)` | Explicit path enumeration over the network. |
 | `SPPR_EwE_Ulanowicz(TE_option, global_TE='mean', use_EE=True)` | `(SPPR, A, L)` | Nullspace reformulation of the EwE path sum. |
 | `SPPR_new(...)` | `(SPPR, A, L)` | Primary numeric solver with full detritus recycling. |
 | `SPPR_symbolic(...)` | `(sppr_symbolic, sppr_mat, equations, variables)` | Symbolic solver (keeps imported diet explicit). |
 | `monte_carlo_SPPR(...)` | `(mean, samples, reject_frac, eqs, vars)` | Uncertainty propagation over TE. |
-| `monte_carlo_SPPR_2(...)` | `(mean, samples, reject_frac)` | Same, `kind='new'` only. |
 
 ### 6.2 The classic chain methods
 
@@ -348,7 +362,7 @@ A matrix reformulation that gives the *same* answer as the path sum without enum
 anchored to one basal source. Returns `(SPPR, A, L)`.
 **Raises** `ValueError` if no steady state exists (disconnected web).
 
-**`SPPR_2015(only_pp_det=True)` → `tuple[DataFrame, DataFrame, DataFrame]`.**
+**`SPPR_2015()` → `tuple[DataFrame, DataFrame, DataFrame]`.** (No parameters.)
 A Leontief input–output formulation. Detritus columns are dissolved by reassigning the PP-derived fraction
 of each detritus flow back onto the PP groups, leaving only living compartments. With the
 production-normalized transaction matrix `A`:
@@ -358,7 +372,8 @@ L = (I − A)^(-1)
 ```
 
 The PP columns of `L` give per-group SPPR; a balancing detritus SPPR is added back at the end. Returns
-`(SPPR, A, L)`. (Note: `only_pp_det` is forced to `True` internally, matching the published method.)
+`(SPPR, A, L)`. See `SPPR_Methods.md` §4 (`SPPR_2015`) for the proof that `A = Z/P` is the same matrix as
+`A = DC/TE`.
 
 ### 6.4 `SPPR_new` — the primary solver
 
@@ -377,9 +392,9 @@ source). Then it **resolves detritus recycling** depending on `TE_option`:
 **Full signature:**
 
 ```python
-SPPR_new(TE=None, TE_option='GE', DET_TE_vals=1, collapse_det=None,
+SPPR_new(TE=None, TE_option='GE', DET_TE_vals=1,
          det_collapse_mode='never', det_open_mode='none',
-         det_theta=1.0, det_external_sppr=0.0)
+         det_theta=1.0, det_external_sppr=0.0, fix_EE_0_cases=True)
 ```
 
 | Parameter | Type | Default | Meaning |
@@ -387,20 +402,22 @@ SPPR_new(TE=None, TE_option='GE', DET_TE_vals=1, collapse_det=None,
 | `TE` | `pd.DataFrame \| None` | `None` | An explicit TE matrix (e.g. a Monte-Carlo sample). If `None`, built from `TE_option`. |
 | `TE_option` | `str` | `'GE'` | `'GE'`, `'TE'`, `'With Egestion'`, `'global'` (see §5.1). |
 | `DET_TE_vals` | `float` | `1` | TE assigned to detritus rows when building the TE matrix. |
-| `collapse_det` | `bool \| None` | `None` | **Legacy** boolean: `False` → `det_collapse_mode='never'`, `True` → `'auto'`, `None` → leave `det_collapse_mode` as given. |
 | `det_collapse_mode` | `str` | `'never'` | Detritus stability strategy (see §6.5). |
 | `det_open_mode` | `str` | `'none'` | Detritus openness model (see §6.5). |
 | `det_theta` | `float \| dict` | `1.0` | Detritus availability/retention fraction (see §6.5). |
 | `det_external_sppr` | `float \| dict` | `0.0` | External SPPR for diluted material under `'source_dilution'` (see §6.5). |
+| `fix_EE_0_cases` | `bool` | `True` | Mass-balance fix for the `TE_option='TE'` case: re-credits the PP consumed by `EE=0` dead-end groups to detritus (single-detritus models only; no-op otherwise). See §6.5 and `SPPR_Methods.md` §4. |
 
 **Returns** `(SPPR, A, L)`.
 **Raises** `ValueError` (empty nullspace) or `Exception` (bad `TE_option`).
 
-### 6.5 The detritus knobs (shared by `SPPR_new`, `SPPR_symbolic`, the symbolic helpers, and both Monte-Carlo methods)
+### 6.5 The detritus knobs (shared by `SPPR_new`, `SPPR_symbolic`, and `monte_carlo_SPPR`)
 
 Detritus is a recycling pool: dead biomass and faeces flow into it, and detritus-feeders eat from it, which
 sends energy back up the web. This loop can amplify SPPR without bound if recycling is too strong, so these
-knobs control **how the loop is closed and stabilized**.
+knobs control **how the loop is closed and stabilized**. For the full derivation of the recycling solve
+(the single-pool fixed point `sppr_det = a/(1−b)` and the multi-pool `(I − B)x = c` system) and of each
+openness transform, see `SPPR_Methods.md` §4 (`SPPR_new`).
 
 **`det_collapse_mode`** — what to do when the recycling system is numerically unstable:
 
@@ -424,6 +441,12 @@ name (`str`). `θ = 1.0` (default) reproduces the fully closed system.
 
 **`det_external_sppr`** — the SPPR assigned to the diluted (replacement) material under
 `'source_dilution'`. Same scalar-or-`dict` form as `det_theta`; default `0.0`.
+
+**`fix_EE_0_cases`** (default `True`) — a mass-balance fix specific to `TE_option='TE'`. Groups with
+`EE=0` (all production dies non-predatorily) get `TE=0` and are severed from the nullspace, which leaks the
+PP they consumed and breaks the global PP balance. When `True`, that consumed PP is re-credited to
+detritus. It is only active for **single-detritus** models under `'TE'` (a no-op otherwise) and emits a
+`RuntimeWarning` when `EE=0` groups are present. See `SPPR_Methods.md` §4 for details.
 
 The openness transform applied to the recycling system `(I − B)x = c` is, with θ and `ext` aligned to the
 detritus groups:
@@ -465,9 +488,8 @@ Solves the same steady state symbolically (with `sympy`), which lets imported di
 
 ```python
 SPPR_symbolic(TE=None, TE_option='GE', diet_import_option='as_DC', DET_TE_vals=1,
-              sppr_det_value=None, collapse_det=None,
-              det_collapse_mode='never', det_open_mode='none',
-              det_theta=1.0, det_external_sppr=0.0)
+              sppr_det_value=None, det_collapse_mode='never', det_open_mode='none',
+              det_theta=1.0, det_external_sppr=0.0, fix_EE_0_cases=True)
 ```
 
 The new parameter is **`diet_import_option`**:
@@ -516,9 +538,6 @@ draws have mean `TE_mean` and `std/mean = CV`. Basal rows are pinned to 1 each d
 are `None` when `kind='new'`. `rejection_fraction` tells you how often the model was unstable — a high value
 is a red flag about the model or the chosen TE error.
 **Raises** `Exception` if `kind` is not `'new'` or `'symbolic'`.
-
-**`monte_carlo_SPPR_2(...)`** is the same loop restricted to `kind='new'`; it pre-allocates from the model
-shape and returns the 3-tuple `(mean_sppr, accepted_samples_array, rejection_fraction)`.
 
 ---
 
@@ -578,7 +597,8 @@ sppr_open, _, _ = model.SPPR_new(
     TE_option='GE', det_open_mode='recycling_loss', det_theta=0.7)
 
 # 5. Turn SPPR into total PPR and the PPR/NPP ratio.
-print("total PPR:", model.get_PPR(sppr_new))
+#    get_PPR always returns a 1-row DataFrame; collapse it for the scalar total.
+print("total PPR:", model.get_PPR(sppr_new).sum(axis=1).sum())
 print("PPR/NPP:", model.get_PPR2NPP_ratio(sppr_new))
 
 # 6. Uncertainty bounds (robust mode).

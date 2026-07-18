@@ -1,0 +1,3508 @@
+{
+  "nodes": [
+    {
+      "id": "pprcalculator",
+      "label": "PPRCalculator.py",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator",
+      "label": "PPRCalculator",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L17",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_init",
+      "label": ".__init__()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L20",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_from_dict",
+      "label": ".from_dict()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L59",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_from_modeldata",
+      "label": ".from_modeldata()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L106",
+      "_origin": "ast"
+    },
+    {
+      "id": "modeldata",
+      "label": "ModelData",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L106",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_sort",
+      "label": "._sort()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L177",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_fill_properties",
+      "label": "._fill_properties()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L195",
+      "_origin": "ast"
+    },
+    {
+      "id": "dataframe",
+      "label": "DataFrame",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L195",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_apply_ecopath_defaults",
+      "label": ".apply_ecopath_defaults()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L244",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_apply_lim",
+      "label": ".apply_lim()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L416",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_is_model_balanced",
+      "label": ".is_model_balanced()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L620",
+      "_origin": "ast"
+    },
+    {
+      "id": "series",
+      "label": "Series",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L620",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_balance_model",
+      "label": ".balance_model()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L644",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_is_sppr_balanced",
+      "label": ".is_sppr_balanced()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L685",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_get_model",
+      "label": ".get_model()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L751",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_get_groups_df",
+      "label": ".get_groups_df()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L763",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_get_dc",
+      "label": ".get_DC()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L771",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_get_det_fate",
+      "label": ".get_det_fate()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L798",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_get_z",
+      "label": ".get_Z()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L801",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_get_det_seq",
+      "label": ".get_DET_seq()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L838",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_get_pp_seq",
+      "label": ".get_PP_seq()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L846",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_get_regular_seq",
+      "label": ".get_Regular_seq()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L854",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_get_import_seq",
+      "label": ".get_Import_seq()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L862",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_get_te",
+      "label": ".get_TE()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L872",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_get_tl",
+      "label": ".get_TL()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L927",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_get_ppr",
+      "label": ".get_PPR()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L977",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_get_npp",
+      "label": ".get_NPP()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1026",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_get_ppr2npp_ratio",
+      "label": ".get_PPR2NPP_ratio()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1046",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_sppr_1986",
+      "label": ".SPPR_1986()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1062",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_sppr_1995",
+      "label": ".SPPR_1995()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1080",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_sppr_1995_tl_fix",
+      "label": ".SPPR_1995_TL_fix()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1098",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_sppr_ewe",
+      "label": ".SPPR_EwE()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1121",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_sppr_ewe_ulanowicz",
+      "label": ".SPPR_EwE_Ulanowicz()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1364",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_sppr_2015",
+      "label": ".SPPR_2015()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1440",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_build_det_bc",
+      "label": "._build_det_BC()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1500",
+      "_origin": "ast"
+    },
+    {
+      "id": "ndarray",
+      "label": "ndarray",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1500",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_spectral_radius",
+      "label": "._spectral_radius()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1564",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_resolve_det_param",
+      "label": "._resolve_det_param()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1582",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_collapse_det_scaling",
+      "label": "._collapse_det_scaling()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1611",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_solve_det_scaling",
+      "label": "._solve_det_scaling()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1696",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_sppr_new",
+      "label": ".SPPR_new()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1813",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
+      "label": "._SPPR_symbolic_helper_diet_import_as_PP()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2007",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
+      "label": "._SPPR_symbolic_helper_diet_import_as_DC()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2196",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_sppr_symbolic",
+      "label": ".SPPR_symbolic()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2369",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_sample_sppr_new_forced_balance",
+      "label": "._sample_SPPR_new_forced_balance()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2418",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_monte_carlo_sppr",
+      "label": ".monte_carlo_SPPR()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2455",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_pprcalculator_rename_results",
+      "label": ".rename_results()",
+      "file_type": "code",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2595",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_21",
+      "label": "Primary constructor: build the calculator directly from a model identifier.",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L21",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_60",
+      "label": "Alternative constructor: rebuild an instance from a dict of pre-existing attribu",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L60",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_107",
+      "label": "Core constructor used by __init__: build the calculator from a loaded ModelData.",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L107",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_178",
+      "label": "Normalize the ordering of every Series/DataFrame attribute on the instance.",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L178",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_196",
+      "label": "Unpack the fully-filled groups table into the individual named vectors.",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L196",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_245",
+      "label": "Apply standard Ecopath defaults and sync the mass-balance flows with the ratios.",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L245",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_417",
+      "label": "Fill missing mass-balance variables via a per-group Linear Inverse Model (SLSQP)",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L417",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_621",
+      "label": "Check the two Ecopath mass-balance identities hold (within tolerance).",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L621",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_645",
+      "label": "Iteratively force the model onto exact mass balance and return a balanced copy.",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L645",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_686",
+      "label": "Check an SPPR result is globally self-consistent (inflow == outflow).          T",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L686",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_752",
+      "label": "Return the underlying ModelData, or None for toy / from_dict instances.",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L752",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_764",
+      "label": "Return a defensive (descending-seq sorted) copy of the per-group parameter table",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L764",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_772",
+      "label": "Return the diet-composition (DC) matrix, optionally redefining detritus rows.",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L772",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_802",
+      "label": "Return the flow matrix Z = DC * q (consumption-weighted diet), with DET rows red",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L802",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_839",
+      "label": "Return the sorted seq IDs of all detritus (DET) groups.          Returns:",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L839",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_847",
+      "label": "Return the sorted seq IDs of all primary-producer (PP) groups.          Returns:",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L847",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_855",
+      "label": "Return the sorted seq IDs of all regular (consumer) groups.          Returns:",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L855",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_863",
+      "label": "Return the sorted seq IDs of all imported-diet (Import) groups.          Import",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L863",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_873",
+      "label": "Build the per-group transfer-efficiency (TE) vector or matrix.          Args:",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L873",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_928",
+      "label": "Compute the trophic level of every group via the standard linear-algebra definit",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L928",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_978",
+      "label": "Convert a per-group SPPR into total primary production required (PPR) by the cat",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L978",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_1027",
+      "label": "Return the net primary production (NPP) of the system.          NPP is the total",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1027",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_1047",
+      "label": "Return the fraction of available NPP appropriated by the catch (PPR / NPP).",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1047",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_1063",
+      "label": "Pauly & Christensen (1986)-style SPPR using a single catch-weighted trophic leve",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1063",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_1081",
+      "label": "Christensen & Pauly (1995)-style per-group SPPR = TE^(1-TL).          Uses each",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1081",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_1099",
+      "label": "SPPR_1995 variant that linearly interpolates between bracketing integer trophic",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1099",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_1122",
+      "label": "Path-enumeration SPPR in the style of Ecopath with Ecosim (EwE) flow-network ana",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1122",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_1365",
+      "label": "Matrix (nullspace) reformulation of the EwE path-summation SPPR.          Instea",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1365",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_1441",
+      "label": "2015-method SPPR: a matrix-inversion (Leontief-style) formulation.          Detr",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1441",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_1501",
+      "label": "Build the detritus recycling system (I - B) x = c for the GE / With Egestion mod",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1501",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_1565",
+      "label": "Return the spectral radius (largest absolute eigenvalue) of M.          Used to",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1565",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_1583",
+      "label": "Resolve a per-DET parameter into a float array aligned with DET_seq.          Tu",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1583",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_1614",
+      "label": "Fallback DET scaling: pool all detritus into one compartment and solve a 1-D pro",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1614",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_1700",
+      "label": "Resolve the detritus recycling system: apply openness, choose solve-vs-pool, sca",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1700",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_1817",
+      "label": "Primary numeric SPPR solver via the nullspace of L = A - I.          Builds the",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1817",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_2011",
+      "label": "Symbolic SPPR helper, \"diet import as PP\" variant.          Imported diet is tre",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2011",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_2200",
+      "label": "Symbolic SPPR helper, \"diet import as DC\" variant.          Imported diet is kep",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2200",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_2374",
+      "label": "Symbolic SPPR solver: dispatch to the selected diet-import helper.          Appl",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2374",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_2419",
+      "label": "Run SPPR_new and force exact global balance by solving the single detritus SPPR.",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2419",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_2459",
+      "label": "Monte-Carlo uncertainty propagation over transfer efficiency.          Repeatedl",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2459",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_2596",
+      "label": "Relabel the index (and columns) of one or more SPPR-style results.          Typi",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2596",
+      "_origin": "ast"
+    },
+    {
+      "id": "pprcalculator_rationale_661",
+      "label": "# TODO: change this function so I can decide which subset of parameters stays co",
+      "file_type": "rationale",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L661",
+      "_origin": "ast"
+    },
+    {
+      "id": "create_pprs_excel",
+      "label": "create_PPRS_excel.py",
+      "file_type": "code",
+      "source_file": "create_PPRS_excel.py",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "create_pprs_excel_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "create_PPRS_excel.py",
+      "source_location": "L23",
+      "_origin": "ast"
+    }
+  ],
+  "edges": [
+    {
+      "source": "pprcalculator",
+      "target": "numpy",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator",
+      "target": "pandas",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator",
+      "target": "sympy",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator",
+      "target": "tqdm_notebook",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator",
+      "target": "scipy_stats",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator",
+      "target": "igraph",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator",
+      "target": "scipy_optimize",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator",
+      "target": "warnings",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator",
+      "target": "typing",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator",
+      "target": "modeldata",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator",
+      "target": "utils",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator",
+      "target": "copy",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator",
+      "target": "pprcalculator_pprcalculator",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_init",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_from_dict",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L59",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_from_modeldata",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L106",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_from_modeldata",
+      "target": "modeldata",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L106",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_sort",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L177",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_fill_properties",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L195",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_fill_properties",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L195",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_apply_ecopath_defaults",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L244",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_apply_ecopath_defaults",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L244",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_apply_ecopath_defaults",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L244",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_apply_ecopath_defaults",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L244",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_apply_ecopath_defaults",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L244",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_apply_lim",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L416",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_apply_lim",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L416",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_apply_lim",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L416",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_is_model_balanced",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L620",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_is_model_balanced",
+      "target": "series",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L620",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_is_model_balanced",
+      "target": "series",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L620",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_balance_model",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L644",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_is_sppr_balanced",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L685",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_is_sppr_balanced",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L685",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_is_sppr_balanced",
+      "target": "series",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L685",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_get_model",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L751",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_model",
+      "target": "modeldata",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L751",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_get_groups_df",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L763",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_groups_df",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L763",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_get_dc",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L771",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_dc",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L771",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_get_det_fate",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L798",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_get_z",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L801",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_z",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L801",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_get_det_seq",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L838",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_get_pp_seq",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L846",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_get_regular_seq",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L854",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_get_import_seq",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L862",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_get_te",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L872",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_te",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L872",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_te",
+      "target": "series",
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L872",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_get_tl",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L927",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_tl",
+      "target": "series",
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L927",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_get_ppr",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L977",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_ppr",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L977",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_ppr",
+      "target": "series",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L977",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_ppr",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L977",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_get_npp",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1026",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_get_ppr2npp_ratio",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1046",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_ppr2npp_ratio",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1046",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_ppr2npp_ratio",
+      "target": "series",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1046",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_sppr_1986",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1062",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_1986",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1062",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_sppr_1995",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1080",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_1995",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1080",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_sppr_1995_tl_fix",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1098",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_1995_tl_fix",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1098",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_sppr_ewe",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1121",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_ewe",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1121",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_ewe",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1121",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_sppr_ewe_ulanowicz",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1364",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_ewe_ulanowicz",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1364",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_ewe_ulanowicz",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1364",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_ewe_ulanowicz",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1364",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_sppr_2015",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1440",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_2015",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1440",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_2015",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1440",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_2015",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1440",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_build_det_bc",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1500",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_build_det_bc",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1500",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_build_det_bc",
+      "target": "series",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1500",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_build_det_bc",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1500",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_build_det_bc",
+      "target": "ndarray",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1500",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_build_det_bc",
+      "target": "ndarray",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1500",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_spectral_radius",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1564",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_spectral_radius",
+      "target": "ndarray",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1564",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_resolve_det_param",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1582",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_resolve_det_param",
+      "target": "ndarray",
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1582",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_collapse_det_scaling",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1611",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_collapse_det_scaling",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1611",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_collapse_det_scaling",
+      "target": "series",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1611",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_collapse_det_scaling",
+      "target": "series",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1611",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_collapse_det_scaling",
+      "target": "series",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1611",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_collapse_det_scaling",
+      "target": "series",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1611",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_collapse_det_scaling",
+      "target": "series",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1611",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_collapse_det_scaling",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1611",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_collapse_det_scaling",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1611",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_collapse_det_scaling",
+      "target": "ndarray",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1611",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_collapse_det_scaling",
+      "target": "ndarray",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1611",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_collapse_det_scaling",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1611",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_solve_det_scaling",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1696",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_solve_det_scaling",
+      "target": "ndarray",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1696",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_solve_det_scaling",
+      "target": "ndarray",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1696",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_solve_det_scaling",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1696",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_solve_det_scaling",
+      "target": "series",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1696",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_solve_det_scaling",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1696",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_solve_det_scaling",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1696",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_sppr_new",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1813",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_new",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1813",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_new",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1813",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_new",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1813",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_new",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1813",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2007",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2007",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2007",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2007",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2196",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2196",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2196",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2196",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_sppr_symbolic",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2369",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2369",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2369",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2369",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_sample_sppr_new_forced_balance",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2418",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sample_sppr_new_forced_balance",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2418",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_monte_carlo_sppr",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2455",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator",
+      "target": "pprcalculator_pprcalculator_rename_results",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2595",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_rename_results",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2595",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_rename_results",
+      "target": "series",
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2595",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_rename_results",
+      "target": "dataframe",
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2595",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_rename_results",
+      "target": "series",
+      "relation": "references",
+      "context": "return_type",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2595",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_init",
+      "target": "pprcalculator_pprcalculator_from_modeldata",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_init",
+      "target": "modeldata",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_from_dict",
+      "target": "pprcalculator_pprcalculator_apply_ecopath_defaults",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L87",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_from_dict",
+      "target": "pprcalculator_pprcalculator_get_dc",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L89",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_from_dict",
+      "target": "pprcalculator_pprcalculator_apply_lim",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L95",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_from_dict",
+      "target": "pprcalculator_pprcalculator_fill_properties",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L98",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_from_dict",
+      "target": "pprcalculator_pprcalculator_sort",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L101",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_from_modeldata",
+      "target": "pprcalculator_pprcalculator_get_det_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L148",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_from_modeldata",
+      "target": "pprcalculator_pprcalculator_apply_ecopath_defaults",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L159",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_from_modeldata",
+      "target": "pprcalculator_pprcalculator_get_dc",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L161",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_from_modeldata",
+      "target": "pprcalculator_pprcalculator_apply_lim",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L167",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_from_modeldata",
+      "target": "pprcalculator_pprcalculator_fill_properties",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L170",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_from_modeldata",
+      "target": "pprcalculator_pprcalculator_sort",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L173",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_fill_properties",
+      "target": "pprcalculator_pprcalculator_get_tl",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L216",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_fill_properties",
+      "target": "series",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L232",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_fill_properties",
+      "target": "pprcalculator_pprcalculator_is_model_balanced",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L240",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_fill_properties",
+      "target": "pprcalculator_pprcalculator_balance_model",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L241",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_apply_ecopath_defaults",
+      "target": "series",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L361",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_apply_lim",
+      "target": "pprcalculator_pprcalculator_get_model",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L608",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_balance_model",
+      "target": "pprcalculator_pprcalculator_get_z",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L673",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_dc",
+      "target": "pprcalculator_pprcalculator_get_z",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L788",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_dc",
+      "target": "pprcalculator_pprcalculator_get_det_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L791",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_z",
+      "target": "pprcalculator_pprcalculator_get_det_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L817",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_te",
+      "target": "pprcalculator_pprcalculator_get_groups_df",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L909",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_te",
+      "target": "series",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L914",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_te",
+      "target": "pprcalculator_pprcalculator_get_det_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L918",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_te",
+      "target": "dataframe",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L922",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_tl",
+      "target": "pprcalculator_pprcalculator_get_det_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L946",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_tl",
+      "target": "pprcalculator_pprcalculator_get_regular_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L947",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_tl",
+      "target": "pprcalculator_pprcalculator_get_z",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L949",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_tl",
+      "target": "pprcalculator_pprcalculator_get_dc",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L950",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_tl",
+      "target": "series",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L974",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_ppr",
+      "target": "pprcalculator_pprcalculator_rename_results",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1004",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_ppr",
+      "target": "pprcalculator_pprcalculator_get_import_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1014",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_ppr",
+      "target": "pprcalculator_pprcalculator_get_det_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1017",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_ppr",
+      "target": "dataframe",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1024",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_npp",
+      "target": "pprcalculator_pprcalculator_get_pp_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1042",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_ppr2npp_ratio",
+      "target": "pprcalculator_pprcalculator_get_ppr",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1057",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_get_ppr2npp_ratio",
+      "target": "pprcalculator_pprcalculator_get_npp",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1057",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_1986",
+      "target": "dataframe",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1073",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_1986",
+      "target": "pprcalculator_pprcalculator_get_tl",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1075",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_1995",
+      "target": "pprcalculator_pprcalculator_get_te",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1093",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_1995",
+      "target": "pprcalculator_pprcalculator_get_tl",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1094",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_1995_tl_fix",
+      "target": "pprcalculator_pprcalculator_get_te",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1113",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_1995_tl_fix",
+      "target": "pprcalculator_pprcalculator_get_tl",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1114",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_ewe_ulanowicz",
+      "target": "pprcalculator_pprcalculator_get_dc",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1389",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_ewe_ulanowicz",
+      "target": "pprcalculator_pprcalculator_get_te",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1396",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_ewe_ulanowicz",
+      "target": "dataframe",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1404",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_2015",
+      "target": "pprcalculator_pprcalculator_get_groups_df",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1453",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_2015",
+      "target": "pprcalculator_pprcalculator_get_import_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1455",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_2015",
+      "target": "pprcalculator_pprcalculator_get_pp_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1455",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_2015",
+      "target": "pprcalculator_pprcalculator_get_det_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1456",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_2015",
+      "target": "pprcalculator_pprcalculator_get_z",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1457",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_2015",
+      "target": "dataframe",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1483",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_build_det_bc",
+      "target": "series",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1543",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_collapse_det_scaling",
+      "target": "series",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1661",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_solve_det_scaling",
+      "target": "pprcalculator_pprcalculator_resolve_det_param",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1749",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_solve_det_scaling",
+      "target": "pprcalculator_pprcalculator_spectral_radius",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1763",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_solve_det_scaling",
+      "target": "pprcalculator_pprcalculator_collapse_det_scaling",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1787",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_new",
+      "target": "pprcalculator_pprcalculator_get_dc",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1865",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_new",
+      "target": "pprcalculator_pprcalculator_get_te",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1871",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_new",
+      "target": "dataframe",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1880",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_new",
+      "target": "pprcalculator_pprcalculator_get_det_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1913",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_new",
+      "target": "pprcalculator_pprcalculator_get_pp_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1925",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_new",
+      "target": "pprcalculator_pprcalculator_get_import_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1925",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_new",
+      "target": "pprcalculator_pprcalculator_resolve_det_param",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1926",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_new",
+      "target": "series",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1957",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_new",
+      "target": "pprcalculator_pprcalculator_build_det_bc",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1997",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_new",
+      "target": "pprcalculator_pprcalculator_solve_det_scaling",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1998",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
+      "target": "pprcalculator_pprcalculator_get_det_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2051",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
+      "target": "pprcalculator_pprcalculator_get_regular_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2053",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
+      "target": "pprcalculator_pprcalculator_get_import_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2054",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
+      "target": "pprcalculator_pprcalculator_get_pp_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2055",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
+      "target": "pprcalculator_pprcalculator_get_dc",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2058",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
+      "target": "pprcalculator_pprcalculator_get_te",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2059",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
+      "target": "dataframe",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2100",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
+      "target": "pprcalculator_pprcalculator_resolve_det_param",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2154",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
+      "target": "pprcalculator_pprcalculator_build_det_bc",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2185",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
+      "target": "pprcalculator_pprcalculator_solve_det_scaling",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2186",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
+      "target": "pprcalculator_pprcalculator_get_det_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2237",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
+      "target": "pprcalculator_pprcalculator_get_regular_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2238",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
+      "target": "pprcalculator_pprcalculator_get_import_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2239",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
+      "target": "pprcalculator_pprcalculator_get_pp_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2240",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
+      "target": "pprcalculator_pprcalculator_get_dc",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2243",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
+      "target": "pprcalculator_pprcalculator_get_te",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2244",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
+      "target": "dataframe",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2277",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
+      "target": "pprcalculator_pprcalculator_build_det_bc",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2353",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
+      "target": "pprcalculator_pprcalculator_solve_det_scaling",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2354",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic",
+      "target": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2414",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sppr_symbolic",
+      "target": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2416",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sample_sppr_new_forced_balance",
+      "target": "pprcalculator_pprcalculator_sppr_new",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2436",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sample_sppr_new_forced_balance",
+      "target": "pprcalculator_pprcalculator_get_det_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2441",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_sample_sppr_new_forced_balance",
+      "target": "pprcalculator_pprcalculator_get_pp_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2442",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_monte_carlo_sppr",
+      "target": "pprcalculator_pprcalculator_get_pp_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2501",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_monte_carlo_sppr",
+      "target": "pprcalculator_pprcalculator_get_import_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2502",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_monte_carlo_sppr",
+      "target": "pprcalculator_pprcalculator_get_det_seq",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2503",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_monte_carlo_sppr",
+      "target": "pprcalculator_pprcalculator_get_te",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2511",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_monte_carlo_sppr",
+      "target": "pprcalculator_pprcalculator_sppr_new",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2549",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_monte_carlo_sppr",
+      "target": "pprcalculator_pprcalculator_sppr_symbolic",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2551",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_pprcalculator_monte_carlo_sppr",
+      "target": "dataframe",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2586",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_21",
+      "target": "pprcalculator_pprcalculator_init",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_60",
+      "target": "pprcalculator_pprcalculator_from_dict",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_107",
+      "target": "pprcalculator_pprcalculator_from_modeldata",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L107",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_178",
+      "target": "pprcalculator_pprcalculator_sort",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L178",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_196",
+      "target": "pprcalculator_pprcalculator_fill_properties",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L196",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_245",
+      "target": "pprcalculator_pprcalculator_apply_ecopath_defaults",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L245",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_417",
+      "target": "pprcalculator_pprcalculator_apply_lim",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L417",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_621",
+      "target": "pprcalculator_pprcalculator_is_model_balanced",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L621",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_645",
+      "target": "pprcalculator_pprcalculator_balance_model",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L645",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_686",
+      "target": "pprcalculator_pprcalculator_is_sppr_balanced",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L686",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_752",
+      "target": "pprcalculator_pprcalculator_get_model",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L752",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_764",
+      "target": "pprcalculator_pprcalculator_get_groups_df",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L764",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_772",
+      "target": "pprcalculator_pprcalculator_get_dc",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L772",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_802",
+      "target": "pprcalculator_pprcalculator_get_z",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L802",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_839",
+      "target": "pprcalculator_pprcalculator_get_det_seq",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L839",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_847",
+      "target": "pprcalculator_pprcalculator_get_pp_seq",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L847",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_855",
+      "target": "pprcalculator_pprcalculator_get_regular_seq",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L855",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_863",
+      "target": "pprcalculator_pprcalculator_get_import_seq",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L863",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_873",
+      "target": "pprcalculator_pprcalculator_get_te",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L873",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_928",
+      "target": "pprcalculator_pprcalculator_get_tl",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L928",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_978",
+      "target": "pprcalculator_pprcalculator_get_ppr",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L978",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_1027",
+      "target": "pprcalculator_pprcalculator_get_npp",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1027",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_1047",
+      "target": "pprcalculator_pprcalculator_get_ppr2npp_ratio",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1047",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_1063",
+      "target": "pprcalculator_pprcalculator_sppr_1986",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1063",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_1081",
+      "target": "pprcalculator_pprcalculator_sppr_1995",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1081",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_1099",
+      "target": "pprcalculator_pprcalculator_sppr_1995_tl_fix",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1099",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_1122",
+      "target": "pprcalculator_pprcalculator_sppr_ewe",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1122",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_1365",
+      "target": "pprcalculator_pprcalculator_sppr_ewe_ulanowicz",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1365",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_1441",
+      "target": "pprcalculator_pprcalculator_sppr_2015",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1441",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_1501",
+      "target": "pprcalculator_pprcalculator_build_det_bc",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1501",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_1565",
+      "target": "pprcalculator_pprcalculator_spectral_radius",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1565",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_1583",
+      "target": "pprcalculator_pprcalculator_resolve_det_param",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1583",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_1614",
+      "target": "pprcalculator_pprcalculator_collapse_det_scaling",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1614",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_1700",
+      "target": "pprcalculator_pprcalculator_solve_det_scaling",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1700",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_1817",
+      "target": "pprcalculator_pprcalculator_sppr_new",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L1817",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_2011",
+      "target": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_pp",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2011",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_2200",
+      "target": "pprcalculator_pprcalculator_sppr_symbolic_helper_diet_import_as_dc",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2200",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_2374",
+      "target": "pprcalculator_pprcalculator_sppr_symbolic",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2374",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_2419",
+      "target": "pprcalculator_pprcalculator_sample_sppr_new_forced_balance",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2419",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_2459",
+      "target": "pprcalculator_pprcalculator_monte_carlo_sppr",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2459",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_2596",
+      "target": "pprcalculator_pprcalculator_rename_results",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L2596",
+      "weight": 1.0
+    },
+    {
+      "source": "pprcalculator_rationale_661",
+      "target": "pprcalculator",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "PPRCalculator.py",
+      "source_location": "L661",
+      "weight": 1.0
+    },
+    {
+      "source": "create_pprs_excel",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "create_PPRS_excel.py",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "create_pprs_excel",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "create_PPRS_excel.py",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "create_pprs_excel",
+      "target": "pandas",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "create_PPRS_excel.py",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "create_pprs_excel",
+      "target": "numpy",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "create_PPRS_excel.py",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "create_pprs_excel",
+      "target": "tqdm",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "create_PPRS_excel.py",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "create_pprs_excel",
+      "target": "pprcalculator",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "create_PPRS_excel.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "create_pprs_excel",
+      "target": "utils",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "create_PPRS_excel.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "create_pprs_excel",
+      "target": "warnings",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "create_PPRS_excel.py",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "create_pprs_excel",
+      "target": "create_pprs_excel_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "create_PPRS_excel.py",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "create_pprs_excel",
+      "target": "pprcalculator_pprcalculator",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "create_PPRS_excel.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "create_pprs_excel_main",
+      "target": "pprcalculator_pprcalculator",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "create_PPRS_excel.py",
+      "source_location": "L37",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

@@ -590,18 +590,16 @@ loop.
   imported dead matter as free primary production; a positive value gives it a cost. Same float-or-
   dict form as `det_theta`.
 
-- **Returns** `(SPPR, A, L)`.
-
-**The `fix_EE_0_cases` correction (default True).** This is *not* a recycling knob but a
+**The `fix_EE_0_cases` correction (default True).** This is a
 mass-balance fix specific to `TE_option='TE'`. Groups with `EE=0` (all their production dies
-naturally, `M0=p`) get transfer efficiency 0 and are severed from the nullspace, which **leaks the
-primary production they consumed** — it goes neither up the web nor back to detritus, so the global
-PP balance breaks. When True, that consumed PP is **re-credited to the detritus pool**, since a
+naturally, `M0=p`) get transfer efficiency 0 and are severed from the nullspace (Becasue the denominator in A is 0), which **leaks the primary production they consumed** — it goes neither up the web nor back to detritus, so the global PP balance breaks. When True, that consumed PP is **re-credited to the detritus pool**, since a
 group whose production is 100% non-predatory mortality physically flows to detritus; this restores
 inflow = outflow. It is only active for **single-detritus** models under `'TE'` (a no-op otherwise),
 and emits a `RuntimeWarning` whenever `EE=0` groups are present. It does *not* fix near-singular
 `0 < EE ≪ 1` groups, whose `SPPR ~ 1/te` blows up — an inherent singularity of the TE method that
 raises a separate warning.
+
+- **Returns** `(SPPR, A, L)`.
 
 ### `SPPR_symbolic(...)` — symbolic solver
 ```python
@@ -625,7 +623,7 @@ production. The two options answer different accounting questions:
     import value for consumer *i* is inferred as the **weighted mean SPPR of that consumer's
     non-import diet**:
 
-$$ (1-DC_{i,DI})\cdot\mathrm{DIET\_SPPR}_i = \sum_{k\in\mathcal{X}} DC_{ik}\cdot\mathrm{SPPR}_k \;\Longrightarrow\; \mathrm{DIET\_SPPR}_i = \frac{\sum_{k\in\mathcal{X}} DC_{ik}\cdot\mathrm{SPPR}_k}{\sum_{k\in\mathcal{X}} DC_{ik}}, $$
+$$ (1-DC_{i,DI})\cdot\mathrm{DIET\_SPPR}_i = \sum_{k\in\mathcal{X}} DC_{ik}\cdot\mathrm{SPPR}_k \;\Longrightarrow\; \mathrm{DIET\_SPPR}_i = \frac{\sum_{k\in\mathcal{X}} DC_{ik}\cdot\mathrm{SPPR}_k}{\sum_{k\in\mathcal{X}} DC_{ik}} $$
 
     where `𝒳` is the set of internal (regular/detritus/PP) compartments and `DI` the import node.
     So imported food is costed by what the consumer's *internal* diet is made of — the most
@@ -670,20 +668,68 @@ which is linear in `x`, so it is solved directly; the detritus columns are then 
 solved `x`. Returns `(sppr, sppr_det)`. Ecologically, it pins the one free recycling degree of
 freedom so that total primary production in equals total exported production out.
 
-### `monte_carlo_SPPR(...)` / `monte_carlo_SPPR_2(...)`
-Uncertainty propagation over transfer efficiency. Each per-group TE is resampled from a gamma
-distribution centred on the model value `\overline{TE}_i`, with shape and scale set so the mean
-is preserved and the coefficient of variation is `η` (= `TE_error_percent`):
+### `monte_carlo_SPPR(...)` — uncertainty propagation over transfer efficiency
+```python
+monte_carlo_SPPR(n_samples=1000, TE_error_percent=10, TE_error_cut_percent=20,
+                 TE_option='GE', DET_TE_vals=1, kind='new', diet_import_option='as_DC',
+                 silent=True, det_collapse_mode='never', det_open_mode='none',
+                 det_theta=1.0, det_external_sppr=0.0)
+    -> (mean_sppr, samples, rejection_fraction, equations, variables)
+```
+Transfer efficiency is the single most uncertain input in every flow-network method, and SPPR
+depends on it nonlinearly. Rather than solve once at the model's mean TE, this method **propagates
+the TE uncertainty**: it draws many TE matrices, re-solves SPPR on each, and averages. Each
+per-group TE is resampled from a **gamma** distribution centred on the model value
+$\overline{TE}_i$, with shape and scale set so the mean is preserved and the coefficient of
+variation equals $\eta$ (`TE_error_percent`):
 
-$$ \widetilde{TE}_i \sim \mathrm{Gamma}(\alpha,\theta_i),\qquad \alpha=\frac{1}{\eta^2},\qquad \theta_i=\overline{TE}_i\cdot\eta^2, $$
+$$ \widetilde{TE}_i \sim \mathrm{Gamma}(\alpha,\theta_i),\qquad \alpha=\frac{1}{\eta^2},\qquad \theta_i=\overline{TE}_i\cdot\eta^2. $$
 
-then clipped to `[\overline{TE}_i(1-\delta),\ \overline{TE}_i(1+\delta)]` (`δ` =
-`TE_error_cut_percent`). SPPR is recomputed (via `SPPR_new` or `SPPR_symbolic`) on each sampled
-matrix, non-physical (negative-SPPR) draws are discarded, and the accepted draws are averaged.
-This matters ecologically because `A = DC/TE` depends on `1/TE`, which is convex, so
-`E[1/TE] ≥ 1/E[TE]` (Jensen): sampling *before* the nonlinear solve gives a higher, less biased
-expected PPR than plugging in the mean TE. Key knobs: `n_samples`, `TE_error_percent`,
-`TE_error_cut_percent`, plus all the detritus knobs.
+Each draw is then clipped to $[\overline{TE}_i(1-\delta),\ \overline{TE}_i(1+\delta)]$ (with
+$\delta$ = `TE_error_cut_percent`), SPPR is recomputed (via `SPPR_new` or `SPPR_symbolic`) on the
+sampled matrix, non-physical (negative-SPPR) draws are discarded, and the accepted draws are
+averaged. The gamma is chosen deliberately: it keeps every sampled TE **strictly positive** with
+the requested mean and spread — essential because $1/TE$ diverges near zero and a negative TE is
+meaningless, so a symmetric normal would be wrong here.
+
+**Why resample instead of solving at the mean — the Jensen point (the whole reason this exists).**
+The per-edge weight is $A = DC/TE$, so SPPR is a function of $1/TE$, which is **convex**. By
+Jensen's inequality, the average of a convex function exceeds the function of the average:
+
+$$ \mathbb{E}\!\left[\tfrac{1}{TE}\right] \;\ge\; \frac{1}{\mathbb{E}[TE]} \qquad\Longrightarrow\qquad \mathbb{E}\big[\mathrm{SPPR}(TE)\big] \;\ge\; \mathrm{SPPR}\big(\mathbb{E}[TE]\big). $$
+
+In words: solving once at the mean TE (a single deterministic call) **systematically
+underestimates** the expected PPR, because it ignores the extra requirement contributed by the
+low-TE tail — where each inefficient transfer costs disproportionately more basal production.
+Averaging over sampled solves recovers the unbiased (higher) expectation. The gap grows with the
+assumed uncertainty $\eta$ and with trophic depth (the more `1/TE` factors multiply along a chain,
+the stronger the convexity). This is the ecological payoff of the method, not merely an error bar.
+
+**Parameters:**
+- **`n_samples`** (default 1000) — number of TE draws / SPPR solves averaged. Larger → tighter,
+  less noisy Monte-Carlo estimate (at linear cost).
+- **`TE_error_percent`** ($\eta$, default 10) — the assumed **relative uncertainty** on transfer
+  efficiency: each TE's standard deviation as a percentage of its mean (the gamma's coefficient of
+  variation). `10` means every TE is drawn with a 10% spread around the model value. This is the
+  knob that drives the Jensen correction — set it to 0 and the method collapses to the single
+  deterministic solve.
+- **`TE_error_cut_percent`** ($\delta$, default 20) — a hard **clip band** of $\pm\delta\%$ applied
+  to each sampled TE *after* drawing, trimming extreme tail draws that would otherwise produce
+  absurd `1/TE` spikes. `20` means no sample departs more than 20% from its mean.
+- **`TE_option`** / **`DET_TE_vals`** — select *which* mean TE matrix is sampled around (see §2 /
+  `SPPR_new`).
+- **`kind`** — which solver to resample: `'new'` (`SPPR_new`) or `'symbolic'` (`SPPR_symbolic`).
+- **`diet_import_option`** — `'as_DC'` / `'as_PP'`, forwarded to `SPPR_symbolic` when
+  `kind='symbolic'` (ignored for `'new'`).
+- **`silent`** — suppress the progress bar / prints.
+- **`det_collapse_mode`**, **`det_open_mode`**, **`det_theta`**, **`det_external_sppr`** — the
+  detritus recycling knobs (see `SPPR_new`), forwarded unchanged to every SPPR solve in the loop.
+- **Returns** `(mean_sppr, samples, rejection_fraction, equations, variables)`: the accepted-sample
+  mean SPPR, the stacked array of accepted samples (for building confidence intervals), the fraction
+  of draws discarded as non-physical, and the symbolic `equations` / `variables` (both `None` unless
+  `kind='symbolic'`). A **negative SPPR** — the rejection trigger — signals the resampled TE drove
+  the detritus recycling loop unstable (spectral radius `b ≥ 1`); dropping those draws keeps them
+  from biasing the mean, and a high `rejection_fraction` flags a model near that instability.
 
 ---
 
@@ -691,7 +737,7 @@ expected PPR than plugging in the mean TE. Key knobs: `n_samples`, `TE_error_per
 
 ### `get_PPR(sppr, only_inner=False, only_pp=False)`
 ```python
-get_PPR(sppr, only_inner=False, only_pp=False) -> pd.DataFrame | pd.Series
+get_PPR(sppr, only_inner=False, only_pp=False) -> pd.DataFrame
 ```
 Converts a **per-group SPPR** into the **total primary production required by the catch**. Each
 group's SPPR is weighted by how much of it we actually harvest and summed — an inner product
@@ -704,8 +750,13 @@ The input SPPR is relabelled to seq, reindexed onto the catch, and infinities ze
 - **`only_inner`** — drop the Import columns, so only production generated *inside* the system is
   counted (exclude subsidies imported across the boundary).
 - **`only_pp`** — drop **both** Import and Detritus columns, counting only genuine within-system
-  **primary** production. (`only_pp` is stronger than `only_inner` and overrides it.)
-- **Returns** a 1-row DataFrame if `sppr` is a DataFrame (a PPR per basal source), else a Series.
+  **primary** production. (`only_pp` is stronger than `only_inner` and overrides it.) Only affects
+  a per-source DataFrame input; a Series input is already aggregated over sources.
+- **Returns** — **always a 1-row DataFrame**, so the output type never depends on the input. For a
+  per-source DataFrame input the columns are the basal sources (a PPR per source); for an
+  already-aggregated Series input there is a single `'PPR'` column. Either way, get the scalar total
+  with `.sum(axis=1).sum()`. (This unified return type is why every caller downstream — including
+  `get_PPR2NPP_ratio` and the notebooks — uses `.sum(axis=1)`.)
 - **Ecological meaning:** this is the headline number — the tonnes of primary production the
   fishery ultimately appropriates. The `only_*` flags let you choose the accounting boundary:
   all basal sources, in-system only, or strictly primary producers.
@@ -724,14 +775,38 @@ get_PPR2NPP_ratio(sppr, only_pp=False) -> float
 ```
 The **fraction of available net primary production appropriated by the catch**: within-system
 `PPR / NPP`. This is the classic "%PPR" indicator (à la Pauly & Christensen) — what share of the
-sea's primary production the fishery consumes. Using the balance identity (§4), the denominator
-can be read as the total production leaving the system, so
+sea's primary production the fishery consumes.
 
-$$ \frac{PPR}{NPP} = \frac{\mathbf{C}\cdot\mathbf{SPPR}}{(\mathbf{N_m}+\mathbf{C}+\mathbf{BA})\cdot\mathbf{SPPR}}. $$
+**What the code computes.** The method is a single line:
+
+```python
+get_PPR(sppr, only_inner=True, only_pp=only_pp).sum(axis=1).sum() / get_NPP(only_inner=True)
+```
+
+Read piece by piece:
+- **Numerator** — `get_PPR(sppr, only_inner=True, ...)` weights each group's SPPR by its catch and
+  sums over groups (`C·SPPR`), with `only_inner=True` dropping the Import columns so only
+  within-system basal sources remain; `.sum(axis=1).sum()` then collapses the 1-row per-source
+  DataFrame to a **single scalar** — the total within-system PPR, $\sum_{s\in\text{inner}} (\mathbf{C}\cdot\mathbf{SPPR})_s = \mathbf{C}\cdot\mathbf{SPPR}_{\text{inner}}$.
+- **Denominator** — `get_NPP(only_inner=True)` = $\sum_{i\in PP} p_i$, the summed production of the
+  primary-producer groups (the ecosystem's net primary production).
+
+$$ \frac{PPR}{NPP} = \frac{\mathbf{C}\cdot\mathbf{SPPR}_{\text{inner}}}{\sum_{i\in PP} p_i}. $$
+
+**How it relates to the inflow–outflow balance (§4).** Under mass balance, all basal production
+entering the system leaves it, both sides measured in SPPR units. The inner form of that identity
+is $NPP = (\mathbf{N_m}+\mathbf{C}+\mathbf{BA})\cdot\mathbf{SPPR}_{\text{inner}}$ — the net primary
+production equals the total *inner outflow* (catch + biomass accumulation + net migration, each
+weighted by the basal production it required). So the denominator $\sum_{i\in PP} p_i$ **is** that
+total outflow, and the numerator $\mathbf{C}\cdot\mathbf{SPPR}_{\text{inner}}$ is precisely the
+**catch's slice** of it. The ratio is therefore the share of the primary-production budget the
+harvest claims:
+
+$$ \frac{PPR}{NPP} = \frac{\mathbf{C}\cdot\mathbf{SPPR}_{\text{inner}}}{(\mathbf{N_m}+\mathbf{C}+\mathbf{BA})\cdot\mathbf{SPPR}_{\text{inner}}}. $$
 
 With `Nm = 0` (the usual case), the ratio can exceed 1 when biomass is being depleted
-(`BA·SPPR < 0`), and falls below 1 when large outflows (mostly detrital) absorb part of the
-primary production.
+(`BA·SPPR < 0`, so the outflow denominator shrinks below the catch term), and falls below 1 when
+large outflows (mostly detrital, or biomass accumulation) absorb part of the primary production.
 
 - **`only_pp`** — if True, count only within-system primary production in the numerator (drop
   Import and Detritus columns) for a like-for-like PP/PP comparison.
@@ -743,15 +818,37 @@ primary production.
 
 ## 6. Quick chooser
 
-| Want… | Use |
-|-------|-----|
-| A one-line classic estimate | `SPPR_1986` |
-| Per-group classic estimate | `SPPR_1995` / `SPPR_1995_TL_fix` |
-| Explicit food-chain paths | `SPPR_EwE` (`return_paths=True`) |
-| Fast cycle-pruned matrix cousin of EwE (≠ EwE when cycles exist) | `SPPR_EwE_Ulanowicz` |
-| The 2015 input–output method (full cycles) | `SPPR_2015` |
-| General numeric solver with detritus control | `SPPR_new` |
-| Exact symbolic solution / import-cost detail | `SPPR_symbolic` |
-| Uncertainty bands | `monte_carlo_SPPR` |
-| Total PPR of the catch | `get_PPR` |
-| Share of NPP appropriated | `get_PPR2NPP_ratio` |
+### By goal
+
+| Want… | Use | Why |
+|-------|-----|-----|
+| A one-line classic estimate for a whole fishery | `SPPR_1986` | one catch-averaged TL, fixed 10% TE — the back-of-envelope number |
+| Per-group classic estimate | `SPPR_1995` / `SPPR_1995_TL_fix` | each group's own trophic level; `_TL_fix` interpolates between integer TLs |
+| Explicit food-chain paths (which chains dominate) | `SPPR_EwE` (`return_paths=True`) | returns the enumerated paths, not just the totals |
+| Fast cycle-pruned matrix cousin of EwE (≠ EwE when cycles exist) | `SPPR_EwE_Ulanowicz` | nullspace after Ulanowicz weakest-link removal; not the exact all-cycles answer |
+| The 2015 input–output method (full cycles) | `SPPR_2015` | Leontief `(I−A)⁻¹`; detritus folded back onto PP |
+| **General numeric solver with full detritus control** (the default workhorse) | `SPPR_new` | all cycles counted, tunable recycling/openness knobs, per-source breakdown |
+| Exact symbolic solution / explicit imported-diet cost | `SPPR_symbolic` | SymPy solve; `diet_import_option` keeps import cost explicit |
+| Uncertainty bands / unbiased expected PPR | `monte_carlo_SPPR` | resamples TE and averages (the Jensen correction, §4) |
+| Total PPR of a catch | `get_PPR` | `C·SPPR`; always a 1-row DataFrame — total via `.sum(axis=1).sum()` |
+| Share of NPP appropriated (%PPR) | `get_PPR2NPP_ratio` | within-system `PPR / NPP` |
+
+### Method comparison at a glance
+
+| Method | Family | Cycles | Per-source breakdown | Detritus knobs | Notes |
+|--------|--------|--------|----------------------|----------------|-------|
+| `SPPR_1986` | trophic-level | via TL inversion | no (one number) | — | fixed TE=0.1, catch-averaged TL |
+| `SPPR_1995` | trophic-level | via TL inversion | no | — | per-group TL, global TE |
+| `SPPR_1995_TL_fix` | trophic-level | via TL inversion | no | — | integer-TL interpolation |
+| `SPPR_EwE` | flow, path-enum | **simple paths only** (undercounts) | yes | — | returns explicit paths; `use_EE` |
+| `SPPR_EwE_Ulanowicz` | flow, nullspace | pruned (weakest-link removed) | yes | — | matrix cousin of EwE; not exact all-cycles |
+| `SPPR_2015` | flow, Leontief | **full** | PP columns (DET folded in) | fixed convention | reference 2015 implementation |
+| `SPPR_new` | flow, nullspace | **full** | yes (PP / DET / import) | `det_collapse_mode`, `det_open_mode`, `det_theta`, `det_external_sppr` | primary numeric solver |
+| `SPPR_symbolic` | flow, symbolic | **full** | yes | same as `SPPR_new` | `diet_import_option='as_DC'/'as_PP'` |
+| `monte_carlo_SPPR` | wrapper | inherits solver | inherits solver | forwarded | resamples TE; returns mean + samples |
+
+**Rule of thumb:** start with `SPPR_new` (default `TE_option='GE'`) for a modern, cycle-correct,
+per-source estimate; switch to `SPPR_1995` when you only need the classic TL-based number, to
+`SPPR_EwE` when you want to *see* the dominant food chains, and wrap any of them in
+`monte_carlo_SPPR` when you need uncertainty. See §2 for the `TE_option` choice (the single most
+important assumption) and §4 for how the detritus knobs reshape the recycling solve.
