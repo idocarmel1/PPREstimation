@@ -930,14 +930,14 @@
       "id": "pprcalculator_pprcalculator_sppr_ewe"
     },
     {
-      "label": ".SPPR_EwE_Ido()",
+      "label": ".SPPR_EwE_Ulanowicz()",
       "file_type": "code",
       "source_file": "PPRCalculator.py",
       "source_location": "L1353",
       "_origin": "ast",
       "community": 5,
-      "norm_label": ".sppr_ewe_ido()",
-      "id": "pprcalculator_pprcalculator_sppr_ewe_ido"
+      "norm_label": ".SPPR_EwE_Ulanowicz()",
+      "id": "pprcalculator_pprcalculator_SPPR_EwE_Ulanowicz"
     },
     {
       "label": ".SPPR_2015()",
@@ -2724,7 +2724,7 @@
       "norm_label": "sppr_ewe path-enumeration method"
     },
     {
-      "label": "SPPR_EwE_Ido nullspace method",
+      "label": "SPPR_EwE_Ulanowicz nullspace method",
       "file_type": "concept",
       "source_file": "USER_GUIDE.md",
       "source_location": null,
@@ -2732,9 +2732,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "user_guide_sppr_ewe_ido",
+      "id": "user_guide_SPPR_EwE_Ulanowicz",
       "community": 4,
-      "norm_label": "sppr_ewe_ido nullspace method"
+      "norm_label": "SPPR_EwE_Ulanowicz nullspace method"
     },
     {
       "label": "SPPR_new primary solver",
@@ -4386,7 +4386,7 @@
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "pprcalculator_pprcalculator",
-      "target": "pprcalculator_pprcalculator_sppr_ewe_ido"
+      "target": "pprcalculator_pprcalculator_SPPR_EwE_Ulanowicz"
     },
     {
       "relation": "method",
@@ -4947,7 +4947,7 @@
       "source_location": "L1353",
       "weight": 1.0,
       "confidence_score": 1.0,
-      "source": "pprcalculator_pprcalculator_sppr_ewe_ido",
+      "source": "pprcalculator_pprcalculator_SPPR_EwE_Ulanowicz",
       "target": "pprcalculator_py_dataframe"
     },
     {
@@ -5281,7 +5281,7 @@
       "source_location": "L1378",
       "weight": 1.0,
       "confidence_score": 1.0,
-      "source": "pprcalculator_pprcalculator_sppr_ewe_ido",
+      "source": "pprcalculator_pprcalculator_SPPR_EwE_Ulanowicz",
       "target": "pprcalculator_pprcalculator_get_dc"
     },
     {
@@ -5781,7 +5781,7 @@
       "source_location": "L1385",
       "weight": 1.0,
       "confidence_score": 1.0,
-      "source": "pprcalculator_pprcalculator_sppr_ewe_ido",
+      "source": "pprcalculator_pprcalculator_SPPR_EwE_Ulanowicz",
       "target": "pprcalculator_pprcalculator_get_te"
     },
     {
@@ -5992,7 +5992,7 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1395",
       "weight": 1.0,
-      "source": "pprcalculator_pprcalculator_sppr_ewe_ido",
+      "source": "pprcalculator_pprcalculator_SPPR_EwE_Ulanowicz",
       "target": "utils_mat_from_np"
     },
     {
@@ -6003,7 +6003,7 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1394",
       "weight": 1.0,
-      "source": "pprcalculator_pprcalculator_sppr_ewe_ido",
+      "source": "pprcalculator_pprcalculator_SPPR_EwE_Ulanowicz",
       "target": "utils_move_scattered_identity"
     },
     {
@@ -6014,7 +6014,7 @@
       "source_file": "PPRCalculator.py",
       "source_location": "L1379",
       "weight": 1.0,
-      "source": "pprcalculator_pprcalculator_sppr_ewe_ido",
+      "source": "pprcalculator_pprcalculator_SPPR_EwE_Ulanowicz",
       "target": "utils_remove_cycles"
     },
     {
@@ -6025,7 +6025,7 @@
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "pprcalculator_rationale_1354",
-      "target": "pprcalculator_pprcalculator_sppr_ewe_ido"
+      "target": "pprcalculator_pprcalculator_SPPR_EwE_Ulanowicz"
     },
     {
       "relation": "rationale_for",
@@ -7500,7 +7500,7 @@
       "source_file": "USER_GUIDE.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "user_guide_sppr_ewe_ido",
+      "source": "user_guide_SPPR_EwE_Ulanowicz",
       "target": "user_guide_sppr_ewe"
     },
     {
@@ -7511,7 +7511,7 @@
       "source_location": null,
       "weight": 1.0,
       "source": "user_guide_sppr_new",
-      "target": "user_guide_sppr_ewe_ido"
+      "target": "user_guide_SPPR_EwE_Ulanowicz"
     },
     {
       "relation": "references",

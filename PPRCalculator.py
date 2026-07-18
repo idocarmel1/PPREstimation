@@ -1350,7 +1350,7 @@ class PPRCalculator:
         else:
             return _fast_EwE_no_paths(TE_option=TE_option, use_EE=use_EE, silent=silent)
 
-    def SPPR_EwE_Ido(self, TE_option: str, global_TE: str | float = 'mean', use_EE: bool = True) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    def SPPR_EwE_Ulanowicz(self, TE_option: str, global_TE: str | float = 'mean', use_EE: bool = True) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """Matrix (nullspace) reformulation of the EwE path-summation SPPR.
 
         Instead of enumerating paths, build the per-edge weight matrix A = DC/TE with cycles

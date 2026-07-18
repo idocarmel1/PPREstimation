@@ -27,7 +27,7 @@ Two broad families of methods exist:
 - **Trophic-level methods** (`SPPR_1986`, `SPPR_1995`, `SPPR_1995_TL_fix`) — collapse the
   whole food web into a single number per group (its trophic level) and apply a fixed
   transfer efficiency. Fast, classic, coarse.
-- **Flow-network methods** (`SPPR_EwE`, `SPPR_EwE_Ido`, `SPPR_2015`, `SPPR_new`,
+- **Flow-network methods** (`SPPR_EwE`, `SPPR_EwE_Ulanowicz`, `SPPR_2015`, `SPPR_new`,
   `SPPR_symbolic`) — trace production back through the actual diet matrix, resolving how much
   of *each* basal source (each primary producer, each detritus pool, imported food) is drawn
   down. These give a **per-basal-source breakdown**, not just a single number, and respect the
@@ -231,8 +231,8 @@ production required from basal source *s* per unit of group *i*'s production.
 
 $$ A_{ik} = \frac{DC_{ik}}{TE_i} \qquad\text{(equivalently } A_{ik}=\tfrac{Z_{ik}}{P_i\cdot EE_i}=\tfrac{Z_{ik}}{P_i-M0_i}\text{).} $$
 
-`A_{ik}` is the number of units of prey/source *k*'s production directly required to make one
-unit of consumer *i*'s production: the diet fraction `DC_{ik}` says how much of *i*'s intake is
+`A_{ik}` is the number of units of prey *k*'s production directly required to make `DC_{ik}`
+units of consumer *i*'s production: the diet fraction `DC_{ik}` says how much of *i*'s intake is
 *k*, and dividing by the transfer efficiency `TE_i` converts "intake" into "production required"
 (you need `1/TE` units in for one unit out). The `TE_option` (§2) chooses which efficiency sits
 in that denominator.
@@ -277,7 +277,7 @@ path* from each group down to a basal terminal node and sums the product of the 
 
 $$ \mathrm{SPPR}_x = EE_x \!\! \sum_{\mathrm{path}\in\mathcal{P}_x}\ \prod_{(\mathrm{pred},\mathrm{prey})\in\mathrm{path}} \frac{DC_{\mathrm{pred},\mathrm{prey}}}{TE_{\mathrm{pred}}}, $$
 
-where `𝒫_x` is the set of **simple** paths (no node repeated) from *x* down to a basal terminal
+where `P_x` is the set of **simple** paths (no node repeated) from *x* down to a basal terminal
 (PP or detritus). Because paths are simple, cannibalism and cycles are **not** expanded into
 repeated loops — this is exactly what the matrix methods below fix.
 
@@ -311,9 +311,9 @@ repeated loops — this is exactly what the matrix methods below fix.
   path, whereas the true cycle-summed value is `(0.99/TE)/(1 − 0.01/TE) = 11`. This is why the
   matrix reformulations below exist.
 
-### `SPPR_EwE_Ido(TE_option, global_TE='mean', use_EE=True)`
+### `SPPR_EwE_Ulanowicz(TE_option, global_TE='mean', use_EE=True)`
 ```python
-SPPR_EwE_Ido(TE_option, global_TE='mean', use_EE=True) -> (SPPR, A, L)
+SPPR_EwE_Ulanowicz(TE_option, global_TE='mean', use_EE=True) -> (SPPR, A, L)
 ```
 A **matrix (nullspace) reformulation** in the spirit of `SPPR_EwE`. It builds `A = DC/TE`,
 **removes cycles first**, replaces each basal (producer) row with an identity row, and finds the
@@ -330,7 +330,7 @@ diet fractions*. It then solves the nullspace on that pruned matrix.
 - **`use_EE`** — scale each focal group's row by its `EE` (same meaning as in `SPPR_EwE`).
 - **Returns** `(SPPR, A, L)`.
 
-> **`SPPR_EwE_Ido` is *not* mathematically equivalent to `SPPR_EwE` in general — they agree only
+> **`SPPR_EwE_Ulanowicz` is *not* mathematically equivalent to `SPPR_EwE` in general — they agree only
 > when the food web has no cycles.**
 >
 > **Why.** When the graph is acyclic, `remove_cycles` is a no-op, so both methods operate on the
@@ -339,7 +339,7 @@ diet fractions*. It then solves the nullspace on that pruned matrix.
 > equals the true cycle-summed (Leontief) answer:
 > - `SPPR_EwE` keeps **all simple paths at their full diet weights**, but drops any path that
 >   would repeat a node (so it undercounts cyclic recycling).
-> - `SPPR_EwE_Ido` **deletes the weakest-link edges** of each cycle and keeps the survivors at
+> - `SPPR_EwE_Ulanowicz` **deletes the weakest-link edges** of each cycle and keeps the survivors at
 >   full weight *without renormalizing*, so the pruned consumer's diet no longer sums to 1 — it
 >   loses mass, and its nullspace SPPR is generally *lower* than the simple-path sum.
 >
@@ -393,7 +393,7 @@ SPPR_new(TE=None, TE_option='GE', DET_TE_vals=1, collapse_det=None,
 The main, most general numeric SPPR method. It builds `A = DC/TE` (with detritus treated as a
 basal source, `DET_as_PP=True`), replaces basal rows with identity rows, and solves the
 **nullspace of `L = A − I`** (the shared foundation above), RREF-normalized to one column per
-basal source. Unlike `SPPR_EwE_Ido` it does **not** prune cycles, so the living-network solution
+basal source. Unlike `SPPR_EwE_Ulanowicz` it does **not** prune cycles, so the living-network solution
 counts all cycles exactly. Its novelty is **explicit, tunable detritus handling** — how recycled
 dead organic matter is credited as a basal source.
 
@@ -708,7 +708,7 @@ primary production.
 | A one-line classic estimate | `SPPR_1986` |
 | Per-group classic estimate | `SPPR_1995` / `SPPR_1995_TL_fix` |
 | Explicit food-chain paths | `SPPR_EwE` (`return_paths=True`) |
-| Fast cycle-pruned matrix cousin of EwE (≠ EwE when cycles exist) | `SPPR_EwE_Ido` |
+| Fast cycle-pruned matrix cousin of EwE (≠ EwE when cycles exist) | `SPPR_EwE_Ulanowicz` |
 | The 2015 input–output method (full cycles) | `SPPR_2015` |
 | General numeric solver with detritus control | `SPPR_new` |
 | Exact symbolic solution / import-cost detail | `SPPR_symbolic` |

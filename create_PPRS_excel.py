@@ -62,8 +62,8 @@ def main():
             results['SPPR_1995_TL2_global_TE_01'] = model.SPPR_1995_TL_fix(global_TE=0.1) # should be overestimation for omnivorous species
             results['SPPR_1995_mTL_global_mTE'] = model.SPPR_1995(global_TE='mean')  
             results['SPPR_1995_TL2_global_mTE'] = model.SPPR_1995_TL_fix(global_TE='mean') # should be overestimation for omnivorous species
-            results['SPPR_1995_TL_Jensened_global_mTE'], _, _ = model.SPPR_EwE_Ido(TE_option='global', global_TE='mean', use_EE=False)  # by Jensen: should be between SPPR_1995_mTL_global_TE and SPPR_1995_TL2_global_TE
-            results['SPPR_1995_TL_TE_Jensened'], _, _ = model.SPPR_EwE_Ido(TE_option='TE', global_TE=None, use_EE=False)  # by Jensen: should be between SPPR_1995_mTL_global_TE and SPPR_1995_TL2_global_TE
+            results['SPPR_1995_TL_Jensened_global_mTE'], _, _ = model.SPPR_EwE_Ulanowicz(TE_option='global', global_TE='mean', use_EE=False)  # by Jensen: should be between SPPR_1995_mTL_global_TE and SPPR_1995_TL2_global_TE
+            results['SPPR_1995_TL_TE_Jensened'], _, _ = model.SPPR_EwE_Ulanowicz(TE_option='TE', global_TE=None, use_EE=False)  # by Jensen: should be between SPPR_1995_mTL_global_TE and SPPR_1995_TL2_global_TE
             results['SPPR_EwE'], _, _ = model.SPPR_EwE(TE_option='TE', use_EE=True, return_paths=True, silent=False)  # This is the EwE model
             results['SPPR_2015'], _, _ = model.SPPR_2015(only_pp_det=True)  # this is 2015's model
             results['SPPR_new_2015'], _, _ = model.SPPR_new(TE_option='TE', DET_TE_vals=1)  # should be like SPPR_2015

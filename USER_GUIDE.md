@@ -282,7 +282,7 @@ All SPPR methods return a `pd.DataFrame` (or `Series`) of SPPR values. The matri
 | `SPPR_1995_TL_fix(global_TE=0.1)` | `DataFrame` | 1995 with linear interpolation between integer TLs. |
 | `SPPR_2015(only_pp_det=True)` | `(SPPR, A, L)` | Leontief matrix-inversion formulation. |
 | `SPPR_EwE(TE_option, use_EE=True, return_paths=True, silent=True)` | `(SPPR, A, paths)` | Explicit path enumeration over the network. |
-| `SPPR_EwE_Ido(TE_option, global_TE='mean', use_EE=True)` | `(SPPR, A, L)` | Nullspace reformulation of the EwE path sum. |
+| `SPPR_EwE_Ulanowicz(TE_option, global_TE='mean', use_EE=True)` | `(SPPR, A, L)` | Nullspace reformulation of the EwE path sum. |
 | `SPPR_new(...)` | `(SPPR, A, L)` | Primary numeric solver with full detritus recycling. |
 | `SPPR_symbolic(...)` | `(sppr_symbolic, sppr_mat, equations, variables)` | Symbolic solver (keeps imported diet explicit). |
 | `monte_carlo_SPPR(...)` | `(mean, samples, reject_frac, eqs, vars)` | Uncertainty propagation over TE. |
@@ -341,7 +341,7 @@ SPPR(group, source) = Σ over paths  Π over edges  A[edge]
 
 Returns `(SPPR, A, paths_dict)`.
 
-**`SPPR_EwE_Ido(TE_option, global_TE='mean', use_EE=True)` → `tuple[DataFrame, DataFrame, DataFrame]`.**
+**`SPPR_EwE_Ulanowicz(TE_option, global_TE='mean', use_EE=True)` → `tuple[DataFrame, DataFrame, DataFrame]`.**
 A matrix reformulation that gives the *same* answer as the path sum without enumerating paths. It builds
 `A = DC/TE` (cycles removed), replaces basal rows with identity rows, and solves for the steady state as the
 **nullspace** of `L = A − I` (so `A·x = x`). The nullspace basis is RREF-normalized so each output column is
