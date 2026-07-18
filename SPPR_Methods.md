@@ -460,7 +460,7 @@ $$ \boxed{\ \mathrm{sppr\_det} = \dfrac{a}{1-b}\ } \qquad (b<1\text{ required fo
    gains a second term (write `fracs` for the `det_fate` share reaching the pool; `fracs = 1` for a
    single pool):
 
-$$ m_k = \underbrace{\frac{M0_k\cdot\mathrm{fracs}_k}{q_{DET}}}_{k\text{'s own dead body}} \;+\; \underbrace{\sum_j DC_{jk}\cdot\frac{\mathrm{egestion}_j\cdot\mathrm{fracs}_j}{q_{DET}}}_{\text{prey }k\text{ egested undigested by consumers }j} \;=\; \frac{M0_k\cdot\mathrm{fracs}_k}{q_{DET}} + \Big(DC^{\mathsf{T}}\big(\mathrm{egestion}\cdot\mathrm{fracs}/q_{DET}\big)\Big)_k. $$
+$$ m_k = \underbrace{\frac{M0_k}{q_{DET}}}_{k\text{'s own dead body}} \;+\; \underbrace{\sum_j DC_{jk}\cdot\frac{\mathrm{egestion}_j}{q_{DET}}}_{\text{prey }k\text{ egested undigested by consumers }j} \;=\; \frac{M0_k}{q_{DET}} + \Big(DC^{\mathsf{T}}\big(\mathrm{egestion}/q_{DET}\big)\Big)_k. $$
 
    The first term is the mortality route from GE: `k`'s carcass carries `k`'s own SPPR. The second
    term handles faeces, which are *not* the egesting consumer's production — they are food that
