@@ -70,7 +70,7 @@ Per-group flow quantities used throughout (all in the same currency, e.g. t/km²
 | `EE`   | `model.EE` | Ecotrophic efficiency = fraction of production used in the system, `1 - M0/p`. |
 | `GE`   | `model.GE` | Gross efficiency = `p/q`. |
 | `GS`   | `model.GS` | Unassimilated fraction = `egestion/q`. |
-| `TL`   | `model.TL` | Trophic level. |
+| `TL`   | `model.TL` | Trophic level. Models rarely store one, so it is solved on construction via `get_TL(break_cycles=False, DET_as_PP=True)` and any stored value is kept. |
 
 Two mass-balance identities link them (and the calculator enforces them):
 
@@ -635,7 +635,7 @@ PPR/NPP is a finding about the ecosystem, not a defect in the calculation.
 | `living_converges` | `bool` | `rho_living < 1`. `False` corrupts the basis `B` is built from, so `b` becomes meaningless too. |
 | `sppr_det` | `dict` | `{detritus_seq: sppr_det}` — the primary production charged per unit of each detritus pool. |
 | `max_sppr_det` | `float` | The largest of those, graded against `sppr_det_warn` (default `10`). |
-| `max_sppr_group` | `dict` | `{'seq', 'tl', 'sppr'}` for the group carrying the largest total SPPR (`sppr.sum(axis=1)`). Trophic levels come from `get_TL(break_cycles=True, DET_as_PP=True)`, **not** the `model.TL` attribute, which reads `1.0` for every group on real models. |
+| `max_sppr_group` | `dict` | `{'seq', 'tl', 'sppr'}` for the group carrying the largest total SPPR (`sppr.sum(axis=1)`). Trophic levels come from `get_TL(break_cycles=True, DET_as_PP=True)` — the convention the other SPPR-facing methods use — rather than the `model.TL` attribute, which is built with `break_cycles=False`. |
 | `max_tl_group` | `dict` | The same record for the group at the top of the trophic ordering. SPPR rises with trophic depth, so the two records naming the same group is the expected picture; when they disagree, something other than trophic depth dominates the solution. Both are `None` if the solve produced no SPPR. |
 | `n_negative_sources` | `int` | Basal-source **columns** containing a negative value. Counted per column, not per group, because a negative detritus column is masked in a group's row total by its positive PP columns. `≥ 1` is `FAIL`. |
 | `expect_negatives` | `bool` | The prediction `b ≥ 1` — whether negatives *should* be present. |

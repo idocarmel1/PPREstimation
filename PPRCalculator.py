@@ -234,8 +234,8 @@ class PPRCalculator:
         # add missing columns:
         if 'detritus_import' not in groups_df.columns:
             groups_df['detritus_import'] = 0
-        if 'tl' not in groups_df.columns:
-            groups_df['tl'] = self.get_TL(break_cycles=False, DET_as_PP=True)
+        # NOTE: trophic levels are resolved further down, after the flow vectors exist -- get_TL
+        # reads M0, egestion and q, so it cannot run this early.
 
         # important vectors:
         self.p = groups_df['p'].fillna(0).copy()
@@ -255,7 +255,18 @@ class PPRCalculator:
         self.EE = groups_df['ee'].fillna(1).copy()
         self.GE = groups_df['ge'].fillna(1).copy()
         self.GS = groups_df['gs'].fillna(0).copy()
-        self.TL = groups_df['tl'].fillna(1).copy()
+        # Trophic levels. This has to sit after the vectors above, because get_TL reads M0,
+        # egestion and q. Real EwE JSONs do carry a 'tl' column, but it holds a value only for the
+        # synthetic import group (ModelData sets that one to 1) and is NaN for every real group,
+        # so filling the stored column alone made self.TL read 1.0 for the whole model. Keep
+        # whatever the model supplied and solve the gaps; _groups_df is updated too so that
+        # get_groups_df and the Excel export see the same trophic levels.
+        tl = (groups_df['tl'] if 'tl' in groups_df.columns
+              else pd.Series(np.nan, index=groups_df.index))
+        if tl.isna().any():
+            tl = tl.fillna(self.get_TL(break_cycles=False, DET_as_PP=True))
+        self.TL = tl.fillna(1).copy()
+        self._groups_df['tl'] = self.TL
 
         # balance:
         self.n_balance_runs = 0
@@ -905,7 +916,8 @@ class PPRCalculator:
             divergence.max_sppr_group / max_tl_group -- two landmarks of the solved SPPR vector,
                 reported and never graded: {'seq', 'tl', 'sppr'} for the group with the largest
                 total SPPR, and the same record for the group at the top of the trophic ordering
-                (TL from self.TL). SPPR should broadly rise with TL, so the two agreeing is
+                (TL from get_TL(break_cycles=True, DET_as_PP=True), the convention the other
+                SPPR-facing methods use). SPPR should broadly rise with TL, so the two agreeing is
                 reassuring, and their disagreeing points at whatever dominates the solution
                 instead of trophic depth -- a near-singular te, or a runaway detritus column.
                 Both are None when the solve produced no SPPR.
@@ -1164,8 +1176,9 @@ class PPRCalculator:
             # rise with TL, so the two records agreeing is reassuring and their disagreeing is a
             # hint that something (a near-singular te, a runaway detritus column) dominates.
             sppr_by_group = SPPR_diag.sum(axis=1)
-            # self.TL is degenerate on real models (every group reads 1.0), so compute the
-            # trophic levels the same way SPPR_1986 and get_PPR2NPP_ratio do.
+            # Called explicitly rather than read off self.TL: the SPPR-facing methods
+            # (SPPR_1986, get_PPR2NPP_ratio) all use break_cycles=True, while the cached
+            # attribute is built with break_cycles=False.
             tl_by_group = self.get_TL(break_cycles=True, DET_as_PP=True).reindex(sppr_by_group.index)
 
             def _group_record(seq) -> Optional[dict]:

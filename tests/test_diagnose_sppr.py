@@ -165,9 +165,19 @@ def test_max_tl_group_really_is_the_top_of_the_trophic_ordering(toy):
 
 
 def test_trophic_levels_are_not_degenerate(black_sea_report):
-    """Guards the self.TL trap: that attribute reads 1.0 for every group on real models, so
-    the landmarks must come from get_TL, not from it."""
+    """The reported TL must be a real trophic level, not the all-1.0 fallback."""
     assert black_sea_report["divergence"]["max_tl_group"]["tl"] > 1.5
+
+
+def test_tl_attribute_is_populated(black_sea, toy):
+    """Regression: the stored 'tl' column carries a value only for the synthetic import group,
+    so PPRCalculator used to fill every real group with 1.0 and self.TL was useless."""
+    for pc in (black_sea, toy):
+        assert pc.TL.max() > 1.0
+        assert pc.TL.notna().all()
+        assert pc.get_groups_df()["tl"].notna().all()
+        expected = pc.get_TL(break_cycles=False, DET_as_PP=True)
+        assert np.allclose(pc.TL.reindex(expected.index), expected)
 
 
 def test_ee0_warning_names_the_groups(black_sea, black_sea_report):
