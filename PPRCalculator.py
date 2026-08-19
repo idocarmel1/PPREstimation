@@ -14,6 +14,28 @@ from ModelData import ModelData
 from utils import mat_from_np, remove_cycles, move_scattered_identity
 from copy import deepcopy
 
+DEFAULT_DIAGNOSTIC_THRESHOLDS = {
+    # Detritus recycling loop gain b = rho(diag(theta) @ B): >= 1 diverges outright,
+    # and the last stretch below 1 already inflates sppr_det (b = 0.83 -> ~9.9).
+    'b_warn': 0.7,                'b_fail': 1.0,
+    # Living-block gain rho(A_LL): the same condition for predation cycles/cannibalism.
+    'rho_living_warn': 0.7,       'rho_living_fail': 1.0,
+    # PP-equivalents per unit of a detritus pool; converged but implausible above this.
+    'sppr_det_warn': 10.0,
+    # is_sppr_balanced relative gap between PP inflow and SPPR-weighted export outflow.
+    'balance_warn': 0.01,         'balance_fail': 0.05,
+    # is_model_balanced relative residual. Measured over real_models/EwE_jsons/ (222
+    # loadable models) the distribution is bimodal: balanced models sit at <= 1e-6 and
+    # nothing falls between 1e-6 and 1e-4, so 1e-4 separates cleanly and 0.1 isolates
+    # the 32 severely broken ones.
+    'model_balance_warn': 1e-4,   'model_balance_fail': 0.1,
+    # Diet-row deviation from 1. ModelData.validate_DC already raises at 1e-3 on load,
+    # so only a tighter tolerance than that carries new information.
+    'dc_row_tol': 1e-6,
+    # Upper bound of 'marginal' EE (0 < EE < this) -- near-singular SPPR ~ 1/te.
+    'ee_marginal': 1e-3,
+}
+
 class PPRCalculator:
 
     # constructors:
@@ -767,6 +789,480 @@ class PPRCalculator:
             pd.DataFrame: a copy of _groups_df sorted by descending seq.
         """
         return self._groups_df.copy().sort_index(ascending=False)
+
+    @staticmethod
+    def _max_rel_dev(actual: pd.Series, target: pd.Series) -> float:
+        """Return the largest relative deviation between two aligned vectors.
+
+        Helper for diagnose_sppr's mass-balance residuals: reports how far off the worst
+        group is, in units of its own magnitude, so the answer is scale-free and can be
+        thresholded across models of very different total throughput.
+
+        Args:
+            actual (pd.Series): recomputed values (e.g. production from the flow identity).
+            target (pd.Series): stored values to compare against (e.g. self.p).
+
+        Returns:
+            float: max(|actual - target| / max(|target|, 1e-12)), or 0.0 for empty input.
+        """
+        a = np.asarray(actual, dtype=float)
+        t = np.asarray(target, dtype=float)
+        if a.size == 0:
+            return 0.0
+        return float(np.max(np.abs(a - t) / np.maximum(np.abs(t), 1e-12)))
+
+    @staticmethod
+    def _flatten_diagnostics(report: dict) -> dict:
+        """Flatten a nested diagnose_sppr report into single-level '<section>_<field>' keys.
+
+        Makes many reports concatenable into one DataFrame: dict fields (sppr_det) are
+        expanded per key, and list fields are replaced by their length under an 'n_' name so
+        that no cell holds a list.
+
+        Args:
+            report (dict): a nested report as built by diagnose_sppr.
+
+        Returns:
+            dict: a single-level dict of scalars.
+        """
+        out: dict = {}
+        for section, body in report.items():
+            if not isinstance(body, dict):
+                if isinstance(body, (list, tuple)):
+                    out[f"n_{section}"] = len(body)
+                else:
+                    out[section] = body
+                continue
+            for key, val in body.items():
+                name = f"{section}_{key}"
+                if isinstance(val, dict):
+                    for sub, subval in val.items():
+                        out[f"{name}_{sub}"] = subval
+                elif isinstance(val, (list, tuple)):
+                    out[f"{section}_n_{key}"] = len(val)
+                else:
+                    out[name] = val
+        return out
+
+    def diagnose_sppr(self, TE_option: str = 'GE', *, short: bool = False, flat: bool = False,
+                     thresholds: Optional[dict] = None, return_sppr: bool = False,
+                     **sppr_kwargs) -> dict | tuple[dict, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+        """Diagnose whether SPPR_new's output can be trusted for a given configuration.
+
+        Runs SPPR_new once and grades four things: the Ecopath input data, the two
+        convergence conditions that decide whether a finite non-negative SPPR exists, the
+        PP-budget balance of the result, and (full report only) the catch footprint.
+
+        The verdict describes a CONFIGURATION, not a model. The recycling gain b depends on
+        TE_option, det_theta and det_open_mode, so one model can be healthy under one
+        configuration and divergent under another; what was evaluated is echoed under
+        'config'. Every number comes from a single internal solve, so pass return_sppr=True
+        if you also want the SPPR itself rather than paying for the sympy nullspace twice.
+
+        The two convergence conditions, both necessary and neither sufficient:
+            b = rho(diag(theta) @ B) < 1   the death->detritus->consumption->death loop gain
+                                          (see _build_det_BC). At b >= 1 each unit of
+                                          detritus regenerates >= 1 unit, the Neumann series
+                                          I + B + B^2 + ... diverges, and the finite numbers
+                                          the solve returns are meaningless.
+            rho(A_LL) < 1                 the same condition for the living block of
+                                          A = DC/TE (predation cycles, cannibalism). With
+                                          detritus treated as basal,
+                                          sppr_L = (I - A_LL)^-1 A_LB sppr_B.
+        Neither is sufficient: b just below 1 yields large positive values (b = 0.83 gives
+        sppr_det ~ 9.9 PP-units per unit detritus), and a model can converge cleanly while
+        failing its PP budget, so magnitude and balance are graded too.
+
+        Checks, and why each one is here:
+            model_input.is_model_balanced -- Ecopath's own production and consumption
+                identities. Every SPPR method reads p, q, M0 and predation as if they were
+                mutually consistent; if they are not, the nullspace is solving a food web
+                that does not close and no downstream number can be trusted. Graded on the
+                relative residual rather than the strict bool, because the bool is an
+                np.isclose test that ~20% of real models fail by wildly differing amounts.
+            model_input.dc_rows_sum_to_1 -- diet fractions must partition a consumer's
+                intake, or A = DC/TE misweights every path through that consumer. Note
+                ModelData.validate_DC already raises at load time at tol=1e-3, so this check
+                only adds information at a tighter tolerance; it reports the observed max
+                deviation for that reason.
+            model_input.catch -- PPR is catch . SPPR, so a negative catch produces a negative
+                footprint from a perfectly healthy SPPR, and an all-zero catch makes every
+                footprint number identically 0 (vacuous rather than wrong). Neither
+                invalidates the divergence diagnostics, hence WARN and not FAIL.
+            model_input.has_ee_issues -- EE = 0 means a group's production is entirely
+                non-predatory death. Under TE_option='TE' its whole TE row is 0, which severs
+                it from the nullspace and leaks the PP it consumed; marginal EE
+                (0 < EE << 1) makes its SPPR ~ 1/te near-singular. Both are properties of the
+                input data, so they are reported here regardless of TE_option, while the
+                TE-matrix-dependent consequence is near_singular_te below.
+            divergence.b / rho_living -- the two convergence conditions above.
+            divergence.max_sppr_det -- catches the converged-but-absurd regime that a
+                convergence bool cannot: a detritus pool costing >= 10 units of primary
+                production per unit of itself signals recycling near runaway.
+            divergence.n_negative_sources -- the observed symptom of divergence: how many
+                basal-source columns contain a negative value. Counted per source column and
+                not per group, because a negative detritus column is masked in a group's row
+                total by its positive PP columns.
+            divergence.near_singular_te -- groups whose transfer efficiency in the TE matrix
+                actually in use is within 1e-3 of zero; their SPPR blows up as 1/te. Depends
+                on TE_option and on any explicit TE draw, unlike the EE check above.
+            balance -- is_sppr_balanced on the result: PP inflow must equal the SPPR-weighted
+                export outflow. An SPPR that converged but does not close the PP budget is
+                arithmetically fine and physically wrong.
+            footprint -- reported, never graded, because a large PPR/NPP is a finding about
+                the ecosystem rather than a defect in the calculation.
+
+        Args:
+            TE_option (str): 'GE' (default), 'TE', 'With Egestion' or 'global'. Sets
+                A = DC/TE, so it moves both b and rho(A_LL), and it selects the detritus
+                resolution: 'GE' / 'With Egestion' / 'global' build the recycling system,
+                while 'TE' has no recycling matrix at all and reports b = 0.0 with a note.
+                Defaults to 'GE'.
+            short (bool): if True return only 'status', 'model_input', 'divergence' and
+                'balance', dropping 'config', 'footprint' and 'warnings'. Defaults to False.
+            flat (bool): if True return a single-level dict with '<section>_<field>' keys,
+                sppr_det expanded per detritus seq and list fields replaced by counts, so
+                that pd.DataFrame([...]) over many models works. Defaults to False.
+            thresholds (Optional[dict]): per-key overrides for DEFAULT_DIAGNOSTIC_THRESHOLDS;
+                missing keys keep their default. Defaults to None.
+            return_sppr (bool): if True also return (SPPR, A, L) from the internal solve.
+                Defaults to False.
+            **sppr_kwargs: forwarded verbatim to SPPR_new. Their meaning here:
+                TE -- an explicit TE matrix, e.g. one Monte-Carlo draw. Low-TE draws are
+                    exactly the ones that push b over 1, which makes this the natural
+                    per-draw screening call.
+                DET_TE_vals -- TE for detritus rows; feeds the same A.
+                det_collapse_mode -- does not soften the diagnosis. b is recorded before the
+                    solve-vs-pool decision, so this only sets 'would_pool', i.e. whether your
+                    production call has a safety net.
+                det_open_mode, det_theta -- damp B to diag(theta) @ B. The reported b is the
+                    damped one, so an open configuration legitimately looks healthier than
+                    the closed system it approximates.
+                det_external_sppr -- enters only c, never B, so it cannot change b or the
+                    convergence verdict; it does shift sppr_det, negatives and the footprint.
+                fix_EE_0_cases -- active under 'TE' only; changes sppr_det and the balance
+                    gap, not b.
+
+        Returns:
+            dict: the health report. Top level holds 'status' ('OK' / 'WARN' / 'FAIL', the
+            worst of the graded sections) plus the sections 'model_input', 'divergence' and
+            'balance' -- each with its own 'status' -- and, unless short=True, the ungraded
+            'footprint', the echoed 'config' and a human-readable 'warnings' list. Flattened
+            to one level when flat=True.
+
+            tuple[dict, pd.DataFrame, pd.DataFrame, pd.DataFrame]: (report, SPPR, A, L) when
+            return_sppr is True. SPPR is per-group x basal-source with its DET columns
+            already scaled, A is the per-edge weight matrix and L = A - I, exactly as
+            SPPR_new returns them. All three are None if the solve failed.
+
+        Raises:
+            ValueError: if TE_option, det_open_mode or det_collapse_mode is not a recognized
+                value. These are caller mistakes, validated before the solve.
+
+            Does NOT raise on a sick model: a LinAlgError from the singular b = 1 solve, or a
+            ValueError from a diverging pooled fallback, is caught and reported as status
+            'FAIL' with the reason in 'warnings' and in divergence['solve_error']. A
+            diagnostic must not crash on the model it is diagnosing. When that happens a
+            second solve with det_collapse_mode='never' recovers b and rho(A_LL), so the
+            report can still say why the configuration failed; 'balance' and 'footprint' are
+            then None, config['method'] is None, and config['would_pool'] is predicted from
+            the requested mode and the measured b rather than observed.
+
+        Notes:
+            'model_input' grades the Ecopath input data and is independent of TE_option;
+            'balance' is a different quantity, is_sppr_balanced on the SPPR result's PP
+            budget. Both use the word balance for unrelated identities.
+
+            expect_negatives is the prediction b >= 1. The exception noted in
+            SPPR_Methods.md -- a reducible B whose supercritical block receives no PP-origin
+            inflow can still solve non-negative -- is not tested for, so treat
+            expect_negatives as a strong expectation and n_negative_sources as the fact.
+        """
+        th = {**DEFAULT_DIAGNOSTIC_THRESHOLDS, **(thresholds or {})}
+        rank = {'OK': 0, 'WARN': 1, 'FAIL': 2}
+
+        def worst(*statuses: str) -> str:
+            return max(statuses, key=lambda s: rank[s])
+
+        warns: list[str] = []
+
+        # Caller-mistake validation up front, so that a ValueError raised later by the solve
+        # can be attributed to the model rather than to a bad argument.
+        if TE_option not in ('GE', 'TE', 'With Egestion', 'global'):
+            raise ValueError("TE_option must be 'GE', 'TE', 'With Egestion' or 'global'")
+        det_open_mode = sppr_kwargs.get('det_open_mode', 'none')
+        det_collapse_mode = sppr_kwargs.get('det_collapse_mode', 'never')
+        if det_open_mode not in ('none', 'recycling_loss', 'source_dilution'):
+            raise ValueError("det_open_mode must be 'none', 'recycling_loss', or 'source_dilution'")
+        if det_collapse_mode not in ('never', 'auto', 'always'):
+            raise ValueError("det_collapse_mode must be 'never', 'auto', or 'always'")
+
+        DET_seq = list(self.get_DET_seq())
+        basal_seq = list(self.get_PP_seq()) + list(self.get_Import_seq()) + DET_seq
+
+        # ------------------------------- model_input -----------------------------------
+        mi_status = 'OK'
+        balanced, production, consumption = self.is_model_balanced()
+        p_res = self._max_rel_dev(production, self.p)
+        q_res = self._max_rel_dev(consumption, self.q)
+        res = max(p_res, q_res)
+        if res > th['model_balance_fail']:
+            mi_status = 'FAIL'
+            warns.append(f"model input not mass-balanced: max relative residual {res:.3g} "
+                         f"exceeds fail threshold {th['model_balance_fail']:g}")
+        elif res > th['model_balance_warn']:
+            mi_status = worst(mi_status, 'WARN')
+            warns.append(f"model input mass-balance residual {res:.3g} exceeds "
+                         f"{th['model_balance_warn']:g}")
+
+        DC = self.get_DC(DET_as_PP=True, normalize=False)
+        consumers = [g for g in DC.index if DC.loc[g].sum() > 0]
+        dc_dev = float((DC.loc[consumers].sum(axis=1) - 1.0).abs().max()) if consumers else 0.0
+        dc_ok = bool(dc_dev <= th['dc_row_tol'])
+        if not dc_ok:
+            mi_status = worst(mi_status, 'WARN')
+            warns.append(f"diet rows deviate from 1 by up to {dc_dev:.3g} "
+                         f"(> {th['dc_row_tol']:g}; ModelData.validate_DC only guards 1e-3)")
+
+        n_neg_catch = int((self.catch < 0).sum())
+        n_zero_catch = int((self.catch == 0).sum())
+        total_catch = float(self.catch.sum())
+        has_catch = bool(total_catch > 0)
+        if n_neg_catch:
+            mi_status = worst(mi_status, 'WARN')
+            warns.append(f"{n_neg_catch} group(s) have a negative catch: PPR = catch . SPPR "
+                         f"is negative regardless of SPPR health")
+        if not has_catch:
+            mi_status = worst(mi_status, 'WARN')
+            warns.append("total catch is 0: every footprint number is identically 0 "
+                         "(the divergence diagnostics are unaffected)")
+
+        ee = self.EE.drop(index=[g for g in basal_seq if g in self.EE.index], errors='ignore')
+        ee0_groups = [int(g) for g in ee.index[ee == 0]]
+        ee_marginal_groups = [int(g) for g in ee.index[(ee > 0) & (ee < th['ee_marginal'])]]
+        n_ee_gt_1 = int((ee > 1).sum())
+        has_ee_issues = bool(ee0_groups or ee_marginal_groups)
+        if has_ee_issues:
+            mi_status = worst(mi_status, 'WARN')
+            warns.append(f"{len(ee0_groups)} group(s) with EE=0 and "
+                         f"{len(ee_marginal_groups)} with 0 < EE < {th['ee_marginal']:g}: "
+                         f"severed from the nullspace / near-singular under TE_option='TE'")
+        if n_ee_gt_1:
+            mi_status = worst(mi_status, 'WARN')
+            warns.append(f"{n_ee_gt_1} group(s) have EE > 1 (Ecopath over-consumption)")
+
+        model_input = {
+            'status': mi_status,
+            'is_model_balanced': bool(balanced),
+            'p_max_rel_residual': p_res,
+            'q_max_rel_residual': q_res,
+            'dc_rows_sum_to_1': dc_ok,
+            'dc_max_deviation': dc_dev,
+            'n_negative_catch': n_neg_catch,
+            'n_zero_catch': n_zero_catch,
+            'total_catch': total_catch,
+            'has_catch': has_catch,
+            'has_ee_issues': has_ee_issues,
+            'n_ee0': len(ee0_groups),
+            'n_ee_marginal': len(ee_marginal_groups),
+            'n_ee_gt_1': n_ee_gt_1,
+            'ee0_groups': ee0_groups,
+            'ee_marginal_groups': ee_marginal_groups,
+        }
+
+        # ------------------------------- the solve(s) -----------------------------------
+        # One solve supplies every number below. If the caller's configuration raises -- a
+        # singular b = 1 system, or a pooled fallback that also diverges -- a second solve with
+        # collapsing disabled recovers b and rho(A_LL) anyway, so the report can explain WHY the
+        # configuration failed instead of reporting nothing. balance and footprint stay None in
+        # that case, because the caller's own configuration produces no SPPR to grade.
+        SPPR = A = L = None
+        SPPR_diag = A_diag = None
+        solve_error = None
+        diag_from_recovery = False
+        info: dict = {}
+        try:
+            SPPR, A, L = self.SPPR_new(TE_option=TE_option, **sppr_kwargs)
+        except (np.linalg.LinAlgError, ValueError) as exc:
+            solve_error = f"{type(exc).__name__}: {exc}"
+            warns.append(f"SPPR_new failed on this configuration -- {solve_error}")
+            try:
+                SPPR_diag, A_diag, _ = self.SPPR_new(
+                    TE_option=TE_option, **{**sppr_kwargs, 'det_collapse_mode': 'never'})
+                info = getattr(self, 'detritus_resolution_info', {}) or {}
+                diag_from_recovery = True
+                warns.append("the divergence numbers come from a diagnostic re-solve with "
+                             "det_collapse_mode='never'; balance and footprint are unavailable "
+                             "because the requested configuration raises")
+            except (np.linalg.LinAlgError, ValueError):
+                pass
+        else:
+            SPPR_diag, A_diag = SPPR, A
+            info = getattr(self, 'detritus_resolution_info', {}) or {}
+
+        # TE_option='TE' has no recycling matrix, so there is no b to report and any
+        # detritus_resolution_info still on self belongs to an earlier call.
+        if TE_option == 'TE':
+            info = {}
+
+        # ------------------------------- divergence ------------------------------------
+        if SPPR_diag is None:
+            divergence = {
+                'status': 'FAIL', 'solve_error': solve_error,
+                'b': None, 'b_converges': None, 'rho_living': None, 'living_converges': None,
+                'sppr_det': {}, 'max_sppr_det': None,
+                'n_negative_sources': None, 'expect_negatives': True, 'near_singular_te': [],
+            }
+        else:
+            if TE_option == 'TE':
+                b = 0.0
+                warns.append("TE_option='TE' has no detritus recycling matrix: b reported as "
+                             "0.0 (mortality-derived SPPR is written off as lost)")
+            else:
+                b = float(info.get('rho_B', 0.0))
+            b_converges = bool(b < th['b_fail'])
+
+            # Living block of A: the groups SPPR_new did NOT replace with an identity row, i.e.
+            # everything with a non-empty diet. rho(A_LL) < 1 is their Leontief condition.
+            basal_rows = list(DC.index[DC.sum(axis=1) == 0])
+            living = [g for g in A_diag.index if g not in basal_rows]
+            if living:
+                rho_living = float(
+                    np.max(np.abs(np.linalg.eigvals(A_diag.loc[living, living].values))))
+            else:
+                rho_living = 0.0
+            living_converges = bool(rho_living < th['rho_living_fail'])
+
+            # sppr_det straight off the result: each DET column is pivoted at 1 on its own row
+            # before scaling, so SPPR.loc[d, d] IS that pool's resolved SPPR. Holds for every
+            # TE_option and for the pooled fallback alike.
+            sppr_det = {int(d): float(SPPR_diag.loc[d, d]) for d in DET_seq
+                        if d in SPPR_diag.index and d in SPPR_diag.columns}
+            max_sppr_det = max(sppr_det.values()) if sppr_det else None
+
+            n_neg_sources = int((SPPR_diag < 0).any(axis=0).sum())
+
+            GE_used = sppr_kwargs.get('TE')
+            if GE_used is None:
+                GE_used = self.get_TE(TE_option=TE_option,
+                                      DET_values=sppr_kwargs.get('DET_TE_vals', 1),
+                                      as_matrix=True)
+            te_col = GE_used.iloc[:, 0] if GE_used.shape[1] else pd.Series(dtype=float)
+            near_singular_te = [int(g) for g in te_col.index
+                                if g not in basal_seq and 0 < abs(float(te_col[g])) < 1e-3]
+
+            div_status = 'OK'
+            if not b_converges:
+                div_status = 'FAIL'
+                warns.append(f"detritus recycling diverges: b={b:.4g} >= {th['b_fail']:g}; "
+                             f"the SPPR returned is not a convergent sum")
+            elif b > th['b_warn']:
+                div_status = worst(div_status, 'WARN')
+                warns.append(f"b={b:.4g} is within {1 - th['b_warn']:g} of divergence"
+                             + (f" (max sppr_det {max_sppr_det:.3g} PP-units per unit detritus)"
+                                if max_sppr_det is not None else ""))
+            if not living_converges:
+                div_status = 'FAIL'
+                warns.append(f"living network diverges: rho(A_LL)={rho_living:.4g} >= "
+                             f"{th['rho_living_fail']:g}; this corrupts the basis B is built "
+                             f"from, so b is unreliable")
+            elif rho_living > th['rho_living_warn']:
+                div_status = worst(div_status, 'WARN')
+                warns.append(f"rho(A_LL)={rho_living:.4g} is within "
+                             f"{1 - th['rho_living_warn']:g} of divergence")
+            if max_sppr_det is not None and max_sppr_det >= th['sppr_det_warn']:
+                div_status = worst(div_status, 'WARN')
+                warns.append(f"max sppr_det={max_sppr_det:.3g} >= {th['sppr_det_warn']:g}: "
+                             f"converged, but detritus is implausibly expensive")
+            if n_neg_sources:
+                div_status = 'FAIL'
+                warns.append(f"{n_neg_sources} basal source column(s) contain negative SPPR")
+            if near_singular_te:
+                div_status = worst(div_status, 'WARN')
+                warns.append(f"{len(near_singular_te)} group(s) have near-zero TE "
+                             f"(SPPR ~ 1/te is near-singular): {near_singular_te}")
+            if solve_error is not None:
+                div_status = 'FAIL'
+
+            divergence = {
+                'status': div_status, 'solve_error': solve_error,
+                'b': b, 'b_converges': b_converges,
+                'rho_living': rho_living, 'living_converges': living_converges,
+                'sppr_det': sppr_det, 'max_sppr_det': max_sppr_det,
+                'n_negative_sources': n_neg_sources,
+                'expect_negatives': bool(not b_converges),
+                'near_singular_te': near_singular_te,
+            }
+
+        # ------------------------------- balance / footprint ----------------------------
+        if solve_error is not None:
+            balance = {'status': 'FAIL', 'is_balanced': None, 'inflow': None,
+                       'outflow': None, 'rel_gap': None}
+            footprint = {'ppr_all': None, 'ppr_inner': None, 'ppr_pp_only': None,
+                         'npp': None, 'ppr2npp': None, 'ppr2npp_pp_only': None}
+        else:
+            sppr_total = SPPR.sum(axis=1)
+            is_bal, inflow, outflow = self.is_sppr_balanced(sppr_total)
+            rel_gap = (abs(float(outflow) - float(inflow)) / abs(float(inflow))
+                       if inflow else float('nan'))
+            if rel_gap > th['balance_fail']:
+                bal_status = 'FAIL'
+                warns.append(f"PP balance gap {rel_gap:.3%} exceeds fail threshold "
+                             f"{th['balance_fail']:.1%}")
+            elif rel_gap > th['balance_warn']:
+                bal_status = 'WARN'
+                warns.append(f"PP balance gap {rel_gap:.3%} exceeds {th['balance_warn']:.1%}")
+            else:
+                bal_status = 'OK'
+            balance = {'status': bal_status, 'is_balanced': bool(is_bal),
+                       'inflow': float(inflow), 'outflow': float(outflow), 'rel_gap': rel_gap}
+
+            # footprint is reported, never graded: a large PPR/NPP is a finding about the
+            # ecosystem, not a defect in the calculation.
+            npp = float(self.get_NPP(only_inner=True))
+            ppr_all = float(self.get_PPR(SPPR, only_inner=False).sum(axis=1).sum())
+            ppr_inner = float(self.get_PPR(SPPR, only_inner=True).sum(axis=1).sum())
+            ppr_pp_only = float(self.get_PPR(SPPR, only_pp=True).sum(axis=1).sum())
+            footprint = {
+                'ppr_all': ppr_all, 'ppr_inner': ppr_inner, 'ppr_pp_only': ppr_pp_only,
+                'npp': npp,
+                'ppr2npp': (ppr_inner / npp) if npp else None,
+                'ppr2npp_pp_only': (ppr_pp_only / npp) if npp else None,
+            }
+
+        status = worst(model_input['status'], divergence['status'], balance['status'])
+
+        report: dict = {'status': status, 'model_input': model_input,
+                        'divergence': divergence, 'balance': balance}
+        if not short:
+            md = self.get_model()
+            report['footprint'] = footprint
+            report['config'] = {
+                'TE_option': TE_option,
+                'det_open_mode': det_open_mode,
+                'det_theta': sppr_kwargs.get('det_theta', 1.0),
+                'det_external_sppr': sppr_kwargs.get('det_external_sppr', 0.0),
+                'det_collapse_mode': det_collapse_mode,
+                'explicit_TE': sppr_kwargs.get('TE') is not None,
+                # Authoritative when the requested configuration actually solved; predicted
+                # from the requested mode and the measured b when it raised and the numbers
+                # came from the recovery solve instead.
+                'method': None if diag_from_recovery else info.get('method'),
+                'would_pool': (
+                    (det_collapse_mode == 'always'
+                     or (det_collapse_mode == 'auto' and divergence['b_converges'] is False))
+                    if diag_from_recovery else
+                    info.get('method') == 'pooled_detritus_scaling'
+                ),
+                'model': (f"{md.model_name} ({md.model_year})" if md is not None else None),
+            }
+            report['warnings'] = warns
+
+        if flat:
+            report = self._flatten_diagnostics(report)
+        if return_sppr:
+            return report, SPPR, A, L
+        return report
 
     def get_DC(self, DET_as_PP: bool = True, normalize: bool = False) -> pd.DataFrame:
         """Return the diet-composition (DC) matrix, optionally redefining detritus rows.

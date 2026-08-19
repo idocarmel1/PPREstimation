@@ -546,21 +546,33 @@ multi-pool form `(I − B)x = c`, where `b` (the spectral radius of `B`) measure
 strength: how much detritus one unit of detritus regenerates via the death→detritus→consumption→death
 loop.
 
-- **`det_collapse_mode`** — what to do when that loop is **too strong to invert**. A finite,
-  non-negative solution exists only while `b < 1`; once `b ≥ 1` each unit of detritus regenerates
-  ≥ 1 unit and the closed system diverges (`1 − b ≤ 0`). This flag chooses the response:
-  - `'never'` (default): always solve the coupled system directly, even at `b ≥ 1`. The answer may
-    come out **negative** — a clear signal that recycling diverged — but the call never raises.
-    This is the default because the Monte-Carlo samplers solve thousands of TE draws and simply
-    discard the non-physical (negative) ones.
+- **`det_collapse_mode`** — what to do when that loop is **too strong to invert**. `B` is entrywise
+  non-negative, so by Perron–Frobenius `(I − B)⁻¹ ≥ 0` **iff** `b < 1`: a finite non-negative
+  solution is guaranteed for *every* admissible `c` only while `b < 1`, and at `b ≥ 1` each unit of
+  detritus regenerates ≥ 1 unit. This flag chooses the response:
+  - `'never'` (default): always solve the coupled system directly, even at `b ≥ 1`. The answer
+    usually comes out **negative** — a clear signal that recycling diverged — and the call
+    essentially never raises. This is the default because the Monte-Carlo samplers solve thousands
+    of TE draws and simply discard the non-physical (negative) ones.
+    - *Two caveats on reading the sign.* For a given `c`, negativity is guaranteed only when the
+      left Perron vector `v` sees the new material: `(1 − b)·vᵀx = vᵀc`, so `b > 1` forces
+      `vᵀx < 0` when `vᵀc > 0`. A reducible `B` whose supercritical block receives no PP-origin
+      inflow can still solve non-negative (e.g. `B = [[2,0],[0,0]]`, `c = [0,1]` → `x = [0,1]`).
+      Measured on `900_900_Multi_DET_Toy` at `b = 4.15`, one pool's scaling stayed **positive**
+      (`x = [+1.82, −22.6]`), and only 2 of 6 groups had a negative *total* SPPR. Second, `b = 1`
+      exactly is singular and does raise `LinAlgError`. **Test `b`, not the sign** — see
+      `diagnose_sppr` below.
   - `'auto'`: solve directly **unless** the system is unstable (`b ≥ 1`, or `(I − B)`
     ill-conditioned), in which case fall back to pooling. The safe, self-correcting choice.
   - `'always'`: always pool.
   - *What "pooling" does, ecologically:* it merges all detritus pools into **one** combined
     compartment and solves a single scalar `sppr_det = a/(1−b)`. Because the combined pool's inflow
-    `q_combined` is the sum of every pool's inflow, it is far larger than any single `q_l`, and the
-    bigger denominator drives `b` back below 1 — taming an otherwise runaway loop at the cost of
-    resolution (every detritus pool then shares one blended value).
+    `q_combined` is the sum of every pool's inflow, it is usually far larger than any single `q_l`,
+    and the bigger denominator drives `b` back below 1 — taming an otherwise runaway loop at the
+    cost of resolution (every detritus pool then shares one blended value). This is not guaranteed:
+    pooling also sums the numerator, so when one pool dominates `q_combined` it can make `b`
+    *worse*. On `900_900_Multi_DET_Toy` with a flat `TE = 0.02`, pooling raises `b` from 1.038 to
+    1.128 and `_collapse_det_scaling` raises instead of rescuing.
 
 - **`det_open_mode`** — whether detritus recycling is **closed** (all dead matter is reprocessed
   inside the system) or **open** (some escapes, or some is supplied from outside). It works by
@@ -649,13 +661,66 @@ $$ (1-DC_{i,DI})\cdot\mathrm{DIET\_SPPR}_i = \sum_{k\in\mathcal{X}} DC_{ik}\cdot
   `det_fate`), and `c` is the contribution from non-detritus sources. This encodes the
   "dead matter → consumer → dead matter" loop.
 - **`_spectral_radius`** — largest eigenvalue of `B`; `< 1` means recycling converges (a finite,
-  non-negative SPPR exists), `≥ 1` means it diverges.
+  non-negative SPPR is guaranteed for every admissible `c`), `≥ 1` means the Neumann series
+  diverges. Note the solve still returns finite numbers at `b ≥ 1`; they are the analytic
+  continuation of a divergent series, not a solution.
 - **`_solve_det_scaling`** — applies the openness transform, tests stability, decides
   solve-vs-pool per `det_collapse_mode`, and scales the detritus columns in place.
 - **`_collapse_det_scaling`** — the fallback that pools all detritus into one compartment and
   solves a scalar `x = a + b·x`, used when the coupled system is unstable.
 - **`_resolve_det_param`** — expands the `det_theta` / `det_external_sppr` scalar-or-dict knobs
   into per-detritus arrays.
+
+### `diagnose_sppr(TE_option='GE', *, short, flat, thresholds, return_sppr, **sppr_kwargs)`
+
+The single-call trust check for `SPPR_new`. It runs the solver once and grades the two convergence
+conditions, the input data, the PP budget, and (ungraded) the footprint. Practical usage is in
+`USER_GUIDE.md` §7.1; what matters here is the mathematics it tests.
+
+**Two independent convergence conditions.** The detritus condition documented above has a twin on the
+living side. Because `SPPR_new` replaces every zero-diet row of `A = DC/TE` with an identity row,
+detritus (under `DET_as_PP=True`), PP and Import all sit in the basal block, and the living rows
+satisfy
+
+$$ \mathrm{sppr}_L = A_{LL}\,\mathrm{sppr}_L + A_{LB}\,\mathrm{sppr}_B \qquad\Longleftrightarrow\qquad \mathrm{sppr}_L = (I - A_{LL})^{-1}A_{LB}\,\mathrm{sppr}_B, $$
+
+so `ρ(A_LL) < 1` is exactly the Leontief condition for predation cycles and cannibalism, reported as
+`rho_living`. The two failures are **not** additive: `ρ(A_LL) ≥ 1` corrupts the nullspace basis that
+`B` is assembled from, so a living-side failure invalidates `b` rather than adding to it. Measured
+values on real models are comfortable (Humboldt 1980 `0.358`, N. South China Sea `0.321`, Black Sea
+1960-69 `0.238`) but not always — East China Sea 1997 under `TE_option='TE'` reaches `0.9995`.
+
+**Convergence is necessary, not sufficient.** `b` just below 1 returns large positive values, so the
+report also grades `max_sppr_det`, the PP-equivalents charged per unit of a detritus pool:
+
+| Model (`TE_option='GE'`) | `b` | `max_sppr_det` | Verdict |
+|---|---|---|---|
+| `900_900_Multi_DET_Toy` | 0.069 | 0.995 | healthy |
+| Humboldt Current 1980 | 0.021 | 1.07 | healthy |
+| Black Sea 1960-69 | 0.832 | 9.85 | converges, unusable |
+| North Sea 1991 | 0.888 | 62.6 | converges, unusable |
+
+**`sppr_det` per pool** is read straight off the result as `SPPR.loc[d, d]`: each detritus column is
+pivoted at 1 on its own row before scaling, so after scaling that entry *is* the pool's resolved
+SPPR. This holds for every `TE_option` and for the pooled fallback alike, and equals
+`_solve_det_scaling`'s `x_vec` when the coupled system was solved directly.
+
+**`n_negative_sources`** counts basal-source *columns* containing a negative value, not groups,
+because a negative detritus column is masked in a group's row total by its positive PP columns
+(measured: at `b = 4.15` only 2 of 6 group totals were negative). `expect_negatives` is the
+prediction `b ≥ 1`; the reducible-`B` exception noted above is not tested for, so treat
+`expect_negatives` as the expectation and `n_negative_sources` as the fact.
+
+**It never raises on a sick model.** A singular `b = 1` solve, or a pooled fallback that also
+diverges, is reported as `FAIL`; a diagnostic re-solve with `det_collapse_mode='never'` then recovers
+`b` and `rho_living` so the report can still say *why* the configuration failed. `det_collapse_mode`
+never softens the diagnosis — `b` is measured before the solve-vs-pool decision, and the flag only
+sets `would_pool`.
+
+Thresholds live in the module-level `DEFAULT_DIAGNOSTIC_THRESHOLDS` and are overridable per key. The
+`model_balance_*` pair was calibrated against `real_models/EwE_jsons/`: over 222 loadable models the
+`is_model_balanced` residuals are bimodal — 176 balanced models sit at ≤ 1e-6 with nothing between
+1e-6 and 1e-4 — so `1e-4` separates cleanly and `0.1` isolates the 32 severely broken ones.
 
 ### `_sample_SPPR_new_forced_balance(TE_option='TE', sppr_det=None)`
 Runs `SPPR_new`, then treats the detritus scaling as a single unknown `x = sppr_det` and solves
