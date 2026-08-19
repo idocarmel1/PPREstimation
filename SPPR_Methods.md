@@ -778,7 +778,7 @@ with every **basal** row replaced by an identity row. Split the group index set 
 Writing the fixed point `x = Ã·x` in those blocks, with `x_L` the SPPR values of the living groups
 and `x_B` those of the basal sources:
 
-$$ \mathbf{x}_L = A_{LL}\,\mathbf{x}_L + A_{LB}\,\mathbf{x}_B, \qquad\qquad \mathbf{x}_B = \mathbf{x}_B \;\;\text{(the identity rows).} $$
+$$ \mathbf{x}_L = A_{LL}\cdot\mathbf{x}_L + A_{LB}\cdot\mathbf{x}_B, \qquad\qquad \mathbf{x}_B = \mathbf{x}_B \;\;\text{(the identity rows).} $$
 
 - **`A_LL`** is the living→living block of `A`: `A_LL[i,k]` = units of **living** prey *k*'s
   production required per unit of living consumer *i*'s production. Its non-zeros are exactly the
@@ -788,7 +788,7 @@ $$ \mathbf{x}_L = A_{LL}\,\mathbf{x}_L + A_{LB}\,\mathbf{x}_B, \qquad\qquad \mat
 
 Solving the first block for `x_L` gives
 
-$$ \mathbf{x}_L = (I - A_{LL})^{-1}A_{LB}\,\mathbf{x}_B \;=\; \big(I + A_{LL} + A_{LL}^2 + \dots\big)A_{LB}\,\mathbf{x}_B, $$
+$$ \mathbf{x}_L = (I - A_{LL})^{-1}\cdot A_{LB}\cdot\mathbf{x}_B \;=\; \big(I + A_{LL} + A_{LL}^2 + \dots\big)\cdot A_{LB}\cdot\mathbf{x}_B, $$
 
 the same Leontief series as `(I − B)⁻¹` in the detritus solve, but summing paths **through living
 groups** instead of through detritus pools: `A_LB·x_B` is the direct basal requirement, `A_LL·A_LB·x_B`
