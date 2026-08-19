@@ -43,6 +43,12 @@ sppr_1995 = model.SPPR_1995(global_TE=0.1)
 # Full flow-network solver; returns (SPPR, A, L).
 sppr_new, A, L = model.SPPR_new(TE_option='GE')
 
+# Is that result trustworthy? One call grades the input data, both convergence
+# conditions, and the PP budget. return_sppr=True reuses the same solve.
+report, sppr_new, A, L = model.diagnose_sppr(return_sppr=True)
+print("status:", report['status'])          # 'OK' | 'WARN' | 'FAIL'
+print(report['warnings'])
+
 # Ecosystem footprint: total PPR appropriated by the catch (1-row DataFrame).
 ppr = model.get_PPR(sppr_new)
 print("total PPR:", ppr.sum(axis=1).sum())

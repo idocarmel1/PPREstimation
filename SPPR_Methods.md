@@ -671,57 +671,6 @@ $$ (1-DC_{i,DI})\cdot\mathrm{DIET\_SPPR}_i = \sum_{k\in\mathcal{X}} DC_{ik}\cdot
 - **`_resolve_det_param`** — expands the `det_theta` / `det_external_sppr` scalar-or-dict knobs
   into per-detritus arrays.
 
-### `diagnose_sppr(TE_option='GE', *, short, flat, thresholds, return_sppr, **sppr_kwargs)`
-
-The single-call trust check for `SPPR_new`. It runs the solver once and grades the two convergence
-conditions, the input data, the PP budget, and (ungraded) the footprint. Practical usage is in
-`USER_GUIDE.md` §7.1; what matters here is the mathematics it tests.
-
-**Two independent convergence conditions.** The detritus condition documented above has a twin on the
-living side. Because `SPPR_new` replaces every zero-diet row of `A = DC/TE` with an identity row,
-detritus (under `DET_as_PP=True`), PP and Import all sit in the basal block, and the living rows
-satisfy
-
-$$ \mathrm{sppr}_L = A_{LL}\,\mathrm{sppr}_L + A_{LB}\,\mathrm{sppr}_B \qquad\Longleftrightarrow\qquad \mathrm{sppr}_L = (I - A_{LL})^{-1}A_{LB}\,\mathrm{sppr}_B, $$
-
-so `ρ(A_LL) < 1` is exactly the Leontief condition for predation cycles and cannibalism, reported as
-`rho_living`. The two failures are **not** additive: `ρ(A_LL) ≥ 1` corrupts the nullspace basis that
-`B` is assembled from, so a living-side failure invalidates `b` rather than adding to it. Measured
-values on real models are comfortable (Humboldt 1980 `0.358`, N. South China Sea `0.321`, Black Sea
-1960-69 `0.238`) but not always — East China Sea 1997 under `TE_option='TE'` reaches `0.9995`.
-
-**Convergence is necessary, not sufficient.** `b` just below 1 returns large positive values, so the
-report also grades `max_sppr_det`, the PP-equivalents charged per unit of a detritus pool:
-
-| Model (`TE_option='GE'`) | `b` | `max_sppr_det` | Verdict |
-|---|---|---|---|
-| `900_900_Multi_DET_Toy` | 0.069 | 0.995 | healthy |
-| Humboldt Current 1980 | 0.021 | 1.07 | healthy |
-| Black Sea 1960-69 | 0.832 | 9.85 | converges, unusable |
-| North Sea 1991 | 0.888 | 62.6 | converges, unusable |
-
-**`sppr_det` per pool** is read straight off the result as `SPPR.loc[d, d]`: each detritus column is
-pivoted at 1 on its own row before scaling, so after scaling that entry *is* the pool's resolved
-SPPR. This holds for every `TE_option` and for the pooled fallback alike, and equals
-`_solve_det_scaling`'s `x_vec` when the coupled system was solved directly.
-
-**`n_negative_sources`** counts basal-source *columns* containing a negative value, not groups,
-because a negative detritus column is masked in a group's row total by its positive PP columns
-(measured: at `b = 4.15` only 2 of 6 group totals were negative). `expect_negatives` is the
-prediction `b ≥ 1`; the reducible-`B` exception noted above is not tested for, so treat
-`expect_negatives` as the expectation and `n_negative_sources` as the fact.
-
-**It never raises on a sick model.** A singular `b = 1` solve, or a pooled fallback that also
-diverges, is reported as `FAIL`; a diagnostic re-solve with `det_collapse_mode='never'` then recovers
-`b` and `rho_living` so the report can still say *why* the configuration failed. `det_collapse_mode`
-never softens the diagnosis — `b` is measured before the solve-vs-pool decision, and the flag only
-sets `would_pool`.
-
-Thresholds live in the module-level `DEFAULT_DIAGNOSTIC_THRESHOLDS` and are overridable per key. The
-`model_balance_*` pair was calibrated against `real_models/EwE_jsons/`: over 222 loadable models the
-`is_model_balanced` residuals are bimodal — 176 balanced models sit at ≤ 1e-6 with nothing between
-1e-6 and 1e-4 — so `1e-4` separates cleanly and `0.1` isolates the 32 severely broken ones.
-
 ### `_sample_SPPR_new_forced_balance(TE_option='TE', sppr_det=None)`
 Runs `SPPR_new`, then treats the detritus scaling as a single unknown `x = sppr_det` and solves
 the scalar equation that forces **exact global mass balance** — PP inflow equals the export
@@ -795,6 +744,113 @@ the stronger the convexity). This is the ecological payoff of the method, not me
   `kind='symbolic'`). A **negative SPPR** — the rejection trigger — signals the resampled TE drove
   the detritus recycling loop unstable (spectral radius `b ≥ 1`); dropping those draws keeps them
   from biasing the mean, and a high `rejection_fraction` flags a model near that instability.
+
+---
+
+### `diagnose_sppr(...)` — is this result trustworthy?
+```python
+diagnose_sppr(TE_option='GE', *, short=False, flat=False, thresholds=None,
+              return_sppr=False, **sppr_kwargs)
+    -> report                      # or (report, SPPR, A, L) when return_sppr=True
+```
+Every method above returns numbers whether or not those numbers mean anything. `diagnose_sppr`
+runs `SPPR_new` once and answers the prior question: **is the solve you just made a convergent
+one, on data that closes?** It grades the Ecopath input, the two convergence conditions, the
+global PP budget, and — ungraded — the catch footprint, into one `'OK'` / `'WARN'` / `'FAIL'`
+verdict per section.
+
+The verdict describes a **configuration, not a model**. The recycling gain `b` is a function of
+`TE_option`, `det_theta` and `det_open_mode`, so one model can be healthy under one configuration
+and divergent under another; the configuration evaluated is echoed back under `config`.
+
+**The two convergence conditions.** The detritus condition derived above has a twin on the living
+side, and the report tests both. Because `SPPR_new` replaces every zero-diet row of `A = DC/TE`
+with an identity row, detritus (under `DET_as_PP=True`), PP and Import all sit in the basal block
+`B`, and the living rows `L` satisfy
+
+$$ \mathrm{sppr}_L = A_{LL}\,\mathrm{sppr}_L + A_{LB}\,\mathrm{sppr}_B \qquad\Longleftrightarrow\qquad \mathrm{sppr}_L = (I - A_{LL})^{-1}A_{LB}\,\mathrm{sppr}_B, $$
+
+so `ρ(A_LL) < 1` is exactly the Leontief condition of the *living* network — predation cycles and
+cannibalism — reported as `rho_living`, while `b = ρ(diag(θ)·B) < 1` is the same condition for the
+detritus loop. The two are not additive and not interchangeable: `B` is assembled *from* the
+living nullspace basis, so `ρ(A_LL) ≥ 1` corrupts the basis and thereby invalidates `b`, rather
+than adding a second independent failure. Measured under `'GE'`, `rho_living` is comfortable on
+real models (Humboldt 1980 `0.358`, N. South China Sea 1970s `0.321`, Black Sea 1960-69 `0.238`),
+but it is not always so: East China Sea 1997 under `TE_option='TE'` reaches `0.9995`, a case no
+detritus-only check would ever surface.
+
+**Why convergence is necessary but nowhere near sufficient.** `1/(1−b)` is finite for every
+`b < 1`, but it is not *bounded*: as `b` approaches 1 the recycled contribution grows without
+limit while every convergence test still passes. The report therefore grades `max_sppr_det` — the
+primary production charged per unit of a detritus pool — alongside the convergence booleans:
+
+| Model (`TE_option='GE'`) | `b` | `max_sppr_det` | verdict |
+|---|---|---|---|
+| `900_900_Multi_DET_Toy` | 0.069 | 0.995 | healthy |
+| Humboldt Current (1980) | 0.021 | 1.07 | healthy |
+| Black Sea (1960-1969) | 0.832 | 9.85 | converges, unusable |
+| North Sea (1991) | 0.888 | 62.6 | converges, unusable |
+
+Ecologically, `sppr_det ≈ 1` is the healthy signature — one unit of detritus costs about one unit
+of primary production, because most of it fell in directly from producers. A pool at 62.6 is one
+whose material has been round-tripped through consumers so many times that the accounting charges
+it sixty times its own mass in upstream production.
+
+**How the reported quantities are obtained.** `b` is read from `detritus_resolution_info['rho_B']`,
+which `_solve_det_scaling` records *before* the solve-vs-pool decision — so `det_collapse_mode`
+cannot soften the diagnosis, and only sets the reported `would_pool`. Each pool's `sppr_det` is
+read straight off the result as `SPPR.loc[d, d]`: the detritus column is pivoted at 1 on its own
+row before scaling, so after scaling that entry *is* the pool's resolved SPPR. This identity holds
+for every `TE_option` and for the pooled fallback alike, and reproduces `x_vec` exactly when the
+coupled system was solved directly.
+
+**Reading the negatives.** `n_negative_sources` counts basal-source *columns* containing a
+negative value, not groups: a negative detritus column is routinely masked inside a group's row
+total by its positive PP columns (measured on the toy at `b = 4.15`, only 2 of 6 group totals were
+negative while the detritus column was plainly broken). `expect_negatives` is the *prediction*
+`b ≥ 1`; the reducible-`B` exception noted in §4 is not tested for, so treat `expect_negatives` as
+the expectation and `n_negative_sources` as the fact.
+
+**It does not raise on the model it is diagnosing.** A singular `b = 1` solve, or a pooled fallback
+that itself diverges, is caught and reported as `'FAIL'`; a diagnostic re-solve with
+`det_collapse_mode='never'` then recovers `b` and `rho_living`, so the report can still say *why*
+the configuration failed instead of returning nothing. In that case `balance` and `footprint` are
+`None` — the requested configuration produced no SPPR to grade — and `would_pool` is predicted
+from the requested mode rather than observed. A `ValueError` is still raised for an unrecognized
+`TE_option`, `det_open_mode` or `det_collapse_mode`, since those are caller mistakes rather than
+model pathologies.
+
+**Parameters:**
+- **`TE_option`** (default `'GE'`) — as in `SPPR_new`. It moves *both* convergence numbers, since
+  both are functions of `A = DC/TE`, and it selects the detritus resolution: `'GE'` /
+  `'With Egestion'` / `'global'` build the recycling system, while `'TE'` has no recycling matrix
+  at all and reports `b = 0.0` with a note.
+- **`short`** (default `False`) — return only `status`, `model_input`, `divergence` and `balance`,
+  dropping the ungraded `footprint`, the echoed `config` and the `warnings` list.
+- **`flat`** (default `False`) — return one level of `'<section>_<field>'` keys, with `sppr_det`
+  expanded per detritus seq and list fields replaced by counts, so many models concatenate into a
+  single `pd.DataFrame`.
+- **`thresholds`** (default `None`) — per-key overrides of `DEFAULT_DIAGNOSTIC_THRESHOLDS`; missing
+  keys keep their defaults. The `model_balance_*` pair was calibrated against
+  `real_models/EwE_jsons/`: across 222 loadable models the `is_model_balanced` residuals are
+  bimodal — the 176 balanced models sit at `≤ 1e-6` with nothing at all between `1e-6` and `1e-4` —
+  so `1e-4` separates cleanly and `0.1` isolates the 32 severely broken ones.
+- **`return_sppr`** (default `False`) — also return `(SPPR, A, L)` from the internal solve, so the
+  sympy nullspace is not paid for twice when you want both the diagnosis and the result.
+- **`**sppr_kwargs`** — forwarded verbatim to `SPPR_new` (`TE`, `DET_TE_vals`,
+  `det_collapse_mode`, `det_open_mode`, `det_theta`, `det_external_sppr`, `fix_EE_0_cases`). Two
+  are worth flagging here: `TE` is how a single Monte-Carlo draw is screened — low-TE draws are
+  precisely the ones that push `b` over 1, which is the same rejection signal `monte_carlo_SPPR`
+  detects after the fact from negative SPPR — and `det_external_sppr` enters only `c`, never `B`,
+  so it cannot change `b` or the convergence verdict at all.
+- **Returns** the report `dict`: `status` (the worst graded section) over the sections
+  `model_input` (`is_model_balanced` with its `p`/`q` max relative residuals, diet-row deviation,
+  the catch checks, and the EE checks — all independent of `TE_option`), `divergence` (`b`,
+  `rho_living`, `sppr_det`, `max_sppr_det`, `n_negative_sources`, `expect_negatives`,
+  `near_singular_te`), `balance` (`is_sppr_balanced`'s `inflow`, `outflow` and their `rel_gap`),
+  and — unless `short` — the ungraded `footprint` (§5), the echoed `config`, and a `warnings` list
+  of human-readable reasons. The footprint is deliberately never graded: a large `PPR/NPP` is a
+  finding about the ecosystem, not a defect in the calculation.
 
 ---
 
@@ -899,6 +955,7 @@ large outflows (mostly detrital, or biomass accumulation) absorb part of the pri
 | Uncertainty bands / unbiased expected PPR | `monte_carlo_SPPR` | resamples TE and averages (the Jensen correction, §4) |
 | Total PPR of a catch | `get_PPR` | `C·SPPR`; always a 1-row DataFrame — total via `.sum(axis=1).sum()` |
 | Share of NPP appropriated (%PPR) | `get_PPR2NPP_ratio` | within-system `PPR / NPP` |
+| **Whether any of the above can be trusted** | `diagnose_sppr` | grades both convergence conditions (`b`, `ρ(A_LL)`), the input data and the PP budget in one call (§4) |
 
 ### Method comparison at a glance
 
@@ -913,9 +970,12 @@ large outflows (mostly detrital, or biomass accumulation) absorb part of the pri
 | `SPPR_new` | flow, nullspace | **full** | yes (PP / DET / import) | `det_collapse_mode`, `det_open_mode`, `det_theta`, `det_external_sppr` | primary numeric solver |
 | `SPPR_symbolic` | flow, symbolic | **full** | yes | same as `SPPR_new` | `diet_import_option='as_DC'/'as_PP'` |
 | `monte_carlo_SPPR` | wrapper | inherits solver | inherits solver | forwarded | resamples TE; returns mean + samples |
+| `diagnose_sppr` | diagnostic | tests both `ρ(B)` and `ρ(A_LL)` | reads `sppr_det` per pool | forwarded | grades a *configuration*, not a model; never raises on a sick model |
 
 **Rule of thumb:** start with `SPPR_new` (default `TE_option='GE'`) for a modern, cycle-correct,
 per-source estimate; switch to `SPPR_1995` when you only need the classic TL-based number, to
 `SPPR_EwE` when you want to *see* the dominant food chains, and wrap any of them in
-`monte_carlo_SPPR` when you need uncertainty. See §2 for the `TE_option` choice (the single most
+`monte_carlo_SPPR` when you need uncertainty. Run `diagnose_sppr` on any model you have not
+vetted before reading its numbers: convergence is not visible in the output, and a model can
+converge cleanly while charging ten times the primary production it should. See §2 for the `TE_option` choice (the single most
 important assumption) and §4 for how the detritus knobs reshape the recycling solve.

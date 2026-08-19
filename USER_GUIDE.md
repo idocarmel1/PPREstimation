@@ -301,6 +301,7 @@ All SPPR methods return a `pd.DataFrame` (or `Series`) of SPPR values. The matri
 | `SPPR_new(...)` | `(SPPR, A, L)` | Primary numeric solver with full detritus recycling. |
 | `SPPR_symbolic(...)` | `(sppr_symbolic, sppr_mat, equations, variables)` | Symbolic solver (keeps imported diet explicit). |
 | `monte_carlo_SPPR(...)` | `(mean, samples, reject_frac, eqs, vars)` | Uncertainty propagation over TE. |
+| `diagnose_sppr(...)` | `dict` | *Not an SPPR method* — grades whether a `SPPR_new` result is trustworthy (§7.1). |
 
 ### 6.2 The classic chain methods
 
@@ -563,66 +564,65 @@ that came in as primary production — a strong sanity check on any method.
 
 ### 7.1 `diagnose_sppr` — can I rely on this result?
 
-One call runs `SPPR_new` once and grades everything that decides whether its output is usable:
-
 ```python
-h = model.diagnose_sppr()                 # full report, TE_option='GE', closed recycling
-h['status']                              # 'OK' | 'WARN' | 'FAIL' (worst graded section)
-h['divergence']['b']                     # detritus recycling loop gain
-h['divergence']['sppr_det']              # {det_seq: PP-equivalents per unit of that pool}
-h['warnings']                            # human-readable reasons
+report = model.diagnose_sppr()
 ```
 
-**The verdict describes a configuration, not a model.** `b` depends on `TE_option`, `det_theta` and
-`det_open_mode`, so the same model can be healthy under one configuration and divergent under another.
-What was evaluated is echoed back under `h['config']`.
+`diagnose_sppr` runs `SPPR_new` once and grades everything that decides whether its output is
+usable — the input data, the two convergence conditions, the global PP balance — plus the catch
+footprint, which is reported but never graded. Use it before trusting any SPPR number from a model
+you have not vetted, and to screen Monte-Carlo draws.
 
-| Section | Graded? | Contents |
-|---------|---------|----------|
-| `model_input` | yes | `is_model_balanced` plus `p`/`q` max relative residuals, diet-row deviation from 1, catch checks (`n_negative_catch`, `total_catch`, `has_catch`), EE checks (`has_ee_issues`, `n_ee0`, `n_ee_marginal`, `n_ee_gt_1`). Independent of `TE_option`. |
-| `divergence` | yes | `b` and `b_converges`, `rho_living` and `living_converges`, `sppr_det` per pool and `max_sppr_det`, `n_negative_sources`, `expect_negatives`, `near_singular_te`. |
+The verdict describes a **configuration, not a model**: `b` depends on `TE_option`, `det_theta` and
+`det_open_mode`, so the same model can be healthy under one configuration and divergent under
+another. The configuration evaluated is echoed back under `report['config']`. For the mathematics
+of the two convergence conditions see `SPPR_Methods.md` §4 (`diagnose_sppr`).
+
+**Full signature:**
+
+```python
+diagnose_sppr(TE_option='GE', *, short=False, flat=False, thresholds=None,
+              return_sppr=False, **sppr_kwargs)
+```
+
+| Parameter | Type | Default | Meaning |
+|-----------|------|---------|---------|
+| `TE_option` | `str` | `'GE'` | As in `SPPR_new` (see §5.1). Moves both convergence numbers. Under `'TE'` there is no recycling matrix, so `b` is reported as `0.0` with a note. |
+| `short` | `bool` | `False` | Return only `status`, `model_input`, `divergence`, `balance` — dropping `footprint`, `config` and `warnings`. |
+| `flat` | `bool` | `False` | Return one-level `'<section>_<field>'` keys (`sppr_det` expanded per pool, lists replaced by counts) so many models concatenate into a DataFrame. |
+| `thresholds` | `dict \| None` | `None` | Per-key overrides of `DEFAULT_DIAGNOSTIC_THRESHOLDS` (module level in `PPRCalculator.py`); missing keys keep their defaults. |
+| `return_sppr` | `bool` | `False` | Also return `(SPPR, A, L)` from the internal solve, so you don't pay for the nullspace twice. |
+| `**sppr_kwargs` | — | — | Forwarded verbatim to `SPPR_new`: `TE`, `DET_TE_vals`, and the four detritus knobs of §6.5. |
+
+**Returns** a `dict` (see the section table below), or `(report, SPPR, A, L)` when
+`return_sppr=True`.
+**Raises** `ValueError` only for an unrecognized `TE_option`, `det_open_mode` or
+`det_collapse_mode` — caller mistakes. It never raises on a sick model: a singular `b = 1` solve or
+a diverging pooled fallback is reported as `'FAIL'`, and a diagnostic re-solve with
+`det_collapse_mode='never'` recovers `b` so the report still explains the failure.
+
+**What each section contains:**
+
+| Section | Graded | Contents |
+|---------|--------|----------|
+| `model_input` | yes | `is_model_balanced` plus the `p`/`q` max relative residuals, diet-row deviation from 1, catch checks (`n_negative_catch`, `n_zero_catch`, `total_catch`, `has_catch`), EE checks (`has_ee_issues`, `n_ee0`, `n_ee_marginal`, `n_ee_gt_1`). Independent of `TE_option`. |
+| `divergence` | yes | `b` / `b_converges` (detritus loop), `rho_living` / `living_converges` (predation cycles and cannibalism), `sppr_det` per pool and `max_sppr_det`, `n_negative_sources`, `expect_negatives`, `near_singular_te`. |
 | `balance` | yes | `is_sppr_balanced` on the result: `inflow`, `outflow`, `rel_gap`. |
-| `footprint` | **no** | `ppr_all` / `ppr_inner` / `ppr_pp_only`, `npp`, `ppr2npp`, `ppr2npp_pp_only`. Reported only — a large PPR/NPP is a finding about the ecosystem, not a calculation defect. |
+| `footprint` | **no** | `ppr_all` / `ppr_inner` / `ppr_pp_only`, `npp`, `ppr2npp`, `ppr2npp_pp_only` (see §5.3). Reported only — a large PPR/NPP is a finding about the ecosystem, not a calculation defect. |
 | `config` | — | The configuration evaluated, plus `method` and `would_pool`. |
 
-Two convergence conditions are checked, and **neither is sufficient on its own**:
+**Two convergence conditions, and why passing both is still not enough:**
 
-- `b = ρ(diag(θ)·B) < 1` — the death→detritus→consumption→death loop gain.
-- `rho_living = ρ(A_LL) < 1` — the same condition for the living block of `A = DC/TE`
-  (predation cycles, cannibalism). A living failure corrupts the basis `B` is built from, so it
-  invalidates `b` rather than adding to it.
+| Condition | Meaning | Failure |
+|-----------|---------|---------|
+| `b < 1` | The detritus loop: how much detritus one unit of detritus regenerates (§6.6). | `b ≥ 1` — recycling runs away; the returned SPPR is not a convergent sum. |
+| `rho_living < 1` | The same condition for the living block of `A = DC/TE`. | `rho_living ≥ 1` — corrupts the basis `B` is built from, so `b` becomes meaningless too. |
 
-`b` just under 1 already produces absurd magnitudes: Black Sea 1960-69 sits at `b = 0.83` with
-`sppr_det = 9.85`, and North Sea 1991 at `b = 0.89` with `sppr_det = 62.6` — both converge, neither is
-usable. That's why `max_sppr_det` is graded alongside the convergence bools.
-
-Useful options:
-
-```python
-model.diagnose_sppr(short=True)                       # model_input + divergence + balance only
-model.diagnose_sppr(flat=True)                        # one-level keys, DataFrame-friendly
-model.diagnose_sppr(thresholds={'b_warn': 0.9})       # per-key overrides
-report, SPPR, A, L = model.diagnose_sppr(return_sppr=True)   # reuse the solve
-```
-
-Screening Monte-Carlo draws — low-TE draws are exactly the ones that push `b` over 1:
-
-```python
-usable = [TE for TE in draws
-          if model.diagnose_sppr(TE=TE, short=True)['divergence']['b_converges']]
-```
-
-Flat reports concatenate across models:
-
-```python
-pd.DataFrame([PPRCalculator(p).diagnose_sppr(flat=True, short=True) for p in paths])
-```
-
-Defaults live in `DEFAULT_DIAGNOSTIC_THRESHOLDS` (module level in `PPRCalculator.py`). `diagnose_sppr` never
-raises on a sick model — a singular `b = 1` solve or a diverging pooled fallback is reported as `FAIL`,
-and a diagnostic re-solve with `det_collapse_mode='never'` recovers `b` and `rho_living` so the report
-still explains the failure. It *does* raise `ValueError` on an unrecognized `TE_option`,
-`det_open_mode` or `det_collapse_mode`, since those are caller mistakes.
+Neither is sufficient. `b` just below 1 still returns large positive values: Black Sea 1960-69 sits
+at `b = 0.83` with `sppr_det = 9.85`, and North Sea 1991 at `b = 0.89` with `sppr_det = 62.6` — both
+converge, neither is usable. That is why `max_sppr_det` is graded alongside the convergence flags
+(`sppr_det ≈ 1` is the healthy signature: one unit of detritus costs about one unit of primary
+production).
 
 ---
 
@@ -656,6 +656,16 @@ print("balanced?", model.is_model_balanced()[0])
 sppr_1995 = model.SPPR_1995(global_TE=0.1)             # classic chain method
 sppr_new, A, L = model.SPPR_new(TE_option='GE')        # full network solver
 
+# 3b. Before trusting sppr_new, ask whether this configuration is sound.
+#     return_sppr=True reuses the one solve, so this costs no extra nullspace.
+report, sppr_new, A, L = model.diagnose_sppr(TE_option='GE', return_sppr=True)
+print("status:", report['status'])                     # 'OK' | 'WARN' | 'FAIL'
+print("b:", round(report['divergence']['b'], 4),        # detritus loop gain, must be < 1
+      "| rho_living:", round(report['divergence']['rho_living'], 4))
+print("sppr_det:", report['divergence']['sppr_det'])    # PP cost per unit of each pool
+for w in report['warnings']:
+    print("  !", w)
+
 # 4. Detritus openness sensitivity: lose 30% of recycled detritus.
 sppr_open, _, _ = model.SPPR_new(
     TE_option='GE', det_open_mode='recycling_loss', det_theta=0.7)
@@ -687,3 +697,7 @@ print("SPPR balanced?", model.is_sppr_balanced(sppr_new)[0])
   rejected.
 - **Models with strong detritus recycling that "explode"** → add openness (`det_open_mode='recycling_loss'`,
   `det_theta < 1`) or set `det_collapse_mode='auto'`/`'always'`.
+- **Unsure whether a result is usable at all** → `diagnose_sppr()` first. It reports `b` and
+  `rho_living` (both must be `< 1`), the per-pool `sppr_det`, and the PP balance gap. Do this before
+  interpreting any number from a model you have not vetted — a model can converge cleanly and still be
+  unusable.
