@@ -902,6 +902,13 @@ class PPRCalculator:
             divergence.max_sppr_det -- catches the converged-but-absurd regime that a
                 convergence bool cannot: a detritus pool costing >= 10 units of primary
                 production per unit of itself signals recycling near runaway.
+            divergence.max_sppr_group / max_tl_group -- two landmarks of the solved SPPR vector,
+                reported and never graded: {'seq', 'tl', 'sppr'} for the group with the largest
+                total SPPR, and the same record for the group at the top of the trophic ordering
+                (TL from self.TL). SPPR should broadly rise with TL, so the two agreeing is
+                reassuring, and their disagreeing points at whatever dominates the solution
+                instead of trophic depth -- a near-singular te, or a runaway detritus column.
+                Both are None when the solve produced no SPPR.
             divergence.n_negative_sources -- the observed symptom of divergence: how many
                 basal-source columns contain a negative value. Counted per source column and
                 not per group, because a negative detritus column is masked in a group's row
@@ -1045,11 +1052,19 @@ class PPRCalculator:
         ee_marginal_groups = [int(g) for g in ee.index[(ee > 0) & (ee < th['ee_marginal'])]]
         n_ee_gt_1 = int((ee > 1).sum())
         has_ee_issues = bool(ee0_groups or ee_marginal_groups)
-        if has_ee_issues:
+        # EE=0 and marginal EE are separate failure modes and get separate warnings, each naming
+        # the groups it found -- a count alone leaves you grepping for which group is at fault.
+        if ee0_groups:
             mi_status = worst(mi_status, 'WARN')
-            warns.append(f"{len(ee0_groups)} group(s) with EE=0 and "
-                         f"{len(ee_marginal_groups)} with 0 < EE < {th['ee_marginal']:g}: "
-                         f"severed from the nullspace / near-singular under TE_option='TE'")
+            names = ", ".join(f"{g} ({self.seq2name.get(g, '?')})" for g in ee0_groups)
+            warns.append(f"{len(ee0_groups)} group(s) with EE=0 (all production is non-predatory "
+                         f"death): {names}. Under TE_option='TE' their TE row is 0, which severs "
+                         f"them from the nullspace and leaks the PP they consumed")
+        if ee_marginal_groups:
+            mi_status = worst(mi_status, 'WARN')
+            names = ", ".join(f"{g} ({self.seq2name.get(g, '?')})" for g in ee_marginal_groups)
+            warns.append(f"{len(ee_marginal_groups)} group(s) with 0 < EE < {th['ee_marginal']:g}: "
+                         f"{names}. Their SPPR ~ 1/te is near-singular")
         if n_ee_gt_1:
             mi_status = worst(mi_status, 'WARN')
             warns.append(f"{n_ee_gt_1} group(s) have EE > 1 (Ecopath over-consumption)")
@@ -1114,6 +1129,7 @@ class PPRCalculator:
                 'status': 'FAIL', 'solve_error': solve_error,
                 'b': None, 'b_converges': None, 'rho_living': None, 'living_converges': None,
                 'sppr_det': {}, 'max_sppr_det': None,
+                'max_sppr_group': None, 'max_tl_group': None,
                 'n_negative_sources': None, 'expect_negatives': True, 'near_singular_te': [],
             }
         else:
@@ -1143,6 +1159,27 @@ class PPRCalculator:
                         if d in SPPR_diag.index and d in SPPR_diag.columns}
             max_sppr_det = max(sppr_det.values()) if sppr_det else None
 
+            # Two landmarks of the solved SPPR vector, for plausibility rather than grading:
+            # the most expensive group, and the top of the trophic ordering. SPPR should broadly
+            # rise with TL, so the two records agreeing is reassuring and their disagreeing is a
+            # hint that something (a near-singular te, a runaway detritus column) dominates.
+            sppr_by_group = SPPR_diag.sum(axis=1)
+            # self.TL is degenerate on real models (every group reads 1.0), so compute the
+            # trophic levels the same way SPPR_1986 and get_PPR2NPP_ratio do.
+            tl_by_group = self.get_TL(break_cycles=True, DET_as_PP=True).reindex(sppr_by_group.index)
+
+            def _group_record(seq) -> Optional[dict]:
+                """(seq, TL, sppr) for one group, or None if there is no such group."""
+                if seq is None:
+                    return None
+                tl_val = tl_by_group.get(seq)
+                return {'seq': int(seq),
+                        'tl': float(tl_val) if pd.notna(tl_val) else None,
+                        'sppr': float(sppr_by_group[seq])}
+
+            max_sppr_group = _group_record(sppr_by_group.idxmax() if len(sppr_by_group) else None)
+            max_tl_group = _group_record(tl_by_group.idxmax() if tl_by_group.notna().any() else None)
+
             n_neg_sources = int((SPPR_diag < 0).any(axis=0).sum())
 
             GE_used = sppr_kwargs.get('TE')
@@ -1171,8 +1208,18 @@ class PPRCalculator:
                              f"from, so b is unreliable")
             elif rho_living > th['rho_living_warn']:
                 div_status = worst(div_status, 'WARN')
+                # Quote the largest group SPPR here for the same reason max_sppr_det is quoted on
+                # the b warning: it is the magnitude that the near-divergence is inflating.
+                if max_sppr_group is not None:
+                    tl_txt = ('' if max_sppr_group['tl'] is None
+                              else f", TL {max_sppr_group['tl']:.2f}")
+                    mag = (f" (max SPPR {max_sppr_group['sppr']:.3g} at group "
+                           f"{max_sppr_group['seq']} "
+                           f"({self.seq2name.get(max_sppr_group['seq'], '?')}){tl_txt})")
+                else:
+                    mag = ''
                 warns.append(f"rho(A_LL)={rho_living:.4g} is within "
-                             f"{1 - th['rho_living_warn']:g} of divergence")
+                             f"{1 - th['rho_living_warn']:g} of divergence" + mag)
             if max_sppr_det is not None and max_sppr_det >= th['sppr_det_warn']:
                 div_status = worst(div_status, 'WARN')
                 warns.append(f"max sppr_det={max_sppr_det:.3g} >= {th['sppr_det_warn']:g}: "
@@ -1192,6 +1239,7 @@ class PPRCalculator:
                 'b': b, 'b_converges': b_converges,
                 'rho_living': rho_living, 'living_converges': living_converges,
                 'sppr_det': sppr_det, 'max_sppr_det': max_sppr_det,
+                'max_sppr_group': max_sppr_group, 'max_tl_group': max_tl_group,
                 'n_negative_sources': n_neg_sources,
                 'expect_negatives': bool(not b_converges),
                 'near_singular_te': near_singular_te,

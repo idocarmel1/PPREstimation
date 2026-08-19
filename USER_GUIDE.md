@@ -635,6 +635,8 @@ PPR/NPP is a finding about the ecosystem, not a defect in the calculation.
 | `living_converges` | `bool` | `rho_living < 1`. `False` corrupts the basis `B` is built from, so `b` becomes meaningless too. |
 | `sppr_det` | `dict` | `{detritus_seq: sppr_det}` — the primary production charged per unit of each detritus pool. |
 | `max_sppr_det` | `float` | The largest of those, graded against `sppr_det_warn` (default `10`). |
+| `max_sppr_group` | `dict` | `{'seq', 'tl', 'sppr'}` for the group carrying the largest total SPPR (`sppr.sum(axis=1)`). Trophic levels come from `get_TL(break_cycles=True, DET_as_PP=True)`, **not** the `model.TL` attribute, which reads `1.0` for every group on real models. |
+| `max_tl_group` | `dict` | The same record for the group at the top of the trophic ordering. SPPR rises with trophic depth, so the two records naming the same group is the expected picture; when they disagree, something other than trophic depth dominates the solution. Both are `None` if the solve produced no SPPR. |
 | `n_negative_sources` | `int` | Basal-source **columns** containing a negative value. Counted per column, not per group, because a negative detritus column is masked in a group's row total by its positive PP columns. `≥ 1` is `FAIL`. |
 | `expect_negatives` | `bool` | The prediction `b ≥ 1` — whether negatives *should* be present. |
 | `near_singular_te` | `list` | Group seqs whose TE in the matrix **actually in use** is within `1e-3` of zero, so `SPPR ~ 1/te` blows up. Depends on `TE_option` and on any explicit `TE`, unlike the EE fields above. |
@@ -673,7 +675,9 @@ PPR/NPP is a finding about the ecosystem, not a defect in the calculation.
 with the configuration that produced it.
 
 `warnings` is one plain-language string per tripped threshold, naming the quantity, its value and the
-threshold crossed.
+threshold crossed. The two near-divergence warnings also quote the magnitude being inflated — the worst
+`sppr_det` for `b`, and the largest group SPPR with its seq and TL for `rho_living` — so the warning
+shows the consequence, not just the ratio.
 
 **Two convergence conditions, and why passing both is still not enough:**
 

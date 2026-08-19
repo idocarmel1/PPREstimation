@@ -906,6 +906,15 @@ with the configuration.
 - **`sppr_det`** — `{detritus_seq: sppr_det}`, one entry per detritus pool: the primary production
   charged per unit of that pool. This is the per-source answer to "what is detritus worth".
 - **`max_sppr_det`** — the largest of those, graded against `sppr_det_warn` (default `10`).
+- **`max_sppr_group`**, **`max_tl_group`** — two landmarks of the solved SPPR vector, reported
+  and never graded: `{'seq', 'tl', 'sppr'}` for the group carrying the largest total SPPR, and
+  the same record for the group at the top of the trophic ordering. Trophic levels are taken
+  from `get_TL(break_cycles=True, DET_as_PP=True)` — the convention `SPPR_1986` and
+  `get_PPR2NPP_ratio` already use — because the cached `TL` attribute is degenerate on real
+  models. Since SPPR grows with trophic depth (`SPPR = TE^{1−TL}` in the chain limit, §3), the
+  two records naming the same group is the expected picture; when they disagree, something
+  other than trophic depth is dominating the solution — a near-singular `te`, or a detritus
+  column close to runaway. Both are `None` when the solve produced no SPPR.
 - **`n_negative_sources`** — how many basal-source columns contain a negative value; `≥ 1` is
   `FAIL`, since a negative SPPR is not a physical quantity.
 - **`expect_negatives`** — the prediction `b ≥ 1`, i.e. whether negatives *should* be there.
@@ -946,7 +955,11 @@ outer/inner pair.
 configuration that produced it.
 
 **`warnings`** — one human-readable string per tripped threshold, naming the quantity, its value and
-the threshold it crossed.
+the threshold it crossed. Where a threshold is a bare ratio, the warning also quotes the magnitude
+that ratio is inflating: the worst `sppr_det` on the `b` warning, and the largest group SPPR with its
+seq and TL on the `rho_living` warning. A near-divergence number means little on its own — `ρ(A_LL) =
+0.9995` reads very differently once you see it comes with a TL-2.16 group charged 10⁵ units of primary
+production. The EE warnings likewise name the offending groups rather than counting them.
 
 ---
 

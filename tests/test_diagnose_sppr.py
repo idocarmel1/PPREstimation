@@ -136,6 +136,49 @@ def test_sppr_det_matches_detritus_resolution_info(toy):
         assert report["divergence"]["sppr_det"][seq] == pytest.approx(float(x))
 
 
+def test_group_landmarks_have_the_documented_shape(toy, toy_report):
+    for key in ("max_sppr_group", "max_tl_group"):
+        rec = toy_report["divergence"][key]
+        assert set(rec) == {"seq", "tl", "sppr"}, key
+        assert isinstance(rec["seq"], int)
+        assert rec["seq"] in [int(g) for g in toy.get_DC(DET_as_PP=True).index]
+
+
+def test_max_sppr_group_really_is_the_maximum(toy):
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        report, SPPR, _, _ = toy.diagnose_sppr(return_sppr=True)
+    totals = SPPR.sum(axis=1)
+    rec = report["divergence"]["max_sppr_group"]
+    assert rec["sppr"] == pytest.approx(totals.max())
+    assert rec["seq"] == int(totals.idxmax())
+
+
+def test_max_tl_group_really_is_the_top_of_the_trophic_ordering(toy):
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        report, SPPR, _, _ = toy.diagnose_sppr(return_sppr=True)
+        tl = toy.get_TL(break_cycles=True, DET_as_PP=True)
+    rec = report["divergence"]["max_tl_group"]
+    assert rec["tl"] == pytest.approx(tl.max())
+    assert rec["sppr"] == pytest.approx(SPPR.sum(axis=1)[rec["seq"]])
+
+
+def test_trophic_levels_are_not_degenerate(black_sea_report):
+    """Guards the self.TL trap: that attribute reads 1.0 for every group on real models, so
+    the landmarks must come from get_TL, not from it."""
+    assert black_sea_report["divergence"]["max_tl_group"]["tl"] > 1.5
+
+
+def test_ee0_warning_names_the_groups(black_sea, black_sea_report):
+    mi = black_sea_report["model_input"]
+    assert mi["n_ee0"] > 0, "Black Sea is the EE=0 fixture"
+    ee0_warnings = [w for w in black_sea_report["warnings"] if "EE=0" in w]
+    assert len(ee0_warnings) == 1
+    for seq in mi["ee0_groups"]:
+        assert f"{seq} ({black_sea.seq2name.get(seq)})" in ee0_warnings[0]
+
+
 def test_b_matches_recorded_rho_B(toy):
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
