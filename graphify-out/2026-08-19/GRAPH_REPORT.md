@@ -1,7 +1,7 @@
 # Graph Report - FishEstimationAI  (2026-08-19)
 
 ## Corpus Check
-- 263 files · ~3,225,339 words
+- 263 files · ~3,226,404 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `74d4bf12`
+- Built from commit: `6d0eb5fb`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 

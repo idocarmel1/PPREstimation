@@ -16,7 +16,7 @@ from copy import deepcopy
 
 DEFAULT_DIAGNOSTIC_THRESHOLDS = {
     # Detritus recycling loop gain b = rho(diag(theta) @ B): >= 1 diverges outright,
-    # and the last stretch below 1 already inflates sppr_det (b = 0.83 -> ~9.9).
+    # and the last stretch below 1 inflates sppr_det without bound (b = 0.89 -> ~62).
     'b_warn': 0.7,                'b_fail': 1.0,
     # Living-block gain rho(A_LL): the same condition for predation cycles/cannibalism.
     'rho_living_warn': 0.7,       'rho_living_fail': 1.0,
@@ -869,9 +869,12 @@ class PPRCalculator:
                                           A = DC/TE (predation cycles, cannibalism). With
                                           detritus treated as basal,
                                           sppr_L = (I - A_LL)^-1 A_LB sppr_B.
-        Neither is sufficient: b just below 1 yields large positive values (b = 0.83 gives
-        sppr_det ~ 9.9 PP-units per unit detritus), and a model can converge cleanly while
-        failing its PP budget, so magnitude and balance are graded too.
+        Neither is sufficient. 1/(1-b) is finite for every b < 1 but not bounded, so as b
+        approaches 1 the recycled contribution grows without limit while both tests still pass
+        (b = 0.89 gives sppr_det ~ 62 PP-units per unit detritus). A model can also converge
+        cleanly and still fail its PP budget, so magnitude and balance are graded too.
+        sppr_det ~ 1 is the healthy signature; up to ~10 stays plausible for a pool fed largely
+        by consumer mortality several trophic steps up, which is why sppr_det_warn is 10.
 
         Checks, and why each one is here:
             model_input.is_model_balanced -- Ecopath's own production and consumption

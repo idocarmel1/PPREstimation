@@ -575,8 +575,8 @@ you have not vetted, and to screen Monte-Carlo draws.
 
 The verdict describes a **configuration, not a model**: `b` depends on `TE_option`, `det_theta` and
 `det_open_mode`, so the same model can be healthy under one configuration and divergent under
-another. The configuration evaluated is echoed back under `report['config']`. For the mathematics
-of the two convergence conditions see `SPPR_Methods.md` §4 (`diagnose_sppr`).
+another. The configuration evaluated is echoed back under `report['config']`. For the mathematics of
+the two convergence conditions see `SPPR_Methods.md` §4 (`diagnose_sppr`).
 
 **Full signature:**
 
@@ -594,22 +594,86 @@ diagnose_sppr(TE_option='GE', *, short=False, flat=False, thresholds=None,
 | `return_sppr` | `bool` | `False` | Also return `(SPPR, A, L)` from the internal solve, so you don't pay for the nullspace twice. |
 | `**sppr_kwargs` | — | — | Forwarded verbatim to `SPPR_new`: `TE`, `DET_TE_vals`, and the four detritus knobs of §6.5. |
 
-**Returns** a `dict` (see the section table below), or `(report, SPPR, A, L)` when
-`return_sppr=True`.
+**Returns** a `dict` — three graded sections plus, unless `short=True`, the ungraded `footprint`, the
+echoed `config` and a `warnings` list. Every field is documented below.
 **Raises** `ValueError` only for an unrecognized `TE_option`, `det_open_mode` or
-`det_collapse_mode` — caller mistakes. It never raises on a sick model: a singular `b = 1` solve or
-a diverging pooled fallback is reported as `'FAIL'`, and a diagnostic re-solve with
+`det_collapse_mode` — caller mistakes. It never raises on a sick model: a singular `b = 1` solve or a
+diverging pooled fallback is reported as `'FAIL'`, and a diagnostic re-solve with
 `det_collapse_mode='never'` recovers `b` so the report still explains the failure.
 
-**What each section contains:**
+**`report['status']`** — `'OK'`, `'WARN'` or `'FAIL'`: the worst of the three graded sections. Each
+section also carries its own `status`. `footprint` is excluded from the verdict on purpose — a large
+PPR/NPP is a finding about the ecosystem, not a defect in the calculation.
 
-| Section | Graded | Contents |
-|---------|--------|----------|
-| `model_input` | yes | `is_model_balanced` plus the `p`/`q` max relative residuals, diet-row deviation from 1, catch checks (`n_negative_catch`, `n_zero_catch`, `total_catch`, `has_catch`), EE checks (`has_ee_issues`, `n_ee0`, `n_ee_marginal`, `n_ee_gt_1`). Independent of `TE_option`. |
-| `divergence` | yes | `b` / `b_converges` (detritus loop), `rho_living` / `living_converges` (predation cycles and cannibalism), `sppr_det` per pool and `max_sppr_det`, `n_negative_sources`, `expect_negatives`, `near_singular_te`. |
-| `balance` | yes | `is_sppr_balanced` on the result: `inflow`, `outflow`, `rel_gap`. |
-| `footprint` | **no** | `ppr_all` / `ppr_inner` / `ppr_pp_only`, `npp`, `ppr2npp`, `ppr2npp_pp_only` (see §5.3). Reported only — a large PPR/NPP is a finding about the ecosystem, not a calculation defect. |
-| `config` | — | The configuration evaluated, plus `method` and `would_pool`. |
+#### `report['model_input']` — the Ecopath data (independent of `TE_option`)
+
+| Key | Type | Meaning |
+|-----|------|---------|
+| `status` | `str` | Section verdict. |
+| `is_model_balanced` | `bool` | `is_model_balanced()`'s strict boolean. Reported for completeness — the grading uses the residuals below, since the boolean is all-or-nothing and most real models fail it. |
+| `p_max_rel_residual` | `float` | Worst group's relative deviation between recomputed and stored **production**. Every SPPR method assumes `p`, `q`, `M0`, `predation` are mutually consistent. |
+| `q_max_rel_residual` | `float` | The same for **consumption**. Graded via `model_balance_warn` / `model_balance_fail`. |
+| `dc_rows_sum_to_1` | `bool` | Whether every consumer diet row (including `diet_import`) sums to 1 within `dc_row_tol`. Diet fractions must partition intake or `A = DC/TE` misweights every path through that consumer. |
+| `dc_max_deviation` | `float` | Largest observed deviation from 1. `ModelData.validate_DC` already raises at load time at `1e-3`, so the default `dc_row_tol=1e-6` is what makes this informative. |
+| `n_negative_catch` | `int` | `PPR = C·SPPR`, so a negative catch gives a negative footprint from a healthy SPPR. `WARN`. |
+| `n_zero_catch` | `int` | Zero-catch groups are normal; counted, not penalised. |
+| `total_catch` | `float` | Summed catch. |
+| `has_catch` | `bool` | `False` makes every footprint number identically 0 — vacuous rather than wrong, so `WARN`, and the convergence diagnostics stay valid. |
+| `has_ee_issues` | `bool` | `True` if any `EE = 0` or marginal-EE group exists. |
+| `n_ee0`, `ee0_groups` | `int`, `list` | Groups whose production is entirely non-predatory death. Under `TE_option='TE'` their whole TE row is 0, severing them from the nullspace and leaking the PP they consumed (see `fix_EE_0_cases`, §6.5). |
+| `n_ee_marginal`, `ee_marginal_groups` | `int`, `list` | Groups with `0 < EE < ee_marginal` (default `1e-3`), where `SPPR ~ 1/te` is near-singular. |
+| `n_ee_gt_1` | `int` | Groups with `EE > 1` — the classic Ecopath over-consumption flag. |
+
+#### `report['divergence']` — the solve itself
+
+| Key | Type | Meaning |
+|-----|------|---------|
+| `status` | `str` | Section verdict. |
+| `b` | `float` | Detritus recycling gain `ρ(diag(θ)·B)`: how much detritus one unit of detritus regenerates through the death→detritus→consumption→death loop (§6.6). Measured **before** the solve-vs-pool decision, so `det_collapse_mode` cannot mask it. `0.0` under `TE_option='TE'`, which has no recycling matrix. |
+| `b_converges` | `bool` | `b < 1`. `False` means the returned SPPR is not a convergent sum. |
+| `rho_living` | `float` | `ρ(A_LL)`, the same condition for the living block of `A = DC/TE` — predation cycles and cannibalism. |
+| `living_converges` | `bool` | `rho_living < 1`. `False` corrupts the basis `B` is built from, so `b` becomes meaningless too. |
+| `sppr_det` | `dict` | `{detritus_seq: sppr_det}` — the primary production charged per unit of each detritus pool. |
+| `max_sppr_det` | `float` | The largest of those, graded against `sppr_det_warn` (default `10`). |
+| `n_negative_sources` | `int` | Basal-source **columns** containing a negative value. Counted per column, not per group, because a negative detritus column is masked in a group's row total by its positive PP columns. `≥ 1` is `FAIL`. |
+| `expect_negatives` | `bool` | The prediction `b ≥ 1` — whether negatives *should* be present. |
+| `near_singular_te` | `list` | Group seqs whose TE in the matrix **actually in use** is within `1e-3` of zero, so `SPPR ~ 1/te` blows up. Depends on `TE_option` and on any explicit `TE`, unlike the EE fields above. |
+| `solve_error` | `str \| None` | The exception from a failed solve; the other fields are then recovered by the diagnostic re-solve. |
+
+#### `report['balance']` — the PP budget of the result
+
+| Key | Type | Meaning |
+|-----|------|---------|
+| `status` | `str` | Section verdict, from `rel_gap` against `balance_warn` / `balance_fail` (defaults 1% / 5%). |
+| `inflow` | `float` | Primary production entering the system. |
+| `outflow` | `float` | The SPPR-weighted export leaving it: `(catch + growth + net_migration)·SPPR`. |
+| `rel_gap` | `float` | `\|outflow − inflow\| / \|inflow\|`. An SPPR that converged but does not close the PP budget is arithmetically fine and physically wrong. |
+| `is_balanced` | `bool` | `is_sppr_balanced`'s strict boolean, alongside the gap it comes from. |
+
+#### `report['footprint']` — reported, never graded
+
+`get_NPP(only_inner=False)` raises `not implemented yet`, so NPP has one value and the second view is
+`only_pp` rather than an outer/inner pair (see §5.3).
+
+| Key | Type | Meaning |
+|-----|------|---------|
+| `ppr_all` | `float` | Total PPR over every basal source (`only_inner=False`). |
+| `ppr_inner` | `float` | With `Import` columns dropped: within-system PPR. |
+| `ppr_pp_only` | `float` | With `Import` **and** detritus dropped. The gap from `ppr_all` is how much of the footprint is routed through detritus. |
+| `npp` | `float` | `get_NPP(only_inner=True)` — summed production of the `PP` groups. |
+| `ppr2npp` | `float` | `ppr_inner / npp`: the %PPR appropriated by the catch. |
+| `ppr2npp_pp_only` | `float` | `ppr_pp_only / npp`. A ratio above 1 means the catch needs more primary production than the system makes — a strong hint something is wrong even when every convergence test passed. |
+
+#### `report['config']` and `report['warnings']`
+
+`config` echoes `TE_option`, `det_open_mode`, `det_theta`, `det_external_sppr`,
+`det_collapse_mode`, `explicit_TE` (whether a `TE` matrix was supplied), `method`
+(`'single_detritus'` / `'multi_detritus'` / `'pooled_detritus_scaling'`), `would_pool`, and `model`
+(name and year; `None` for toy or `from_dict` instances). The verdict is only meaningful together
+with the configuration that produced it.
+
+`warnings` is one plain-language string per tripped threshold, naming the quantity, its value and the
+threshold crossed.
 
 **Two convergence conditions, and why passing both is still not enough:**
 
@@ -618,11 +682,13 @@ a diverging pooled fallback is reported as `'FAIL'`, and a diagnostic re-solve w
 | `b < 1` | The detritus loop: how much detritus one unit of detritus regenerates (§6.6). | `b ≥ 1` — recycling runs away; the returned SPPR is not a convergent sum. |
 | `rho_living < 1` | The same condition for the living block of `A = DC/TE`. | `rho_living ≥ 1` — corrupts the basis `B` is built from, so `b` becomes meaningless too. |
 
-Neither is sufficient. `b` just below 1 still returns large positive values: Black Sea 1960-69 sits
-at `b = 0.83` with `sppr_det = 9.85`, and North Sea 1991 at `b = 0.89` with `sppr_det = 62.6` — both
-converge, neither is usable. That is why `max_sppr_det` is graded alongside the convergence flags
-(`sppr_det ≈ 1` is the healthy signature: one unit of detritus costs about one unit of primary
-production).
+Neither is sufficient, because `1/(1−b)` is finite for every `b < 1` but not bounded: as `b`
+approaches 1 the recycled contribution grows without limit while both tests still pass. That is why
+closeness to 1 (`b_warn`, default `0.7`) and the resulting magnitude `max_sppr_det`
+(`sppr_det_warn`, default `10`) are graded too. `sppr_det ≈ 1` is the healthy signature — one unit of
+detritus costing about one unit of primary production — and values up to ~10 stay plausible for a
+pool fed largely by consumer mortality several trophic steps up. Well beyond that the number is not
+usable: North Sea 1991 under `'GE'` converges at `b = 0.89` with `sppr_det = 62.6`.
 
 ---
 
