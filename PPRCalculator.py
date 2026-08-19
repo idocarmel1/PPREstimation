@@ -914,10 +914,14 @@ class PPRCalculator:
                 convergence bool cannot: a detritus pool costing >= 10 units of primary
                 production per unit of itself signals recycling near runaway.
             divergence.max_sppr_group / max_tl_group -- two landmarks of the solved SPPR vector,
-                reported and never graded: {'seq', 'tl', 'sppr'} for the group with the largest
-                total SPPR, and the same record for the group at the top of the trophic ordering
-                (TL from get_TL(break_cycles=True, DET_as_PP=True), the convention the other
-                SPPR-facing methods use). SPPR should broadly rise with TL, so the two agreeing is
+                reported and never graded: {'seq', 'tl', 'sppr', 'inv_te'} for the group with the
+                largest total SPPR, and the same record for the group at the top of the trophic
+                ordering (TL from get_TL(break_cycles=True, DET_as_PP=True), the convention the
+                other SPPR-facing methods use). inv_te is 1/te read off the TE matrix actually in
+                use, so it follows TE_option (p/q under 'GE', (p/q)(1-M0/p) under 'TE', the draw
+                itself when an explicit TE was passed) rather than any one definition of transfer
+                efficiency; it is the per-step amplification the group's edges carry, and is None
+                where te = 0. SPPR should broadly rise with TL, so the two agreeing is
                 reassuring, and their disagreeing points at whatever dominates the solution
                 instead of trophic depth -- a near-singular te, or a runaway detritus column.
                 Both are None when the solve produced no SPPR.
@@ -1181,26 +1185,38 @@ class PPRCalculator:
             # attribute is built with break_cycles=False.
             tl_by_group = self.get_TL(break_cycles=True, DET_as_PP=True).reindex(sppr_by_group.index)
 
-            def _group_record(seq) -> Optional[dict]:
-                """(seq, TL, sppr) for one group, or None if there is no such group."""
-                if seq is None:
-                    return None
-                tl_val = tl_by_group.get(seq)
-                return {'seq': int(seq),
-                        'tl': float(tl_val) if pd.notna(tl_val) else None,
-                        'sppr': float(sppr_by_group[seq])}
-
-            max_sppr_group = _group_record(sppr_by_group.idxmax() if len(sppr_by_group) else None)
-            max_tl_group = _group_record(tl_by_group.idxmax() if tl_by_group.notna().any() else None)
-
-            n_neg_sources = int((SPPR_diag < 0).any(axis=0).sum())
-
+            # The TE matrix actually in use: an explicit draw if one was passed, else whatever
+            # TE_option builds. Needed both for the group records below and for near_singular_te.
             GE_used = sppr_kwargs.get('TE')
             if GE_used is None:
                 GE_used = self.get_TE(TE_option=TE_option,
                                       DET_values=sppr_kwargs.get('DET_TE_vals', 1),
                                       as_matrix=True)
             te_col = GE_used.iloc[:, 0] if GE_used.shape[1] else pd.Series(dtype=float)
+
+            def _group_record(seq) -> Optional[dict]:
+                """(seq, TL, sppr, 1/te) for one group, or None if there is no such group."""
+                if seq is None:
+                    return None
+                tl_val = tl_by_group.get(seq)
+                te_val = te_col.get(seq)
+                # 1/te is the per-step production amplification this group's edges carry. It is
+                # whatever sits in the TE matrix in use -- p/q under 'GE', (p/q)(1-M0/p) under
+                # 'TE', a Monte-Carlo draw when one was passed -- so it tracks TE_option rather
+                # than any single definition of transfer efficiency. Undefined at te = 0, where
+                # the group is severed from the nullspace entirely.
+                inv_te = (None if te_val is None or pd.isna(te_val) or float(te_val) == 0
+                          else 1.0 / float(te_val))
+                return {'seq': int(seq),
+                        'tl': float(tl_val) if pd.notna(tl_val) else None,
+                        'sppr': float(sppr_by_group[seq]),
+                        'inv_te': inv_te}
+
+            max_sppr_group = _group_record(sppr_by_group.idxmax() if len(sppr_by_group) else None)
+            max_tl_group = _group_record(tl_by_group.idxmax() if tl_by_group.notna().any() else None)
+
+            n_neg_sources = int((SPPR_diag < 0).any(axis=0).sum())
+
             near_singular_te = [int(g) for g in te_col.index
                                 if g not in basal_seq and 0 < abs(float(te_col[g])) < 1e-3]
 

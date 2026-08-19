@@ -1,16 +1,16 @@
 # Graph Report - FishEstimationAI  (2026-08-19)
 
 ## Corpus Check
-- 263 files · ~3,229,083 words
+- 263 files · ~3,229,289 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 360 nodes · 577 edges · 39 communities (12 shown, 27 thin omitted)
+- 363 nodes · 580 edges · 41 communities (13 shown, 28 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 11 edges (avg confidence: 0.6)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `61f17040`
+- Built from commit: `cec5807a`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -54,6 +54,8 @@
 - [[_COMMUNITY_Community 36|Community 36]]
 - [[_COMMUNITY_Community 37|Community 37]]
 - [[_COMMUNITY_Community 38|Community 38]]
+- [[_COMMUNITY_Community 39|Community 39]]
+- [[_COMMUNITY_Community 40|Community 40]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `PPRCalculator` - 55 edges
@@ -88,15 +90,15 @@
 - **Detritus recycling stabilization mechanism** — user_guide_detritus_knobs, user_guide_coupled_detritus_solve, user_guide_det_fate [EXTRACTED 0.85]
 - **Model completion pipeline (defaults to LIM to balance)** — user_guide_apply_ecopath_defaults, user_guide_apply_lim, user_guide_mass_balance [EXTRACTED 0.85]
 
-## Communities (39 total, 27 thin omitted)
+## Communities (41 total, 28 thin omitted)
 
 ### Community 0 - "SPPR Solver Core"
 Cohesion: 0.07
 Nodes (40): ndarray, PPRCalculator, DataFrame, Series, Return the diet-composition (DC) matrix, optionally redefining detritus rows., Return the flow matrix Z = DC * q (consumption-weighted diet), with DET rows red, Return the sorted seq IDs of all detritus (DET) groups.          Returns:, Return the sorted seq IDs of all primary-producer (PP) groups.          Returns: (+32 more)
 
 ### Community 1 - "Model Data Loading"
-Cohesion: 0.06
-Nodes (38): Any, get_DC(), get_model_data(), get_model_diet_data(), get_model_metadata(), get_seq2name(), load_json_dict(), ModelData (+30 more)
+Cohesion: 0.07
+Nodes (34): Any, get_DC(), get_model_data(), get_model_diet_data(), get_model_metadata(), get_seq2name(), load_json_dict(), ModelData (+26 more)
 
 ### Community 2 - "Model Construction & Balancing"
 Cohesion: 0.17
@@ -111,8 +113,8 @@ Cohesion: 0.11
 Nodes (25): DC (Diet Composition matrix), Ecopath mass-balance framework, Ecopath JSON model format, LIM (Linear Inverse Modeling), TL (Trophic Level), SPPR_EwE_Ulanowicz nullspace method, apply_ecopath_defaults (model completion), apply_lim (underdetermined solver) (+17 more)
 
 ### Community 5 - "Excel Export & Matrix Utils"
-Cohesion: 0.18
-Nodes (15): main(), Matrix (nullspace) reformulation of the EwE path-summation SPPR.          Instea, # TODO: change this function so I can decide which subset of parameters stays co, _find_all_cycles(), _get_circuit_probability(), mat_from_np(), move_scattered_identity(), Removes cycles from a flow matrix Z using the Ulanowicz method.     Z[i, j] rep (+7 more)
+Cohesion: 0.16
+Nodes (16): main(), Matrix (nullspace) reformulation of the EwE path-summation SPPR.          Instea, # NOTE: trophic levels are resolved further down, after the flow vectors exist -, # TODO: change this function so I can decide which subset of parameters stays co, _find_all_cycles(), _get_circuit_probability(), mat_from_np(), move_scattered_identity() (+8 more)
 
 ### Community 6 - "PPR Concepts & Classic Methods"
 Cohesion: 0.16
@@ -138,25 +140,29 @@ Nodes (13): divergent_report(), _flat_te(), DataFrame, Lower TE amplifies every 
 Cohesion: 0.47
 Nodes (6): black_sea(), _calc(), PPRCalculator, test_negative_catch_is_warned(), test_zero_catch_is_warned_without_invalidating_divergence(), toy()
 
+### Community 39 - "Community 39"
+Cohesion: 0.29
+Nodes (4): Build a ``SpeciesGroupLegacy`` from a flat dict of field values.          Factor, Return a human-readable one-line summary of this legacy species group., Convert this legacy group into a single-row DataFrame of its scalar fields., SpeciesGroupLegacy
+
 ## Knowledge Gaps
 - **87 isolated node(s):** `Documentation`, `What it does`, `Project structure`, `Usage`, `Setup` (+82 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **27 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **28 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `PPRCalculator` connect `SPPR Solver Core` to `Community 32`, `Model Data Loading`, `Model Construction & Balancing`, `Community 33`, `Ecopath Concepts & Detritus`, `Excel Export & Matrix Utils`, `PPR Concepts & Classic Methods`, `Legacy Species Group`?**
-  _High betweenness centrality (0.322) - this node is a cross-community bridge._
+  _High betweenness centrality (0.325) - this node is a cross-community bridge._
 - **Why does `ModelData` connect `Model Data Loading` to `SPPR Solver Core`, `Model Construction & Balancing`, `Ecopath Concepts & Detritus`, `Excel Export & Matrix Utils`, `PPR Concepts & Classic Methods`?**
-  _High betweenness centrality (0.214) - this node is a cross-community bridge._
+  _High betweenness centrality (0.213) - this node is a cross-community bridge._
 - **Why does `ModelData class (user guide)` connect `Ecopath Concepts & Detritus` to `Model Data Loading`?**
-  _High betweenness centrality (0.062) - this node is a cross-community bridge._
+  _High betweenness centrality (0.061) - this node is a cross-community bridge._
 - **Are the 3 inferred relationships involving `PPRCalculator` (e.g. with `ModelData` and `DataFrame`) actually correct?**
   _`PPRCalculator` has 3 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 5 inferred relationships involving `ModelData` (e.g. with `ndarray` and `PPRCalculator`) actually correct?**
   _`ModelData` has 5 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `Load a JSON file (relative to this module's directory) and return it as a dict.`, `Build a ``SpeciesGroupLegacy`` from a flat dict of field values.          Factor`, `Return a human-readable one-line summary of this legacy species group.` to the rest of the system?**
-  _168 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _170 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `SPPR Solver Core` be split into smaller, more focused modules?**
   _Cohesion score 0.06869446343130553 - nodes in this community are weakly interconnected._

@@ -1,16 +1,16 @@
 # Graph Report - FishEstimationAI  (2026-08-19)
 
 ## Corpus Check
-- 263 files · ~3,229,289 words
+- 263 files · ~3,229,733 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 363 nodes · 580 edges · 41 communities (13 shown, 28 thin omitted)
+- 367 nodes · 588 edges · 42 communities (13 shown, 29 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 11 edges (avg confidence: 0.6)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `cec5807a`
+- Built from commit: `29816fc4`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -56,6 +56,7 @@
 - [[_COMMUNITY_Community 38|Community 38]]
 - [[_COMMUNITY_Community 39|Community 39]]
 - [[_COMMUNITY_Community 40|Community 40]]
+- [[_COMMUNITY_Community 41|Community 41]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `PPRCalculator` - 55 edges
@@ -64,7 +65,7 @@
 4. `Series` - 16 edges
 5. `4. Flow-network SPPR methods` - 11 edges
 6. `User Guide: `ModelData` and `PPRCalculator`` - 11 edges
-7. `_flat_te()` - 9 edges
+7. `_flat_te()` - 10 edges
 8. `6. `PPRCalculator` — SPPR methods` - 9 edges
 9. `DataFrame` - 8 edges
 10. `get_DC()` - 8 edges
@@ -90,35 +91,35 @@
 - **Detritus recycling stabilization mechanism** — user_guide_detritus_knobs, user_guide_coupled_detritus_solve, user_guide_det_fate [EXTRACTED 0.85]
 - **Model completion pipeline (defaults to LIM to balance)** — user_guide_apply_ecopath_defaults, user_guide_apply_lim, user_guide_mass_balance [EXTRACTED 0.85]
 
-## Communities (41 total, 28 thin omitted)
+## Communities (42 total, 29 thin omitted)
 
 ### Community 0 - "SPPR Solver Core"
 Cohesion: 0.07
-Nodes (40): ndarray, PPRCalculator, DataFrame, Series, Return the diet-composition (DC) matrix, optionally redefining detritus rows., Return the flow matrix Z = DC * q (consumption-weighted diet), with DET rows red, Return the sorted seq IDs of all detritus (DET) groups.          Returns:, Return the sorted seq IDs of all primary-producer (PP) groups.          Returns: (+32 more)
+Nodes (42): ndarray, PPRCalculator, DataFrame, Series, Return the diet-composition (DC) matrix, optionally redefining detritus rows., Return the flow matrix Z = DC * q (consumption-weighted diet), with DET rows red, Return the sorted seq IDs of all detritus (DET) groups.          Returns:, Return the sorted seq IDs of all primary-producer (PP) groups.          Return (+34 more)
 
 ### Community 1 - "Model Data Loading"
 Cohesion: 0.07
 Nodes (34): Any, get_DC(), get_model_data(), get_model_diet_data(), get_model_metadata(), get_seq2name(), load_json_dict(), ModelData (+26 more)
 
 ### Community 2 - "Model Construction & Balancing"
-Cohesion: 0.17
-Nodes (8): ModelData, Core constructor used by __init__: build the calculator from a loaded ModelData., Normalize the ordering of every Series/DataFrame attribute on the instance., Apply standard Ecopath defaults and sync the mass-balance flows with the ratios., Primary constructor: build the calculator directly from a model identifier., Fill missing mass-balance variables via a per-group Linear Inverse Model (SLSQP), Return the underlying ModelData, or None for toy / from_dict instances., Alternative constructor: rebuild an instance from a dict of pre-existing attribu
+Cohesion: 0.22
+Nodes (6): ModelData, Core constructor used by __init__: build the calculator from a loaded ModelData., Normalize the ordering of every Series/DataFrame attribute on the instance., Primary constructor: build the calculator directly from a model identifier., Fill missing mass-balance variables via a per-group Linear Inverse Model (SLSQP), Return the underlying ModelData, or None for toy / from_dict instances.
 
 ### Community 3 - "User Guide"
 Cohesion: 0.06
 Nodes (33): 10. Choosing a method (rules of thumb), 1. Background: what is PPR / SPPR?, 2. Key ecological quantities and group types, 3.1 Constructor, 3.2 Attributes available after construction, 3.3 Useful methods, 3. `ModelData` — loading a model, 4.1 Primary constructor (+25 more)
 
 ### Community 4 - "Ecopath Concepts & Detritus"
-Cohesion: 0.11
-Nodes (25): DC (Diet Composition matrix), Ecopath mass-balance framework, Ecopath JSON model format, LIM (Linear Inverse Modeling), TL (Trophic Level), SPPR_EwE_Ulanowicz nullspace method, apply_ecopath_defaults (model completion), apply_lim (underdetermined solver) (+17 more)
+Cohesion: 0.10
+Nodes (27): DC (Diet Composition matrix), Ecopath mass-balance framework, Ecopath JSON model format, LIM (Linear Inverse Modeling), TE / GE (Transfer / Gross Efficiency), TL (Trophic Level), SPPR_EwE_Ulanowicz nullspace method, apply_ecopath_defaults (model completion) (+19 more)
 
 ### Community 5 - "Excel Export & Matrix Utils"
 Cohesion: 0.16
-Nodes (16): main(), Matrix (nullspace) reformulation of the EwE path-summation SPPR.          Instea, # NOTE: trophic levels are resolved further down, after the flow vectors exist -, # TODO: change this function so I can decide which subset of parameters stays co, _find_all_cycles(), _get_circuit_probability(), mat_from_np(), move_scattered_identity() (+8 more)
+Nodes (16): main(), Matrix (nullspace) reformulation of the EwE path-summation SPPR.          Inst, # NOTE: trophic levels are resolved further down, after the flow vectors exist -, # TODO: change this function so I can decide which subset of parameters stays co, _find_all_cycles(), _get_circuit_probability(), mat_from_np(), move_scattered_identity() (+8 more)
 
 ### Community 6 - "PPR Concepts & Classic Methods"
-Cohesion: 0.16
-Nodes (15): Documentation, FishEstimationAI — Claude Instructions, Knowledge Graph, Project Overview, NPP (Net Primary Production), Pauly (1986) citation, Pauly & Christensen (1995) citation, PPR (Primary Production Required) (+7 more)
+Cohesion: 0.19
+Nodes (13): Documentation, FishEstimationAI — Claude Instructions, Knowledge Graph, Project Overview, NPP (Net Primary Production), Pauly (1986) citation, Pauly & Christensen (1995) citation, PPR (Primary Production Required) (+5 more)
 
 ### Community 7 - "README / Project Overview"
 Cohesion: 0.11
@@ -133,8 +134,8 @@ Cohesion: 0.11
 Nodes (18): 4. Flow-network SPPR methods, `diagnose_sppr(...)` — is this result trustworthy?, Helpers used by the numeric/symbolic solvers (for reference), How the reported quantities are obtained, It does not raise on the model it is diagnosing, Mathematical foundation (shared by all flow-network methods), `monte_carlo_SPPR(...)` — uncertainty propagation over transfer efficiency, `_sample_SPPR_new_forced_balance(TE_option='TE', sppr_det=None)` (+10 more)
 
 ### Community 32 - "Community 32"
-Cohesion: 0.15
-Nodes (13): divergent_report(), _flat_te(), DataFrame, Lower TE amplifies every path, so b must rise as TE falls., b is measured on diag(theta) @ B, so retention loss must lower it., det_collapse_mode is a remedy, not a diagnosis: b is measured pre-decision., det_collapse_mode='always' on a divergent model makes _collapse_det_scaling rais, A constant TE matrix at `value`, with detritus rows left at 1 (as SPPR_new expec (+5 more)
+Cohesion: 0.13
+Nodes (15): divergent_report(), _flat_te(), DataFrame, An explicit TE matrix overrides TE_option, and inv_te must follow it., Lower TE amplifies every path, so b must rise as TE falls., b is measured on diag(theta) @ B, so retention loss must lower it., det_collapse_mode is a remedy, not a diagnosis: b is measured pre-decision., A constant TE matrix at `value`, with detritus rows left at 1 (as SPPR_new expec (+7 more)
 
 ### Community 33 - "Community 33"
 Cohesion: 0.47
@@ -147,13 +148,13 @@ Nodes (4): Build a ``SpeciesGroupLegacy`` from a flat dict of field values.     
 ## Knowledge Gaps
 - **87 isolated node(s):** `Documentation`, `What it does`, `Project structure`, `Usage`, `Setup` (+82 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **28 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **29 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `PPRCalculator` connect `SPPR Solver Core` to `Community 32`, `Model Data Loading`, `Model Construction & Balancing`, `Community 33`, `Ecopath Concepts & Detritus`, `Excel Export & Matrix Utils`, `PPR Concepts & Classic Methods`, `Legacy Species Group`?**
-  _High betweenness centrality (0.325) - this node is a cross-community bridge._
+  _High betweenness centrality (0.331) - this node is a cross-community bridge._
 - **Why does `ModelData` connect `Model Data Loading` to `SPPR Solver Core`, `Model Construction & Balancing`, `Ecopath Concepts & Detritus`, `Excel Export & Matrix Utils`, `PPR Concepts & Classic Methods`?**
   _High betweenness centrality (0.213) - this node is a cross-community bridge._
 - **Why does `ModelData class (user guide)` connect `Ecopath Concepts & Detritus` to `Model Data Loading`?**
@@ -163,6 +164,6 @@ _Questions this graph is uniquely positioned to answer:_
 - **Are the 5 inferred relationships involving `ModelData` (e.g. with `ndarray` and `PPRCalculator`) actually correct?**
   _`ModelData` has 5 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `Load a JSON file (relative to this module's directory) and return it as a dict.`, `Build a ``SpeciesGroupLegacy`` from a flat dict of field values.          Factor`, `Return a human-readable one-line summary of this legacy species group.` to the rest of the system?**
-  _170 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _169 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `SPPR Solver Core` be split into smaller, more focused modules?**
-  _Cohesion score 0.06869446343130553 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06574074074074074 - nodes in this community are weakly interconnected._

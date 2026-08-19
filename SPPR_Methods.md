@@ -907,8 +907,15 @@ with the configuration.
   charged per unit of that pool. This is the per-source answer to "what is detritus worth".
 - **`max_sppr_det`** — the largest of those, graded against `sppr_det_warn` (default `10`).
 - **`max_sppr_group`**, **`max_tl_group`** — two landmarks of the solved SPPR vector, reported
-  and never graded: `{'seq', 'tl', 'sppr'}` for the group carrying the largest total SPPR, and
-  the same record for the group at the top of the trophic ordering. Trophic levels are taken
+  and never graded: `{'seq', 'tl', 'sppr', 'inv_te'}` for the group carrying the largest total
+  SPPR, and the same record for the group at the top of the trophic ordering. `inv_te` is `1/te`
+  taken from the TE matrix actually in use, so it follows `TE_option` (`p/q` under `'GE'`,
+  `(p/q)(1−M0/p)` under `'TE'`, the draw itself when an explicit `TE` was passed) rather than any
+  one definition of transfer efficiency. It is the per-step amplification `A = DC/TE` applies to
+  that group's edges, and it usually explains a large `sppr`: a group at `1/te ≈ 1900` is
+  expensive because each unit of its production needs 1900 units of prey production, not because
+  the detritus loop ran away. `None` where `te = 0`, i.e. where the group is severed from the
+  nullspace entirely. Trophic levels are taken
   from `get_TL(break_cycles=True, DET_as_PP=True)` — the convention `SPPR_1986` and
   `get_PPR2NPP_ratio` already use — because the cached `TL` attribute is degenerate on real
   models. Since SPPR grows with trophic depth (`SPPR = TE^{1−TL}` in the chain limit, §3), the

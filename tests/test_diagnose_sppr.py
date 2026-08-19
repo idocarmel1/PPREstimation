@@ -139,9 +139,35 @@ def test_sppr_det_matches_detritus_resolution_info(toy):
 def test_group_landmarks_have_the_documented_shape(toy, toy_report):
     for key in ("max_sppr_group", "max_tl_group"):
         rec = toy_report["divergence"][key]
-        assert set(rec) == {"seq", "tl", "sppr"}, key
+        assert set(rec) == {"seq", "tl", "sppr", "inv_te"}, key
         assert isinstance(rec["seq"], int)
         assert rec["seq"] in [int(g) for g in toy.get_DC(DET_as_PP=True).index]
+
+
+@pytest.mark.parametrize("te_option", ["GE", "With Egestion", "TE"])
+def test_inv_te_is_one_over_the_te_matrix_in_use(black_sea, te_option):
+    """inv_te follows TE_option, so it must equal 1/te of the matrix that solve actually used."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        report = black_sea.diagnose_sppr(TE_option=te_option, short=True)
+        te = black_sea.get_TE(TE_option=te_option, DET_values=1, as_matrix=True).iloc[:, 0]
+    for key in ("max_sppr_group", "max_tl_group"):
+        rec = report["divergence"][key]
+        te_val = float(te[rec["seq"]])
+        if te_val == 0:
+            assert rec["inv_te"] is None, "1/te is undefined at te=0, not inf"
+        else:
+            assert rec["inv_te"] == pytest.approx(1.0 / te_val)
+
+
+def test_inv_te_follows_an_explicit_te_draw(toy):
+    """An explicit TE matrix overrides TE_option, and inv_te must follow it."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        report = toy.diagnose_sppr(TE=_flat_te(toy, 0.05), short=True)
+    rec = report["divergence"]["max_sppr_group"]
+    # detritus rows are held at 1.0 by _flat_te; every other group sits at the flat 0.05
+    assert rec["inv_te"] == pytest.approx(1 / 0.05) or rec["inv_te"] == pytest.approx(1.0)
 
 
 def test_max_sppr_group_really_is_the_maximum(toy):
