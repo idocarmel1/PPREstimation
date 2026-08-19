@@ -554,14 +554,6 @@ loop.
     usually comes out **negative** — a clear signal that recycling diverged — and the call
     essentially never raises. This is the default because the Monte-Carlo samplers solve thousands
     of TE draws and simply discard the non-physical (negative) ones.
-    - *Two caveats on reading the sign.* For a given `c`, negativity is guaranteed only when the
-      left Perron vector `v` sees the new material: `(1 − b)·vᵀx = vᵀc`, so `b > 1` forces
-      `vᵀx < 0` when `vᵀc > 0`. A reducible `B` whose supercritical block receives no PP-origin
-      inflow can still solve non-negative (e.g. `B = [[2,0],[0,0]]`, `c = [0,1]` → `x = [0,1]`).
-      Measured on `900_900_Multi_DET_Toy` at `b = 4.15`, one pool's scaling stayed **positive**
-      (`x = [+1.82, −22.6]`), and only 2 of 6 groups had a negative *total* SPPR. Second, `b = 1`
-      exactly is singular and does raise `LinAlgError`. **Test `b`, not the sign** — see
-      `diagnose_sppr` below.
   - `'auto'`: solve directly **unless** the system is unstable (`b ≥ 1`, or `(I − B)`
     ill-conditioned), in which case fall back to pooling. The safe, self-correcting choice.
   - `'always'`: always pool.
@@ -571,8 +563,7 @@ loop.
     and the bigger denominator drives `b` back below 1 — taming an otherwise runaway loop at the
     cost of resolution (every detritus pool then shares one blended value). This is not guaranteed:
     pooling also sums the numerator, so when one pool dominates `q_combined` it can make `b`
-    *worse*. On `900_900_Multi_DET_Toy` with a flat `TE = 0.02`, pooling raises `b` from 1.038 to
-    1.128 and `_collapse_det_scaling` raises instead of rescuing.
+    *worse*. 
 
 - **`det_open_mode`** — whether detritus recycling is **closed** (all dead matter is reprocessed
   inside the system) or **open** (some escapes, or some is supplied from outside). It works by
