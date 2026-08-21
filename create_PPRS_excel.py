@@ -3,7 +3,9 @@
 For each model JSON in a directory this builds a workbook with:
 
     groups_df       -- the per-group parameters the SPPR / PPR / NPP calculations consume
-    sppr_table      -- SPPR per group x basal source x method, plus per-method source sums
+    sppr_PP         -- SPPR per group x method, summed over primary-producer sources only
+    sppr_inner      -- the same, over within-system sources (primary producers + detritus)
+    sppr_all        -- the same, over every basal source (adds Import)
     model_health    -- diagnose_sppr output, one row per TE_option, under a fixed detritus config
     footprint       -- PPR / NPP footprint per method
     mc_diagnostics  -- Monte-Carlo accept/reject breakdown per MC method
@@ -16,11 +18,12 @@ and a plain-text run report next to them listing every warning, skip and failure
 Conventions used throughout, and repeated in the run_notes sheet:
   * NaN means "not available", never zero. A source a method does not resolve is NaN; a method
     that raised leaves its whole block NaN.
-  * SUM_ALL / SUM_INNER / SUM_PP follow get_PPR's own source semantics: all sources, all minus
-    Import, and all minus Import and Detritus respectively.
-  * Methods that return a single un-attributed SPPR column (SPPR_1986, SPPR_1995) are stored
-    under the single basal source 'AGGREGATE' and get NaN for SUM_PP and ppr_pp_only, because
-    their value cannot honestly be attributed to primary production alone.
+  * The three SPPR sheets follow get_PPR's own source semantics: all sources, all minus Import,
+    and all minus Import and Detritus respectively. Each is a flat groups x methods table with
+    no MultiIndex on either axis.
+  * Methods that return a single un-attributed SPPR column (SPPR_1986, SPPR_1995) are NaN in
+    sppr_PP and in ppr_pp_only, because their value cannot honestly be attributed to primary
+    production alone.
 
 Requires `openpyxl` (the .xlsx engine pandas uses here); everything else is already a project
 dependency.
@@ -50,8 +53,9 @@ from PPRCalculator import PPRCalculator
 
 # --------------------------------------------------------------------------- constants
 
-AGGREGATE_SOURCE = "AGGREGATE"
-SUM_COLUMNS = ("SUM_PP", "SUM_INNER", "SUM_ALL")
+# The three SPPR sheets and the source sum each one holds. Every sheet is a flat
+# groups x methods table: no MultiIndex anywhere.
+SPPR_SHEET_SUMS = {"pp": "SUM_PP", "inner": "SUM_INNER", "all": "SUM_ALL"}
 
 # diagnose_sppr is always run under this exact detritus configuration, so the health verdicts are
 # comparable across models and TE options. det_theta is inert while det_open_mode='none' (it does
@@ -67,7 +71,9 @@ HEALTH_DET_CONFIG = {
 FOOTPRINT_COLUMNS = ("ppr_all", "ppr_inner", "ppr_pp_only", "npp", "ppr2npp", "ppr2npp_pp_only")
 
 SHEET_GROUPS = "groups_df"
-SHEET_SPPR = "sppr_table"
+SHEET_SPPR_PP = "sppr_PP"
+SHEET_SPPR_INNER = "sppr_inner"
+SHEET_SPPR_ALL = "sppr_all"
 SHEET_HEALTH = "model_health"
 SHEET_FOOTPRINT = "footprint"
 SHEET_MC = "mc_diagnostics"
@@ -75,21 +81,25 @@ SHEET_NOTES = "run_notes"
 
 LOG_FILENAME = "sppr_export_report.txt"
 DEFAULT_JSON_DIR = os.path.join("real_models", "EwE_jsons")
-DEFAULT_OUT_DIR = "output"
+DEFAULT_OUT_DIR = "output/EwE_jsons/models"
 DEFAULT_MC_SAMPLES = 100
 
 RUN_NOTES = [
     ("NaN convention",
      "NaN means not available, never zero. A basal source a method does not resolve is NaN, and "
      "a method that raised leaves its entire block NaN."),
-    ("SUM_ALL / SUM_INNER / SUM_PP",
-     "Source sums mirror get_PPR: SUM_ALL is every source, SUM_INNER drops Import, SUM_PP drops "
-     "Import and Detritus. They are computed from each method's own columns, not from the "
-     "NaN-padded union."),
-    ("AGGREGATE source",
-     "SPPR_1986 and SPPR_1995 return one un-attributed SPPR column. It is stored under the basal "
-     "source AGGREGATE, and SUM_PP / ppr_pp_only are NaN because the value cannot be attributed "
-     "to primary production alone."),
+    ("The three SPPR sheets",
+     "sppr_all, sppr_inner and sppr_PP are the same table under three source scopes, mirroring "
+     "get_PPR: sppr_all sums every basal source, sppr_inner drops Import, and sppr_PP drops "
+     "Import and Detritus. Each is a flat groups x methods table -- rows are group seq with the "
+     "group name in the first column, one column per method, no MultiIndex. Sums are taken over "
+     "each method's own basal-source columns before aggregation; the per-source breakdown itself "
+     "is not written to the workbook."),
+    ("Un-attributed methods are blank in sppr_PP",
+     "SPPR_1986 and SPPR_1995 return one un-attributed SPPR column, so their value cannot be "
+     "split into a PP-only part: they are NaN in sppr_PP (and in ppr_pp_only) while sppr_inner "
+     "and sppr_all carry the total. A method that resolves no Detritus source (SPPR_2015) has "
+     "sppr_inner equal to sppr_PP by construction."),
     ("SPPR_2015 takes no arguments",
      "SPPR_2015() has no only_pp_det parameter (only_pp belongs to get_PPR / get_PPR2NPP_ratio). "
      "It is called bare here and PP-only filtering is applied downstream at the get_PPR layer, "
@@ -215,14 +225,22 @@ METHOD_SPECS: tuple[MethodSpec, ...] = (
                     "(Jensen-able on TL)."),
     _spec_ulanowicz("Ulanowicz_TE", "TE", None,
                     "Nullspace form of the EwE path sum, per-group TE (Jensen-able on TE)."),
-    MethodSpec("EwE_TE_EE",
-               "EwE path enumeration with EE weighting -- the heavy one.",
+    MethodSpec("EwE_TE_noEE",
+               "EwE path enumeration without EE weighting -- heavy method.",
                # silent=True for the same reason as the Monte-Carlo methods: silent=False routes
                # through tqdm.notebook, which raises ImportError('IProgress not found') outside
                # Jupyter and takes the whole method down.
                lambda m, mc_samples: (
-                   _first(m.SPPR_EwE(TE_option="TE", use_EE=True, return_paths=True,
+                   _first(m.SPPR_EwE(TE_option="TE", use_EE=False, return_paths=True,
                                      silent=True)), {})),
+    MethodSpec("EwE_TE_EE",
+                   "EwE path enumeration with EE weighting -- heavy method.",
+                   # silent=True for the same reason as the Monte-Carlo methods: silent=False routes
+                   # through tqdm.notebook, which raises ImportError('IProgress not found') outside
+                   # Jupyter and takes the whole method down.
+                   lambda m, mc_samples: (
+                       _first(m.SPPR_EwE(TE_option="TE", use_EE=True, return_paths=True,
+                                         silent=True)), {})),
     MethodSpec("SPPR_2015",
                "2015 Leontief method, includes cycles. Takes no arguments: PP-only filtering is "
                "applied downstream via get_PPR.",
@@ -266,7 +284,9 @@ class ModelTables:
     model_label: str
     source_file: str
     groups: pd.DataFrame
-    sppr: pd.DataFrame
+    sppr_pp: pd.DataFrame
+    sppr_inner: pd.DataFrame
+    sppr_all: pd.DataFrame
     health: pd.DataFrame
     footprint: pd.DataFrame
     mc_diagnostics: pd.DataFrame
@@ -277,7 +297,9 @@ class ModelTables:
     def sheets(self) -> dict:
         return {
             SHEET_GROUPS: self.groups,
-            SHEET_SPPR: self.sppr,
+            SHEET_SPPR_PP: self.sppr_pp,
+            SHEET_SPPR_INNER: self.sppr_inner,
+            SHEET_SPPR_ALL: self.sppr_all,
             SHEET_HEALTH: self.health,
             SHEET_FOOTPRINT: self.footprint,
             SHEET_MC: self.mc_diagnostics,
@@ -302,14 +324,6 @@ def _group_type_map(model: PPRCalculator) -> dict:
     for seq in model.get_Regular_seq():
         types[int(seq)] = "Regular"
     return types
-
-
-def _ordered_sources(model: PPRCalculator) -> list:
-    """Basal sources in reading order: PP, then detritus, then import."""
-    ordered = (sorted(int(s) for s in model.get_PP_seq())
-               + sorted(int(s) for s in model.get_DET_seq())
-               + sorted(int(s) for s in model.get_Import_seq()))
-    return ordered
 
 
 def _to_seq_frame(model: PPRCalculator, sppr) -> pd.DataFrame:
@@ -365,44 +379,40 @@ def build_groups_table(model: PPRCalculator) -> pd.DataFrame:
     return groups
 
 
-def build_sppr_table(model: PPRCalculator, results: dict, method_keys: Sequence[str]) -> pd.DataFrame:
-    """SPPR per group x basal source x method, with the three source sums per method.
+def build_sppr_tables(model: PPRCalculator, results: dict,
+                      method_keys: Sequence[str]) -> dict:
+    """The three flat SPPR tables, one per source scope.
 
-    Columns are a (method, basal_source) MultiIndex over the union of basal sources, so methods
-    are directly comparable; a source a given method does not resolve stays NaN.
+    Each is a groups x methods table: the index is group seq, the first column is the group name,
+    and there is one column per method holding that method's SPPR summed over the sources in
+    scope ('pp' drops Import and Detritus, 'inner' drops Import, 'all' keeps everything). No
+    MultiIndex is used on either axis. A method that failed, or whose result cannot be attributed
+    to the scope, is NaN.
+
+    Returns:
+        dict: {'pp': DataFrame, 'inner': DataFrame, 'all': DataFrame}.
     """
     groups = model.get_groups_df()
-    index = pd.MultiIndex.from_arrays(
-        [groups.index, [model.seq2name.get(int(s), str(s)) for s in groups.index]],
-        names=["seq", "group_name"])
+    index = pd.Index(list(groups.index), name="seq")
+    names = [model.seq2name.get(int(s), str(s)) for s in groups.index]
 
-    sources = _ordered_sources(model)
-    source_names = [model.seq2name.get(s, str(s)) for s in sources]
-    needs_aggregate = any(not SPEC_BY_KEY[k].source_resolved for k in method_keys)
-    column_sources = source_names + ([AGGREGATE_SOURCE] if needs_aggregate else [])
+    tables = {}
+    for scope in SPPR_SHEET_SUMS:
+        table = pd.DataFrame(index=index)
+        table["group_name"] = names
+        tables[scope] = table
 
-    blocks = {}
     for key in method_keys:
-        spec = SPEC_BY_KEY[key]
-        frame = pd.DataFrame(np.nan, index=index,
-                             columns=list(column_sources) + list(SUM_COLUMNS), dtype=float)
         raw = results.get(key)
-        if raw is not None:
-            if spec.source_resolved:
-                for seq, name in zip(sources, source_names):
-                    if seq in raw.columns:
-                        frame[name] = raw[seq].to_numpy(dtype=float)
-            else:
-                # single un-attributed column, whatever it is called
-                frame[AGGREGATE_SOURCE] = raw.iloc[:, 0].to_numpy(dtype=float)
-            for name, values in _source_sums(model, raw, spec.source_resolved).items():
-                frame[name] = values.to_numpy(dtype=float)
-        blocks[key] = frame
+        if raw is None:
+            for table in tables.values():
+                table[key] = np.nan
+            continue
+        sums = _source_sums(model, raw, SPEC_BY_KEY[key].source_resolved)
+        for scope, sum_key in SPPR_SHEET_SUMS.items():
+            tables[scope][key] = sums[sum_key].to_numpy(dtype=float)
 
-    table = pd.concat([blocks[k] for k in method_keys], axis=1,
-                      keys=list(method_keys), names=["method", "basal_source"])
-    table.index = index
-    return table
+    return tables
 
 
 def build_footprint_table(model: PPRCalculator, results: dict,
@@ -542,11 +552,15 @@ def build_model_tables(model: PPRCalculator, *, method_keys: Optional[Sequence[s
             issues.append(_issue("sppr_balance",
                                  f"is_sppr_balanced raised {type(exc).__name__}: {exc}", key))
 
+    sppr_tables = build_sppr_tables(model, results, keys)
+
     return ModelTables(
         model_label=model_label,
         source_file=source_file,
         groups=build_groups_table(model),
-        sppr=build_sppr_table(model, results, keys),
+        sppr_pp=sppr_tables["pp"],
+        sppr_inner=sppr_tables["inner"],
+        sppr_all=sppr_tables["all"],
         health=build_health_table(model, issues),
         footprint=build_footprint_table(model, results, keys),
         mc_diagnostics=build_mc_table(extras, keys),
@@ -614,27 +628,19 @@ def write_tables_excel(tables: ModelTables, model_path: str,
     Path(out_dir).mkdir(parents=True, exist_ok=True)
     out_path = os.path.join(out_dir, Path(model_path).stem + ".xlsx")
 
-    # (index columns, header rows) per sheet, so the reader and the freeze panes agree.
-    layout = {
-        SHEET_GROUPS: (1, 1),
-        SHEET_SPPR: (2, 2),
-        SHEET_HEALTH: (1, 1),
-        SHEET_FOOTPRINT: (1, 1),
-        SHEET_MC: (1, 1),
-        SHEET_NOTES: (1, 1),
-    }
-
     with pd.ExcelWriter(out_path, engine="openpyxl") as writer:
         for sheet, table in tables.sheets.items():
             table.to_excel(writer, sheet_name=sheet)
-            n_index, n_header = layout[sheet]
-            _autoformat(writer, sheet, table, n_index, n_header)
+            # Every sheet is flat: one index column, one header row.
+            _autoformat(writer, sheet, table, 1, 1)
     return out_path
 
 
 SHEET_READ_LAYOUT = {
     SHEET_GROUPS: dict(index_col=0, header=0),
-    SHEET_SPPR: dict(index_col=[0, 1], header=[0, 1]),
+    SHEET_SPPR_PP: dict(index_col=0, header=0),
+    SHEET_SPPR_INNER: dict(index_col=0, header=0),
+    SHEET_SPPR_ALL: dict(index_col=0, header=0),
     SHEET_HEALTH: dict(index_col=0, header=0),
     SHEET_FOOTPRINT: dict(index_col=0, header=0),
     SHEET_MC: dict(index_col=0, header=0),
@@ -655,11 +661,7 @@ def read_pprs_excel(path: str) -> dict:
     for sheet, kwargs in SHEET_READ_LAYOUT.items():
         if sheet not in available:
             continue
-        table = pd.read_excel(path, sheet_name=sheet, **kwargs)
-        if sheet == SHEET_SPPR:
-            table.index.names = ["seq", "group_name"]
-            table.columns.names = ["method", "basal_source"]
-        out[sheet] = table
+        out[sheet] = pd.read_excel(path, sheet_name=sheet, **kwargs)
     return out
 
 
@@ -832,4 +834,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    import warnings
+    warnings.filterwarnings("ignore", category=RuntimeWarning)
+
+    json_dir = os.path.join("real_models", "EwE_jsons")
+    out_dir = "output/Ecobase_models"
+
+    raise SystemExit(main([json_dir, out_dir]))

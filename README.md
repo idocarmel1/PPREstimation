@@ -75,11 +75,12 @@ run report listing every warning, skipped method and Monte-Carlo rejection:
 python create_PPRS_excel.py [json_dir] [out_dir]
 ```
 
-Each workbook holds six sheets: `groups_df` (per-group parameters), `sppr_table` (SPPR per
-group × basal source × method, with per-method PP / inner / total sums), `model_health`
-(`diagnose_sppr` per `TE_option`), `footprint` (PPR and %NPP per method), `mc_diagnostics`
-(Monte-Carlo accept/reject breakdown) and `run_notes` (the conventions needed to read the
-numbers correctly).
+Each workbook holds eight sheets: `groups_df` (per-group parameters); `sppr_PP`,
+`sppr_inner` and `sppr_all` — the same flat groups × methods table under three source
+scopes (primary producers only; within-system, i.e. adding detritus; and every source,
+adding import); `model_health` (`diagnose_sppr` per `TE_option`), `footprint` (PPR and
+%NPP per method), `mc_diagnostics` (Monte-Carlo accept/reject breakdown) and `run_notes`
+(the conventions needed to read the numbers correctly).
 
 From Python you can run a subset and read the result back:
 
@@ -92,11 +93,14 @@ summary = cpe.run_directory('real_models/EwE_jsons', 'output',
 print(summary['n_written'], 'workbooks;  report:', summary['report'])
 
 tables = cpe.read_pprs_excel('output/435_435_Black_Sea_(1990).xlsx')
-tables['sppr_table']['new_GE']['SUM_ALL']   # SPPR totals for one method
+tables['sppr_all']['new_GE']    # total SPPR per group for one method
+tables['sppr_PP']['new_GE']     # the primary-producer-only share
 ```
 
-Throughout the workbook **NaN means "not available", never zero** — a basal source a
-method does not resolve, and a method that raised, both stay empty.
+Throughout the workbook **NaN means "not available", never zero** — a method that raised,
+and a value that cannot be attributed to the sheet's source scope, both stay empty.
+`SPPR_1986` and `SPPR_1995` return a single un-attributed SPPR, so they are blank in
+`sppr_PP` while carrying their total in `sppr_inner` and `sppr_all`.
 
 ## Setup
 

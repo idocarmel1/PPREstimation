@@ -69,31 +69,27 @@ def test_heavy_methods_are_excluded_from_the_fast_key_set():
     assert set(cpe.FAST_METHOD_KEYS) | set(cpe.HEAVY_METHOD_KEYS) == set(cpe.ALL_METHOD_KEYS)
 
 
-# --------------------------------------------------------------------- sppr_table
+# --------------------------------------------------------------------- the three sppr sheets
 
-def test_sppr_table_columns_are_a_method_source_multiindex(cheap_tables):
-    sppr = cheap_tables.sppr
-    assert isinstance(sppr.columns, pd.MultiIndex)
-    assert sppr.columns.nlevels == 2
-    assert sppr.columns.names == ["method", "basal_source"]
-    assert set(sppr.columns.get_level_values("method")) == set(CHEAP)
+def test_there_are_three_flat_sppr_sheets(cheap_tables):
+    sheets = cheap_tables.sheets
+    for name in (cpe.SHEET_SPPR_PP, cpe.SHEET_SPPR_INNER, cpe.SHEET_SPPR_ALL):
+        assert name in sheets, name
 
 
-def test_sppr_table_rows_are_every_group_as_seq_and_name(cheap_tables, toy_model):
-    sppr = cheap_tables.sppr
-    assert sppr.index.names == ["seq", "group_name"]
-    assert list(sppr.index.get_level_values("seq")) == list(toy_model.get_groups_df().index)
-    assert "Phytoplankton" in sppr.index.get_level_values("group_name")
+@pytest.mark.parametrize("attr", ["sppr_pp", "sppr_inner", "sppr_all"])
+def test_sppr_sheets_are_flat_groups_by_methods(cheap_tables, toy_model, attr):
+    table = getattr(cheap_tables, attr)
+    assert not isinstance(table.columns, pd.MultiIndex), "columns must be flat"
+    assert not isinstance(table.index, pd.MultiIndex), "index must be flat"
+    assert table.index.name == "seq"
+    assert list(table.columns) == ["group_name"] + list(CHEAP)
+    assert list(table.index) == list(toy_model.get_groups_df().index)
+    assert table.loc[1, "group_name"] == "Phytoplankton"
 
 
-def test_each_method_carries_the_three_sum_columns(cheap_tables):
-    for key in CHEAP:
-        cols = set(cheap_tables.sppr[key].columns)
-        assert {"SUM_PP", "SUM_INNER", "SUM_ALL"} <= cols, (key, cols)
-
-
-def test_sums_follow_get_PPR_source_semantics(cheap_tables, toy_model):
-    """SUM_ALL = every source, SUM_INNER = drop Import, SUM_PP = drop Import and DET."""
+def test_sheets_hold_the_matching_source_sums(cheap_tables, toy_model):
+    """all = every source, inner = drop Import, PP = drop Import and DET."""
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         raw, _, _ = toy_model.SPPR_new(TE_option="GE")
@@ -102,31 +98,29 @@ def test_sums_follow_get_PPR_source_semantics(cheap_tables, toy_model):
     det = list(toy_model.get_DET_seq())
     imp = list(toy_model.get_Import_seq())
 
-    block = cheap_tables.sppr["new_GE"]
     expected_all = raw.sum(axis=1)
     expected_inner = raw.drop(columns=[c for c in imp if c in raw.columns]).sum(axis=1)
     expected_pp = raw.drop(columns=[c for c in det + imp if c in raw.columns]).sum(axis=1)
 
-    assert np.allclose(block["SUM_ALL"].values, expected_all.values)
-    assert np.allclose(block["SUM_INNER"].values, expected_inner.values)
-    assert np.allclose(block["SUM_PP"].values, expected_pp.values)
+    assert np.allclose(cheap_tables.sppr_all["new_GE"].values, expected_all.values)
+    assert np.allclose(cheap_tables.sppr_inner["new_GE"].values, expected_inner.values)
+    assert np.allclose(cheap_tables.sppr_pp["new_GE"].values, expected_pp.values)
 
 
-def test_a_source_a_method_does_not_resolve_is_nan_not_zero(cheap_tables):
-    """SPPR_2015 returns no detritus columns; those cells must be NaN, never a silent 0."""
-    block = cheap_tables.sppr["SPPR_2015"]
-    det_cols = [c for c in block.columns if "detritus" in str(c).lower()]
-    assert det_cols, f"expected detritus source columns in the union, got {list(block.columns)}"
-    assert block[det_cols].isna().all().all(), (
-        "a source the method does not resolve must be NaN, not 0")
+def test_method_without_detritus_columns_has_equal_inner_and_pp(cheap_tables):
+    """SPPR_2015 resolves only PP and Import, so dropping Import already leaves PP alone."""
+    inner = cheap_tables.sppr_inner["SPPR_2015"]
+    pp = cheap_tables.sppr_pp["SPPR_2015"]
+    assert np.allclose(inner.values, pp.values, equal_nan=True)
 
 
-def test_non_source_resolved_method_is_marked_aggregate_with_nan_sum_pp(cheap_tables):
-    """SPPR_1986 returns one un-attributed 'sppr' column, so PP cannot be separated out."""
-    block = cheap_tables.sppr["SPPR_1986"]
-    assert cpe.AGGREGATE_SOURCE in block.columns
-    assert block["SUM_PP"].isna().all(), "an un-attributed SPPR must not claim a PP-only sum"
-    assert np.allclose(block["SUM_ALL"].values, block[cpe.AGGREGATE_SOURCE].values)
+def test_non_source_resolved_method_is_nan_in_the_pp_sheet_only(cheap_tables):
+    """SPPR_1986 returns one un-attributed column, so PP cannot be separated out of it."""
+    assert cheap_tables.sppr_pp["SPPR_1986"].isna().all(), (
+        "an un-attributed SPPR must not claim a PP-only value")
+    assert cheap_tables.sppr_all["SPPR_1986"].notna().any()
+    assert np.allclose(cheap_tables.sppr_all["SPPR_1986"].values,
+                       cheap_tables.sppr_inner["SPPR_1986"].values)
 
 
 # --------------------------------------------------------------------- footprint
@@ -195,8 +189,9 @@ def test_a_failing_method_is_recorded_and_leaves_its_cells_empty(toy_model, monk
     assert [i["method"] for i in failed] == ["SPPR_2015"]
     assert "synthetic solver failure" in failed[0]["detail"]
 
-    block = tables.sppr["SPPR_2015"]
-    assert block.isna().all().all(), "a failed method must leave empty cells, not zeros"
+    for table in (tables.sppr_pp, tables.sppr_inner, tables.sppr_all):
+        assert table["SPPR_2015"].isna().all(), (
+            "a failed method must leave empty cells, not zeros")
     assert tables.footprint.loc["SPPR_2015"].isna().all()
 
 
@@ -217,22 +212,30 @@ def test_monte_carlo_diagnostics_are_collected(toy_model):
 
 # --------------------------------------------------------------------- excel round trip
 
-def test_round_trip_preserves_values_and_multiindex(toy_model, tmp_path):
+@pytest.mark.parametrize("sheet,attr", [
+    ("sppr_PP", "sppr_pp"),
+    ("sppr_inner", "sppr_inner"),
+    ("sppr_all", "sppr_all"),
+])
+def test_round_trip_preserves_each_sppr_sheet_flat(toy_model, tmp_path, sheet, attr):
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         path = cpe.write_model_excel(TOY, out_dir=str(tmp_path), method_keys=CHEAP)
         loaded = cpe.read_pprs_excel(path)
         original = cpe.build_model_tables(toy_model, method_keys=CHEAP)
 
-    assert "sppr_table" in loaded and "groups_df" in loaded
-    back = loaded["sppr_table"]
+    assert "groups_df" in loaded
+    back = loaded[sheet]
+    expected = getattr(original, attr)
 
-    assert isinstance(back.columns, pd.MultiIndex)
-    assert back.columns.names == ["method", "basal_source"]
-    assert back.index.names == ["seq", "group_name"]
-    assert list(back.columns) == list(original.sppr.columns)
+    assert not isinstance(back.columns, pd.MultiIndex)
+    assert not isinstance(back.index, pd.MultiIndex)
+    assert back.index.name == "seq"
+    assert list(back.columns) == list(expected.columns)
+    assert list(back["group_name"]) == list(expected["group_name"])
     np.testing.assert_allclose(
-        back.values.astype(float), original.sppr.values.astype(float), equal_nan=True)
+        back[list(CHEAP)].values.astype(float),
+        expected[list(CHEAP)].values.astype(float), equal_nan=True)
 
 
 def test_round_trip_preserves_the_footprint_table(toy_model, tmp_path):

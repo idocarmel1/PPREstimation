@@ -1,16 +1,16 @@
 # Graph Report - FishEstimationAI  (2026-08-21)
 
 ## Corpus Check
-- 265 files · ~3,236,383 words
+- 265 files · ~3,236,460 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 482 nodes · 780 edges · 41 communities (12 shown, 29 thin omitted)
+- 479 nodes · 775 edges · 41 communities (12 shown, 29 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 22 edges (avg confidence: 0.55)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `af9ceb00`
+- Built from commit: `67ca804e`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -62,9 +62,9 @@
 2. `ModelData` - 32 edges
 3. `DataFrame` - 28 edges
 4. `Series` - 16 edges
-5. `PPRCalculator` - 14 edges
-6. `DataFrame` - 14 edges
-7. `build_model_tables()` - 14 edges
+5. `DataFrame` - 14 edges
+6. `build_model_tables()` - 14 edges
+7. `PPRCalculator` - 13 edges
 8. `4. Flow-network SPPR methods` - 11 edges
 9. `User Guide: `ModelData` and `PPRCalculator`` - 11 edges
 10. `MethodSpec` - 10 edges
@@ -101,7 +101,7 @@ Nodes (48): ndarray, PPRCalculator, DataFrame, ModelData, Series, Core construct
 
 ### Community 1 - "Model Data Loading"
 Cohesion: 0.06
-Nodes (40): get_DC(), get_seq2name(), ModelData, DataFrame, Series, Build a ``SpeciesGroup`` from a flat dict of field values.          Factory used, Convert this group into a single-row DataFrame of all its fields.          Unlik, Container for one Ecopath model's group table, diet composition and detritus fat (+32 more)
+Nodes (38): Any, get_DC(), get_model_data(), get_model_diet_data(), get_model_metadata(), get_seq2name(), load_json_dict(), ModelData (+30 more)
 
 ### Community 2 - "Model Construction & Balancing"
 Cohesion: 0.07
@@ -116,12 +116,12 @@ Cohesion: 0.06
 Nodes (40): Documentation, FishEstimationAI — Claude Instructions, Knowledge Graph, Project Overview, DC (Diet Composition matrix), Ecopath mass-balance framework, Ecopath JSON model format, LIM (Linear Inverse Modeling) (+32 more)
 
 ### Community 5 - "Excel Export & Matrix Utils"
-Cohesion: 0.07
-Nodes (53): _autoformat(), build_footprint_table(), build_groups_table(), build_health_table(), build_mc_table(), build_model_tables(), build_notes_table(), build_sppr_table() (+45 more)
+Cohesion: 0.08
+Nodes (51): _autoformat(), build_footprint_table(), build_groups_table(), build_health_table(), build_mc_table(), build_model_tables(), build_notes_table(), build_sppr_tables() (+43 more)
 
 ### Community 6 - "PPR Concepts & Classic Methods"
 Cohesion: 0.07
-Nodes (7): Tests for create_PPRS_excel.py -- the per-model SPPR/PPR Excel exporter and its, SPPR_2015 returns no detritus columns; those cells must be NaN, never a silent 0, SPPR_1986 returns one un-attributed 'sppr' column, so PP cannot be separated out, SUM_ALL = every source, SUM_INNER = drop Import, SUM_PP = drop Import and DET., test_a_source_a_method_does_not_resolve_is_nan_not_zero(), test_non_source_resolved_method_is_marked_aggregate_with_nan_sum_pp(), test_sums_follow_get_PPR_source_semantics()
+Nodes (9): PPRCalculator, Tests for create_PPRS_excel.py -- the per-model SPPR/PPR Excel exporter and its, SPPR_2015 resolves only PP and Import, so dropping Import already leaves PP alon, SPPR_1986 returns one un-attributed column, so PP cannot be separated out of it., all = every source, inner = drop Import, PP = drop Import and DET., test_method_without_detritus_columns_has_equal_inner_and_pp(), test_non_source_resolved_method_is_nan_in_the_pp_sheet_only(), test_sheets_hold_the_matching_source_sums() (+1 more)
 
 ### Community 7 - "README / Project Overview"
 Cohesion: 0.05
@@ -132,8 +132,8 @@ Cohesion: 0.25
 Nodes (7): Batch export, Documentation, FishEstimationAI, Project structure, Setup, Usage, What it does
 
 ### Community 31 - "Community 31"
-Cohesion: 0.14
-Nodes (15): Any, get_model_data(), get_model_diet_data(), get_model_metadata(), load_json_dict(), Return the bundled metadata record for a model id.      Thin accessor over the m, Return the bundled core data record for a model id.      Thin accessor over the, Return the bundled diet data record for a model id.      Thin accessor over the (+7 more)
+Cohesion: 0.19
+Nodes (15): Matrix (nullspace) reformulation of the EwE path-summation SPPR.          Inst, # NOTE: trophic levels are resolved further down, after the flow vectors exist -, # TODO: change this function so I can decide which subset of parameters stays co, _find_all_cycles(), _get_circuit_probability(), mat_from_np(), move_scattered_identity(), Removes cycles from a flow matrix Z using the Ulanowicz method.     Z[i, j] rep (+7 more)
 
 ### Community 32 - "Community 32"
 Cohesion: 0.13
@@ -151,7 +151,7 @@ Nodes (6): black_sea(), _calc(), PPRCalculator, test_negative_catch_is_warned(),
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `PPRCalculator` connect `SPPR Solver Core` to `Community 32`, `Model Data Loading`, `Community 33`, `Model Construction & Balancing`, `Ecopath Concepts & Detritus`, `Excel Export & Matrix Utils`, `PPR Concepts & Classic Methods`, `Legacy Species Group`?**
+- **Why does `PPRCalculator` connect `SPPR Solver Core` to `Community 32`, `Model Data Loading`, `Community 33`, `Model Construction & Balancing`, `Ecopath Concepts & Detritus`, `Excel Export & Matrix Utils`, `PPR Concepts & Classic Methods`, `Legacy Species Group`, `Community 31`?**
   _High betweenness centrality (0.405) - this node is a cross-community bridge._
 - **Why does `ModelData` connect `Model Data Loading` to `SPPR Solver Core`, `Ecopath Concepts & Detritus`, `Excel Export & Matrix Utils`, `PPR Concepts & Classic Methods`, `Community 31`?**
   _High betweenness centrality (0.206) - this node is a cross-community bridge._
@@ -161,7 +161,7 @@ _Questions this graph is uniquely positioned to answer:_
   _`PPRCalculator` has 9 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 10 inferred relationships involving `ModelData` (e.g. with `MethodSpec` and `ModelTables`) actually correct?**
   _`ModelData` has 10 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 2 inferred relationships involving `PPRCalculator` (e.g. with `ModelData` and `PPRCalculator`) actually correct?**
-  _`PPRCalculator` has 2 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 2 inferred relationships involving `DataFrame` (e.g. with `ModelData` and `PPRCalculator`) actually correct?**
+  _`DataFrame` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `Load a JSON file (relative to this module's directory) and return it as a dict.`, `Build a ``SpeciesGroupLegacy`` from a flat dict of field values.          Factor`, `Return a human-readable one-line summary of this legacy species group.` to the rest of the system?**
-  _207 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _206 weakly-connected nodes found - possible documentation gaps or missing edges._
