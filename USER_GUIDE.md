@@ -300,7 +300,7 @@ All SPPR methods return a `pd.DataFrame` (or `Series`) of SPPR values. The matri
 | `SPPR_EwE_Ulanowicz(TE_option, global_TE='mean', use_EE=True)` | `(SPPR, A, L)` | Nullspace reformulation of the EwE path sum. |
 | `SPPR_new(...)` | `(SPPR, A, L)` | Primary numeric solver with full detritus recycling. |
 | `SPPR_symbolic(...)` | `(sppr_symbolic, sppr_mat, equations, variables)` | Symbolic solver (keeps imported diet explicit). |
-| `monte_carlo_SPPR(...)` | `(mean, samples, reject_frac, eqs, vars)` | Uncertainty propagation over TE. |
+| `monte_carlo_SPPR(...)` | `(mean, samples, reject_frac, eqs, vars[, diagnostics])` | Uncertainty propagation over TE; solver chosen by `kind`, its own parameters via `method_kwargs`. |
 | `diagnose_sppr(...)` | `dict` | *Not an SPPR method* — grades whether a `SPPR_new` result is trustworthy (§7.1). |
 
 ### 6.2 The classic chain methods
@@ -514,10 +514,13 @@ being solved. All the detritus knobs from §6.5 apply here too.
 Transfer efficiency is uncertain, so these methods propagate that uncertainty into SPPR.
 
 **`monte_carlo_SPPR(n_samples=1000, TE_error_percent=10, TE_error_cut_percent=20, TE_option='GE',
-DET_TE_vals=1, kind='new', diet_import_option='as_DC', silent=True, <det knobs>)`**
+DET_TE_vals=1, kind='new', method_kwargs=None, exclude_diverged=False,
+return_diagnostics=False, diet_import_option='as_DC', silent=True, <det knobs>)`**
 
 Repeatedly resamples the TE matrix, recomputes SPPR, **rejects any sample with a negative SPPR** (an
-unstable/non-physical draw), and averages the survivors.
+unstable/non-physical draw), and averages the survivors. Optionally also rejects draws whose
+divergence grade is `FAIL` (`exclude_diverged=True`) — worth doing, because a diverged draw can
+still return an all-positive SPPR and slip past the negative test.
 
 | Parameter | Type | Default | Meaning |
 |-----------|------|---------|---------|
@@ -527,6 +530,9 @@ unstable/non-physical draw), and averages the survivors.
 | `TE_option` | `str` | `'GE'` | TE mode (see §5.1). |
 | `DET_TE_vals` | `float` | `1` | TE of detritus rows. |
 | `kind` | `str` | `'new'` | `'new'` (uses `SPPR_new`) or `'symbolic'` (uses `SPPR_symbolic`). |
+| `method_kwargs` | `dict \| None` | `None` | Extra parameters forwarded to the selected solver on every draw, e.g. `{'fix_EE_0_cases': True}`. A key the solver does not accept raises `TypeError`; a key this wrapper already controls (`TE`, `TE_option`, `DET_TE_vals`, `diet_import_option`, `det_*`) raises `ValueError`. Both before any sampling. |
+| `exclude_diverged` | `bool` | `False` | Also reject draws whose `diagnose_sppr` divergence status is `FAIL` (b > 1). Requires `kind='new'`; costs no extra solve. |
+| `return_diagnostics` | `bool` | `False` | Append a 6th return element with the per-draw accept/reject breakdown. Default keeps the 5-element return. |
 | `diet_import_option` | `str` | `'as_DC'` | Passed to `SPPR_symbolic` when `kind='symbolic'`. |
 | `silent` | `bool` | `True` | Suppress progress output. |
 | `det_collapse_mode`, `det_open_mode`, `det_theta`, `det_external_sppr` | | | Forwarded to every SPPR call (see §6.5). |
@@ -745,11 +751,15 @@ sppr_open, _, _ = model.SPPR_new(
 print("total PPR:", model.get_PPR(sppr_new).sum(axis=1).sum())
 print("PPR/NPP:", model.get_PPR2NPP_ratio(sppr_new))
 
-# 6. Uncertainty bounds (robust mode).
-mean, samples, reject_frac, _, _ = model.monte_carlo_SPPR(
+# 6. Uncertainty bounds (robust mode), gating out draws that diverge as well as
+#    draws that go negative, and asking for the per-draw breakdown.
+mean, samples, reject_frac, _, _, diag = model.monte_carlo_SPPR(
     n_samples=200, TE_error_percent=10, kind='new',
+    method_kwargs={'fix_EE_0_cases': True},
+    exclude_diverged=True, return_diagnostics=True,
     det_collapse_mode='auto')
-print(f"rejected {reject_frac:.0%} of unstable draws")
+print(f"rejected {reject_frac:.0%} of unstable draws "
+      f"({diag['n_rejected_diverged']} diverged, {diag['n_rejected_negative']} negative)")
 
 # 7. Verify a result.
 print("SPPR balanced?", model.is_sppr_balanced(sppr_new)[0])

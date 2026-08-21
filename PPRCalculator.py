@@ -8,6 +8,7 @@ from scipy.stats import gamma
 import igraph as ig
 from scipy.optimize import minimize
 import warnings
+import inspect
 from typing import Any, Optional
 
 from ModelData import ModelData
@@ -3029,7 +3030,10 @@ class PPRCalculator:
         return sppr, sppr_det
 
     def monte_carlo_SPPR(self, n_samples: int = 1000, TE_error_percent: float = 10, TE_error_cut_percent: float = 20,
-                            TE_option: str = 'GE', DET_TE_vals: float = 1, kind: str = 'new', diet_import_option: str = 'as_DC', silent: bool = True,
+                            TE_option: str = 'GE', DET_TE_vals: float = 1, kind: str = 'new',
+                            method_kwargs: Optional[dict] = None, exclude_diverged: bool = False,
+                            return_diagnostics: bool = False,
+                            diet_import_option: str = 'as_DC', silent: bool = True,
                             det_collapse_mode: str = 'never', det_open_mode: str = 'none',
                             det_theta: float | dict = 1.0, det_external_sppr: float | dict = 0.0) -> tuple:
         """Monte-Carlo uncertainty propagation over transfer efficiency.
@@ -3038,6 +3042,19 @@ class PPRCalculator:
         (relative error TE_error_percent, clipped at +/- TE_error_cut_percent), recomputes SPPR
         via SPPR_new or SPPR_symbolic, discards any sample that produces a negative SPPR (an
         unstable / non-physical draw), and averages the accepted samples.
+
+        The solver is selected with `kind` and can be given extra parameters of its own through
+        `method_kwargs` (e.g. {'fix_EE_0_cases': True} for SPPR_new). Only SPPR_new and
+        SPPR_symbolic are selectable, because they are the only two solvers that accept an
+        injected TE matrix -- the whole point of the resampling. Keys the wrapper already
+        controls itself are rejected rather than silently overridden, and keys the chosen solver
+        does not accept are rejected before any sampling work is done.
+
+        With exclude_diverged=True (kind='new' only) each draw is solved through diagnose_sppr
+        instead of SPPR_new and dropped when its divergence grade is 'FAIL', i.e. when the
+        resampled TE pushed the recycling gain b over 1. This costs no extra solve --
+        diagnose_sppr returns the report and the SPPR from one internal solve -- and it catches
+        unusable draws that the negative-SPPR test alone can miss.
 
         Args:
             n_samples (int, optional): number of SPPR samples to draw. Defaults to 1000.
@@ -3050,6 +3067,19 @@ class PPRCalculator:
             DET_TE_vals (float, optional): TE assigned to detritus rows. Defaults to 1.
             kind (str, optional): which solver to resample: 'new' (SPPR_new) or 'symbolic'
                 (SPPR_symbolic). Defaults to 'new'.
+            method_kwargs (Optional[dict], optional): extra keyword arguments forwarded verbatim
+                to the selected solver on every draw (and on the initial shape-probe solve), e.g.
+                {'fix_EE_0_cases': True}. Raises TypeError for a key the solver does not accept
+                and ValueError for a key this wrapper already controls (TE, TE_option,
+                DET_TE_vals, diet_import_option and the four det_* knobs) -- both before any
+                sampling happens. None is treated as {}. Defaults to None.
+            exclude_diverged (bool, optional): if True, solve each draw through diagnose_sppr and
+                discard it when report['divergence']['status'] == 'FAIL', in addition to the
+                negative-SPPR test. Requires kind='new', since diagnose_sppr grades SPPR_new
+                only. Defaults to False.
+            return_diagnostics (bool, optional): if True, append a sixth element to the returned
+                tuple holding the per-draw accept/reject breakdown (see Returns). The default
+                keeps the five-element return that existing call sites unpack. Defaults to False.
             diet_import_option (str, optional): 'as_DC' or 'as_PP', passed to SPPR_symbolic when
                 kind='symbolic'. Defaults to 'as_DC'.
             silent (bool, optional): suppress progress bars / prints. Defaults to True.
@@ -3066,12 +3096,52 @@ class PPRCalculator:
             tuple: (mean_sppr, accepted_samples_array, rejection_fraction, equations, variables),
             where mean_sppr is a pd.DataFrame averaged over accepted samples,
             accepted_samples_array is the np.ndarray of accepted SPPR samples,
-            rejection_fraction is the float share of discarded samples, and equations/variables
-            are the symbolic system from SPPR_symbolic (both None when kind='new').
+            rejection_fraction is the float share of discarded samples (negative and diverged
+            draws together), and equations/variables are the symbolic system from SPPR_symbolic
+            (both None when kind='new'). If every draw is rejected, mean_sppr is all-NaN and a
+            UserWarning is emitted rather than averaging an empty stack.
+
+            With return_diagnostics=True a sixth element is appended: a dict with 'n_accepted',
+            'n_rejected_negative', 'n_rejected_diverged', 'reject_frac_negative',
+            'reject_frac_diverged' and 'per_sample_reason' (a list of 'accepted' / 'negative' /
+            'diverged', one entry per draw in draw order).
 
         Raises:
             Exception: if kind is not 'new' or 'symbolic'.
+            ValueError: if exclude_diverged=True with kind='symbolic', or if method_kwargs sets a
+                key this wrapper already controls.
+            TypeError: if method_kwargs holds a key the selected solver does not accept.
         """
+
+        # Validate the caller's solver selection and method_kwargs up front, so a typo fails
+        # immediately instead of after the first (expensive) nullspace solve.
+        if kind not in ('new', 'symbolic'):
+            raise Exception(f'kind = {kind}')
+
+        target = self.SPPR_new if kind == 'new' else self.SPPR_symbolic
+        method_kwargs = dict(method_kwargs or {})
+
+        if exclude_diverged and kind != 'new':
+            raise ValueError(
+                f"exclude_diverged=True requires kind='new'; diagnose_sppr grades SPPR_new only, "
+                f"so it cannot gate kind={kind!r} draws.")
+
+        # Keys this wrapper sets itself on every call: allowing them through method_kwargs would
+        # mean the same parameter is specified twice, with a silent winner.
+        wrapper_owned = ('TE', 'TE_option', 'DET_TE_vals', 'diet_import_option',
+                         'det_collapse_mode', 'det_open_mode', 'det_theta', 'det_external_sppr')
+        clashing = sorted(set(method_kwargs) & set(wrapper_owned))
+        if clashing:
+            raise ValueError(
+                f"method_kwargs may not set {clashing}: monte_carlo_SPPR controls "
+                f"{list(wrapper_owned)} itself. Use the dedicated argument(s) instead.")
+
+        accepted_params = set(inspect.signature(target).parameters)
+        unknown = sorted(set(method_kwargs) - accepted_params)
+        if unknown:
+            raise TypeError(
+                f"method_kwargs contains {unknown}, which {target.__name__} does not accept. "
+                f"Accepted here: {sorted(accepted_params - set(wrapper_owned))}.")
 
         # define basis sequence:
         PP_seq = self.get_PP_seq()
@@ -3116,55 +3186,90 @@ class PPRCalculator:
 
             return TE_sample
 
-        # Detritus openness/collapse knobs forwarded unchanged to every SPPR call below.
+        # Detritus openness/collapse knobs forwarded unchanged to every SPPR call below,
+        # together with whatever extra solver parameters the caller asked for.
         det_kwargs = dict(det_collapse_mode=det_collapse_mode, det_open_mode=det_open_mode,
                           det_theta=det_theta, det_external_sppr=det_external_sppr)
+        solver_kwargs = {**det_kwargs, **method_kwargs}
 
-        # initialize collectors:
-        if kind == 'new':
-            sppr, _, _ = self.SPPR_new(TE=None, TE_option=TE_option, DET_TE_vals=DET_TE_vals, **det_kwargs)
-        elif kind == 'symbolic':
-            _, sppr, e, v = self.SPPR_symbolic(TE=None, TE_option=TE_option, DET_TE_vals=DET_TE_vals, diet_import_option=diet_import_option, **det_kwargs)
-        else:
-            raise Exception(f'kind = {kind}')
+        def solve_draw(TE_draw):
+            """Solve one draw with the selected solver. Returns (sppr, diverged, eqs, vars)."""
+            if kind == 'symbolic':
+                _, s, eqs, vars_ = self.SPPR_symbolic(TE=TE_draw, TE_option=TE_option, DET_TE_vals=DET_TE_vals,
+                                                      diet_import_option=diet_import_option, **solver_kwargs)
+                return s, False, eqs, vars_
+            if exclude_diverged:
+                # diagnose_sppr runs SPPR_new once and hands back both the grade and the SPPR,
+                # so gating on divergence costs no extra solve.
+                report, s, _, _ = self.diagnose_sppr(TE_option=TE_option, return_sppr=True, TE=TE_draw,
+                                                     DET_TE_vals=DET_TE_vals, **solver_kwargs)
+                return s, report['divergence']['status'] == 'FAIL', None, None
+            s, _, _ = self.SPPR_new(TE=TE_draw, TE_option=TE_option, DET_TE_vals=DET_TE_vals, **solver_kwargs)
+            return s, False, None, None
+
+        # initialize collectors (one unsampled solve, purely to learn the result's shape):
+        sppr, _, e, v = solve_draw(None)
 
         index = sppr.index
         columns = sppr.columns
         sppr_array = np.zeros((n_samples, len(index), len(columns)))
-        not_counted_counter = 0
         counted_rows_array = np.ones(n_samples).astype(bool)
+        reasons: list[str] = []
 
         # perform monte-carlo:
         for i in tqdm(range(n_samples), disable=silent, desc="monte-carlo on TE"):
             TE_sample = sample_TE(TE_error_percent, TE_error_cut_percent)
-            if  kind == 'new':
-                sppr, _, _ = self.SPPR_new(TE=TE_sample, TE_option=TE_option, DET_TE_vals=DET_TE_vals, **det_kwargs)
-                # sppr = sppr.sort_index(ascending=False)
-            elif kind == 'symbolic':
-                _, sppr, _, _ = self.SPPR_symbolic(TE=TE_sample, TE_option=TE_option, DET_TE_vals=DET_TE_vals, diet_import_option=diet_import_option, **det_kwargs)
+            sppr, diverged, _, _ = solve_draw(TE_sample)
+            # Rejection step 1 (exclude_diverged only): the resampled TE pushed the recycling
+            # gain b over 1, so this draw has no finite non-negative solution to average at all.
+            if diverged:
+                counted_rows_array[i] = False
+                reasons.append('diverged')
+                continue
             # turn to numpy and collect:
             sppr = sppr.values
-            # Rejection step: a negative SPPR means the resampled TE drove the detritus
+            # Rejection step 2: a negative SPPR means the resampled TE drove the detritus
             # recycling system unstable / non-physical, so drop this draw from the average.
             if np.any(sppr < -1e-10):
-                not_counted_counter += 1
                 counted_rows_array[i] = False
+                reasons.append('negative')
                 continue
             sppr_array[i, :, :] = sppr
+            reasons.append('accepted')
+
+        n_diverged = reasons.count('diverged')
+        n_negative = reasons.count('negative')
+        n_accepted = int(counted_rows_array.sum())
+        not_counted_counter = n_diverged + n_negative
 
         # take average SPPR over the accepted (non-rejected) samples only:
-        sppr = np.mean(sppr_array[counted_rows_array], axis=0)
+        if n_accepted == 0:
+            warnings.warn(
+                f"monte_carlo_SPPR: 0 of {n_samples} draws were accepted "
+                f"({n_negative} negative, {n_diverged} diverged); returning an all-NaN mean.",
+                UserWarning)
+            sppr = np.full((len(index), len(columns)), np.nan)
+        else:
+            sppr = np.mean(sppr_array[counted_rows_array], axis=0)
 
         if not silent:
-            print(f'    proportion of un-counted calculations: {not_counted_counter}/{n_samples}')
+            print(f'    proportion of un-counted calculations: {not_counted_counter}/{n_samples}'
+                  f' ({n_negative} negative, {n_diverged} diverged)')
 
         # back to dataframe:
         sppr = pd.DataFrame(sppr, index=index, columns=columns)
 
-        if kind == 'new':
-            return sppr, sppr_array[counted_rows_array], not_counted_counter/n_samples, None, None
-        else:
-            return sppr, sppr_array[counted_rows_array], not_counted_counter/n_samples, e, v
+        results = (sppr, sppr_array[counted_rows_array], not_counted_counter/n_samples, e, v)
+        if return_diagnostics:
+            results = results + ({
+                'n_accepted': n_accepted,
+                'n_rejected_negative': n_negative,
+                'n_rejected_diverged': n_diverged,
+                'reject_frac_negative': n_negative/n_samples,
+                'reject_frac_diverged': n_diverged/n_samples,
+                'per_sample_reason': reasons,
+            },)
+        return results
 
     # class methods:
     @classmethod

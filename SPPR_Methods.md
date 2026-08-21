@@ -676,10 +676,12 @@ freedom so that total primary production in equals total exported production out
 ### `monte_carlo_SPPR(...)` — uncertainty propagation over transfer efficiency
 ```python
 monte_carlo_SPPR(n_samples=1000, TE_error_percent=10, TE_error_cut_percent=20,
-                 TE_option='GE', DET_TE_vals=1, kind='new', diet_import_option='as_DC',
+                 TE_option='GE', DET_TE_vals=1, kind='new', method_kwargs=None,
+                 exclude_diverged=False, return_diagnostics=False,
+                 diet_import_option='as_DC',
                  silent=True, det_collapse_mode='never', det_open_mode='none',
                  det_theta=1.0, det_external_sppr=0.0)
-    -> (mean_sppr, samples, rejection_fraction, equations, variables)
+    -> (mean_sppr, samples, rejection_fraction, equations, variables[, diagnostics])
 ```
 Transfer efficiency is the single most uncertain input in every flow-network method, and SPPR
 depends on it nonlinearly. Rather than solve once at the model's mean TE, this method **propagates
@@ -696,6 +698,26 @@ sampled matrix, non-physical (negative-SPPR) draws are discarded, and the accept
 averaged. The gamma is chosen deliberately: it keeps every sampled TE **strictly positive** with
 the requested mean and spread — essential because $1/TE$ diverges near zero and a negative TE is
 meaningless, so a symmetric normal would be wrong here.
+
+**Choosing the solver and passing it parameters.** `kind` selects `SPPR_new` (`'new'`) or
+`SPPR_symbolic` (`'symbolic'`) — the only two solvers that accept an injected `TE` matrix, which is
+what resampling requires. Anything else that solver takes goes through `method_kwargs`, e.g.
+`method_kwargs={'fix_EE_0_cases': True}`. Two guards fire *before* any sampling: a key the chosen
+solver does not accept raises `TypeError` naming it, and a key this wrapper sets itself (`TE`,
+`TE_option`, `DET_TE_vals`, `diet_import_option`, the four `det_*` knobs) raises `ValueError`
+rather than being silently overridden by one side or the other.
+
+**Rejecting diverged draws, not just negative ones.** `exclude_diverged=True` (requires
+`kind='new'`) routes each draw through `diagnose_sppr(..., return_sppr=True)` and discards it when
+`report['divergence']['status'] == 'FAIL'`, i.e. when the resampled TE pushed the recycling gain
+$b$ over 1. This is free: `diagnose_sppr` grades and solves in one pass, so the cost is the same
+solve the method was already paying. It matters because **a negative SPPR is an unreliable symptom
+of divergence** — a draw with $b>1$ can still return an all-positive SPPR and slip past the
+negative-SPPR test, biasing the mean. Rejections are counted separately by cause; pass
+`return_diagnostics=True` for a sixth return element holding `n_accepted`,
+`n_rejected_negative`, `n_rejected_diverged`, the matching fractions, and `per_sample_reason`
+(one of `'accepted'` / `'negative'` / `'diverged'` per draw, in draw order). If *every* draw is
+rejected the mean is all-NaN and a `UserWarning` is emitted instead of averaging an empty stack.
 
 **Why resample instead of solving at the mean — the Jensen point (the whole reason this exists).**
 The per-edge weight is $A = DC/TE$, so SPPR is a function of $1/TE$, which is **convex**. By
