@@ -3560,20 +3560,10 @@
       "norm_label": "usage"
     },
     {
-      "label": "Batch export",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": "L67",
-      "_origin": "ast",
-      "id": "readme_batch_export",
-      "community": 30,
-      "norm_label": "batch export"
-    },
-    {
       "label": "Setup",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L101",
+      "source_location": "L63",
       "_origin": "ast",
       "id": "readme_setup",
       "community": 30,
@@ -3583,7 +3573,7 @@
       "label": "Documentation",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L121",
+      "source_location": "L73",
       "_origin": "ast",
       "id": "readme_documentation",
       "community": 30,
@@ -5466,9 +5456,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L48",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "modeldata_modeldata"
+      "target": "modeldata_modeldata",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -5477,9 +5467,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L560",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_load_model",
-      "target": "modeldata_modeldata"
+      "target": "modeldata_modeldata",
+      "confidence_score": 1.0
     },
     {
       "relation": "uses",
@@ -5487,9 +5477,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L48",
       "weight": 0.8,
-      "confidence_score": 0.5,
       "source": "create_pprs_excel_methodspec",
-      "target": "modeldata_modeldata"
+      "target": "modeldata_modeldata",
+      "confidence_score": 0.5
     },
     {
       "relation": "uses",
@@ -5497,9 +5487,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L48",
       "weight": 0.8,
-      "confidence_score": 0.5,
       "source": "create_pprs_excel_modeltables",
-      "target": "modeldata_modeldata"
+      "target": "modeldata_modeldata",
+      "confidence_score": 0.5
     },
     {
       "relation": "uses",
@@ -5507,9 +5497,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L48",
       "weight": 0.8,
-      "confidence_score": 0.5,
       "source": "create_pprs_excel_py_dataframe",
-      "target": "modeldata_modeldata"
+      "target": "modeldata_modeldata",
+      "confidence_score": 0.5
     },
     {
       "relation": "uses",
@@ -5517,9 +5507,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L48",
       "weight": 0.8,
-      "confidence_score": 0.5,
       "source": "create_pprs_excel_py_pprcalculator",
-      "target": "modeldata_modeldata"
+      "target": "modeldata_modeldata",
+      "confidence_score": 0.5
     },
     {
       "relation": "method",
@@ -5719,9 +5709,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L28",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "modeldata_modeldata"
+      "target": "modeldata_modeldata",
+      "confidence_score": 1.0
     },
     {
       "relation": "uses",
@@ -5729,9 +5719,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L28",
       "weight": 0.8,
-      "confidence_score": 0.5,
       "source": "tests_test_create_pprs_excel_py_pprcalculator",
-      "target": "modeldata_modeldata"
+      "target": "modeldata_modeldata",
+      "confidence_score": 0.5
     },
     {
       "relation": "calls",
@@ -6307,9 +6297,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L49",
       "weight": 0.8,
-      "confidence_score": 0.5,
       "source": "create_pprs_excel_methodspec",
-      "target": "pprcalculator_pprcalculator"
+      "target": "pprcalculator_pprcalculator",
+      "confidence_score": 0.5
     },
     {
       "relation": "uses",
@@ -6317,9 +6307,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L49",
       "weight": 0.8,
-      "confidence_score": 0.5,
       "source": "create_pprs_excel_modeltables",
-      "target": "pprcalculator_pprcalculator"
+      "target": "pprcalculator_pprcalculator",
+      "confidence_score": 0.5
     },
     {
       "relation": "uses",
@@ -6327,9 +6317,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L49",
       "weight": 0.8,
-      "confidence_score": 0.5,
       "source": "create_pprs_excel_py_dataframe",
-      "target": "pprcalculator_pprcalculator"
+      "target": "pprcalculator_pprcalculator",
+      "confidence_score": 0.5
     },
     {
       "relation": "uses",
@@ -6337,9 +6327,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L49",
       "weight": 0.8,
-      "confidence_score": 0.5,
       "source": "create_pprs_excel_py_pprcalculator",
-      "target": "pprcalculator_pprcalculator"
+      "target": "pprcalculator_pprcalculator",
+      "confidence_score": 0.5
     },
     {
       "relation": "method",
@@ -6798,9 +6788,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L29",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "pprcalculator_pprcalculator"
+      "target": "pprcalculator_pprcalculator",
+      "confidence_score": 1.0
     },
     {
       "relation": "uses",
@@ -6808,9 +6798,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L29",
       "weight": 0.8,
-      "confidence_score": 0.5,
       "source": "tests_test_create_pprs_excel_py_pprcalculator",
-      "target": "pprcalculator_pprcalculator"
+      "target": "pprcalculator_pprcalculator",
+      "confidence_score": 0.5
     },
     {
       "relation": "imports",
@@ -9069,9 +9059,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L573",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_autoformat"
+      "target": "create_pprs_excel_autoformat",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9079,9 +9069,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L408",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_build_footprint_table"
+      "target": "create_pprs_excel_build_footprint_table",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9089,9 +9079,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L359",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_build_groups_table"
+      "target": "create_pprs_excel_build_groups_table",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9099,9 +9089,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L423",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_build_health_table"
+      "target": "create_pprs_excel_build_health_table",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9109,9 +9099,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L450",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_build_mc_table"
+      "target": "create_pprs_excel_build_mc_table",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9119,9 +9109,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L471",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_build_model_tables"
+      "target": "create_pprs_excel_build_model_tables",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9129,9 +9119,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L463",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_build_notes_table"
+      "target": "create_pprs_excel_build_notes_table",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9139,9 +9129,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L368",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_build_sppr_table"
+      "target": "create_pprs_excel_build_sppr_table",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9149,9 +9139,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L134",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_first"
+      "target": "create_pprs_excel_first",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9159,9 +9149,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L340",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_footprint_row"
+      "target": "create_pprs_excel_footprint_row",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9169,9 +9159,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L680",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_format_model_section"
+      "target": "create_pprs_excel_format_model_section",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9179,9 +9169,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L294",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_group_type_map"
+      "target": "create_pprs_excel_group_type_map",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9189,9 +9179,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L713",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_health_summary"
+      "target": "create_pprs_excel_health_summary",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9199,9 +9189,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L288",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_issue"
+      "target": "create_pprs_excel_issue",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9209,9 +9199,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L558",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_load_model"
+      "target": "create_pprs_excel_load_model",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9229,9 +9219,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L719",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_mc_summary"
+      "target": "create_pprs_excel_mc_summary",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9239,9 +9229,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L119",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_methodspec"
+      "target": "create_pprs_excel_methodspec",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9249,9 +9239,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L264",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_modeltables"
+      "target": "create_pprs_excel_modeltables",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9259,9 +9249,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L307",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_ordered_sources"
+      "target": "create_pprs_excel_ordered_sources",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -9270,9 +9260,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L49",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_py_pprcalculator"
+      "target": "create_pprs_excel_py_pprcalculator",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9280,9 +9270,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L645",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_read_pprs_excel"
+      "target": "create_pprs_excel_read_pprs_excel",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9290,9 +9280,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L769",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_run_directory"
+      "target": "create_pprs_excel_run_directory",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9300,9 +9290,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L323",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_source_sums"
+      "target": "create_pprs_excel_source_sums",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9310,9 +9300,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L139",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_spec_1986"
+      "target": "create_pprs_excel_spec_1986",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9320,9 +9310,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L145",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_spec_1995"
+      "target": "create_pprs_excel_spec_1995",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9330,9 +9320,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L182",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_spec_monte_carlo"
+      "target": "create_pprs_excel_spec_monte_carlo",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9340,9 +9330,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L159",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_spec_new"
+      "target": "create_pprs_excel_spec_new",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9350,9 +9340,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L166",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_spec_symbolic"
+      "target": "create_pprs_excel_spec_symbolic",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9360,9 +9350,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L152",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_spec_ulanowicz"
+      "target": "create_pprs_excel_spec_ulanowicz",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9370,9 +9360,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L315",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_to_seq_frame"
+      "target": "create_pprs_excel_to_seq_frame",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9380,9 +9370,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L598",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_write_model_excel"
+      "target": "create_pprs_excel_write_model_excel",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9390,9 +9380,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L731",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_write_run_report"
+      "target": "create_pprs_excel_write_run_report",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9400,9 +9390,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L612",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel",
-      "target": "create_pprs_excel_write_tables_excel"
+      "target": "create_pprs_excel_write_tables_excel",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -9421,9 +9411,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_rationale_1",
-      "target": "create_pprs_excel"
+      "target": "create_pprs_excel",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -9432,9 +9422,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L27",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "create_pprs_excel"
+      "target": "create_pprs_excel",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
@@ -9442,9 +9432,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L120",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_rationale_120",
-      "target": "create_pprs_excel_methodspec"
+      "target": "create_pprs_excel_methodspec",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9453,9 +9443,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L139",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_spec_1986",
-      "target": "create_pprs_excel_methodspec"
+      "target": "create_pprs_excel_methodspec",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9464,9 +9454,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L145",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_spec_1995",
-      "target": "create_pprs_excel_methodspec"
+      "target": "create_pprs_excel_methodspec",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9475,9 +9465,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L182",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_spec_monte_carlo",
-      "target": "create_pprs_excel_methodspec"
+      "target": "create_pprs_excel_methodspec",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9486,9 +9476,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L159",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_spec_new",
-      "target": "create_pprs_excel_methodspec"
+      "target": "create_pprs_excel_methodspec",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9497,9 +9487,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L166",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_spec_symbolic",
-      "target": "create_pprs_excel_methodspec"
+      "target": "create_pprs_excel_methodspec",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9508,9 +9498,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L152",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_spec_ulanowicz",
-      "target": "create_pprs_excel_methodspec"
+      "target": "create_pprs_excel_methodspec",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
@@ -9518,9 +9508,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L135",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_rationale_135",
-      "target": "create_pprs_excel_first"
+      "target": "create_pprs_excel_first",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -9529,9 +9519,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L163",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_spec_new",
-      "target": "create_pprs_excel_first"
+      "target": "create_pprs_excel_first",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -9540,9 +9530,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L156",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_spec_ulanowicz",
-      "target": "create_pprs_excel_first"
+      "target": "create_pprs_excel_first",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9551,9 +9541,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L471",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_model_tables",
-      "target": "create_pprs_excel_modeltables"
+      "target": "create_pprs_excel_modeltables",
+      "confidence_score": 1.0
     },
     {
       "relation": "method",
@@ -9561,9 +9551,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L277",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_modeltables",
-      "target": "create_pprs_excel_modeltables_sheets"
+      "target": "create_pprs_excel_modeltables_sheets",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
@@ -9571,9 +9561,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L265",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_rationale_265",
-      "target": "create_pprs_excel_modeltables"
+      "target": "create_pprs_excel_modeltables",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9582,9 +9572,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L612",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_write_tables_excel",
-      "target": "create_pprs_excel_modeltables"
+      "target": "create_pprs_excel_modeltables",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -9593,9 +9583,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L432",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_health_table",
-      "target": "create_pprs_excel_issue"
+      "target": "create_pprs_excel_issue",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -9604,9 +9594,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L506",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_model_tables",
-      "target": "create_pprs_excel_issue"
+      "target": "create_pprs_excel_issue",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -9615,9 +9605,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L362",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_groups_table",
-      "target": "create_pprs_excel_group_type_map"
+      "target": "create_pprs_excel_group_type_map",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9626,9 +9616,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L294",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_group_type_map",
-      "target": "create_pprs_excel_py_pprcalculator"
+      "target": "create_pprs_excel_py_pprcalculator",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9637,9 +9627,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L408",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_footprint_table",
-      "target": "create_pprs_excel_py_pprcalculator"
+      "target": "create_pprs_excel_py_pprcalculator",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9648,9 +9638,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L359",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_groups_table",
-      "target": "create_pprs_excel_py_pprcalculator"
+      "target": "create_pprs_excel_py_pprcalculator",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9659,9 +9649,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L423",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_health_table",
-      "target": "create_pprs_excel_py_pprcalculator"
+      "target": "create_pprs_excel_py_pprcalculator",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9670,9 +9660,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L471",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_model_tables",
-      "target": "create_pprs_excel_py_pprcalculator"
+      "target": "create_pprs_excel_py_pprcalculator",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9681,9 +9671,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L368",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_sppr_table",
-      "target": "create_pprs_excel_py_pprcalculator"
+      "target": "create_pprs_excel_py_pprcalculator",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9692,9 +9682,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L340",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_footprint_row",
-      "target": "create_pprs_excel_py_pprcalculator"
+      "target": "create_pprs_excel_py_pprcalculator",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9703,9 +9693,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L558",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_load_model",
-      "target": "create_pprs_excel_py_pprcalculator"
+      "target": "create_pprs_excel_py_pprcalculator",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9714,9 +9704,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L307",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_ordered_sources",
-      "target": "create_pprs_excel_py_pprcalculator"
+      "target": "create_pprs_excel_py_pprcalculator",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9725,9 +9715,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L323",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_source_sums",
-      "target": "create_pprs_excel_py_pprcalculator"
+      "target": "create_pprs_excel_py_pprcalculator",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9736,9 +9726,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L315",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_to_seq_frame",
-      "target": "create_pprs_excel_py_pprcalculator"
+      "target": "create_pprs_excel_py_pprcalculator",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -9747,9 +9737,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L379",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_sppr_table",
-      "target": "create_pprs_excel_ordered_sources"
+      "target": "create_pprs_excel_ordered_sources",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
@@ -9757,9 +9747,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L308",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_rationale_308",
-      "target": "create_pprs_excel_ordered_sources"
+      "target": "create_pprs_excel_ordered_sources",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -9768,9 +9758,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L507",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_model_tables",
-      "target": "create_pprs_excel_to_seq_frame"
+      "target": "create_pprs_excel_to_seq_frame",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
@@ -9778,9 +9768,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L316",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_rationale_316",
-      "target": "create_pprs_excel_to_seq_frame"
+      "target": "create_pprs_excel_to_seq_frame",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9789,9 +9779,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L315",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_to_seq_frame",
-      "target": "create_pprs_excel_py_dataframe"
+      "target": "create_pprs_excel_py_dataframe",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9800,9 +9790,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L573",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_autoformat",
-      "target": "create_pprs_excel_py_dataframe"
+      "target": "create_pprs_excel_py_dataframe",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9811,9 +9801,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L408",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_footprint_table",
-      "target": "create_pprs_excel_py_dataframe"
+      "target": "create_pprs_excel_py_dataframe",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9822,9 +9812,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L359",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_groups_table",
-      "target": "create_pprs_excel_py_dataframe"
+      "target": "create_pprs_excel_py_dataframe",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9833,9 +9823,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L423",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_health_table",
-      "target": "create_pprs_excel_py_dataframe"
+      "target": "create_pprs_excel_py_dataframe",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9844,9 +9834,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L450",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_mc_table",
-      "target": "create_pprs_excel_py_dataframe"
+      "target": "create_pprs_excel_py_dataframe",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9855,9 +9845,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L463",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_notes_table",
-      "target": "create_pprs_excel_py_dataframe"
+      "target": "create_pprs_excel_py_dataframe",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9866,9 +9856,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L368",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_sppr_table",
-      "target": "create_pprs_excel_py_dataframe"
+      "target": "create_pprs_excel_py_dataframe",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9877,9 +9867,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L340",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_footprint_row",
-      "target": "create_pprs_excel_py_dataframe"
+      "target": "create_pprs_excel_py_dataframe",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9888,9 +9878,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L713",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_health_summary",
-      "target": "create_pprs_excel_py_dataframe"
+      "target": "create_pprs_excel_py_dataframe",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9899,9 +9889,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L719",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_mc_summary",
-      "target": "create_pprs_excel_py_dataframe"
+      "target": "create_pprs_excel_py_dataframe",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -9910,9 +9900,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L323",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_source_sums",
-      "target": "create_pprs_excel_py_dataframe"
+      "target": "create_pprs_excel_py_dataframe",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -9921,9 +9911,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L398",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_sppr_table",
-      "target": "create_pprs_excel_source_sums"
+      "target": "create_pprs_excel_source_sums",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
@@ -9931,9 +9921,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L324",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_rationale_324",
-      "target": "create_pprs_excel_source_sums"
+      "target": "create_pprs_excel_source_sums",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -9942,9 +9932,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L416",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_footprint_table",
-      "target": "create_pprs_excel_footprint_row"
+      "target": "create_pprs_excel_footprint_row",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
@@ -9952,9 +9942,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L341",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_rationale_341",
-      "target": "create_pprs_excel_footprint_row"
+      "target": "create_pprs_excel_footprint_row",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -9963,9 +9953,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L548",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_model_tables",
-      "target": "create_pprs_excel_build_groups_table"
+      "target": "create_pprs_excel_build_groups_table",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
@@ -9973,9 +9963,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L360",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_rationale_360",
-      "target": "create_pprs_excel_build_groups_table"
+      "target": "create_pprs_excel_build_groups_table",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -9984,9 +9974,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L549",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_model_tables",
-      "target": "create_pprs_excel_build_sppr_table"
+      "target": "create_pprs_excel_build_sppr_table",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
@@ -9994,9 +9984,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L369",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_rationale_369",
-      "target": "create_pprs_excel_build_sppr_table"
+      "target": "create_pprs_excel_build_sppr_table",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10005,9 +9995,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L551",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_model_tables",
-      "target": "create_pprs_excel_build_footprint_table"
+      "target": "create_pprs_excel_build_footprint_table",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10016,9 +10006,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L550",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_model_tables",
-      "target": "create_pprs_excel_build_health_table"
+      "target": "create_pprs_excel_build_health_table",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
@@ -10026,9 +10016,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L424",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_rationale_424",
-      "target": "create_pprs_excel_build_health_table"
+      "target": "create_pprs_excel_build_health_table",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10037,9 +10027,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L552",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_model_tables",
-      "target": "create_pprs_excel_build_mc_table"
+      "target": "create_pprs_excel_build_mc_table",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10048,9 +10038,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L553",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_build_model_tables",
-      "target": "create_pprs_excel_build_notes_table"
+      "target": "create_pprs_excel_build_notes_table",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
@@ -10058,9 +10048,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L474",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_rationale_474",
-      "target": "create_pprs_excel_build_model_tables"
+      "target": "create_pprs_excel_build_model_tables",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10069,9 +10059,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L796",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_run_directory",
-      "target": "create_pprs_excel_build_model_tables"
+      "target": "create_pprs_excel_build_model_tables",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10080,9 +10070,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L607",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_write_model_excel",
-      "target": "create_pprs_excel_build_model_tables"
+      "target": "create_pprs_excel_build_model_tables",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
@@ -10090,9 +10080,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L559",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_rationale_559",
-      "target": "create_pprs_excel_load_model"
+      "target": "create_pprs_excel_load_model",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10101,9 +10091,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L794",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_run_directory",
-      "target": "create_pprs_excel_load_model"
+      "target": "create_pprs_excel_load_model",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10112,9 +10102,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L606",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_write_model_excel",
-      "target": "create_pprs_excel_load_model"
+      "target": "create_pprs_excel_load_model",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
@@ -10122,9 +10112,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L575",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_rationale_575",
-      "target": "create_pprs_excel_autoformat"
+      "target": "create_pprs_excel_autoformat",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10133,9 +10123,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L631",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_write_tables_excel",
-      "target": "create_pprs_excel_autoformat"
+      "target": "create_pprs_excel_autoformat",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
@@ -10143,9 +10133,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L601",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_rationale_601",
-      "target": "create_pprs_excel_write_model_excel"
+      "target": "create_pprs_excel_write_model_excel",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10154,9 +10144,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L609",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_write_model_excel",
-      "target": "create_pprs_excel_write_tables_excel"
+      "target": "create_pprs_excel_write_tables_excel",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10165,9 +10155,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L799",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_run_directory",
-      "target": "create_pprs_excel_write_tables_excel"
+      "target": "create_pprs_excel_write_tables_excel",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
@@ -10175,9 +10165,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L646",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_rationale_646",
-      "target": "create_pprs_excel_read_pprs_excel"
+      "target": "create_pprs_excel_read_pprs_excel",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10186,9 +10176,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L760",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_write_run_report",
-      "target": "create_pprs_excel_format_model_section"
+      "target": "create_pprs_excel_format_model_section",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10197,9 +10187,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L804",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_run_directory",
-      "target": "create_pprs_excel_health_summary"
+      "target": "create_pprs_excel_health_summary",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10208,9 +10198,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L805",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_run_directory",
-      "target": "create_pprs_excel_mc_summary"
+      "target": "create_pprs_excel_mc_summary",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
@@ -10218,9 +10208,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L733",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_rationale_733",
-      "target": "create_pprs_excel_write_run_report"
+      "target": "create_pprs_excel_write_run_report",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10229,9 +10219,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L810",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_run_directory",
-      "target": "create_pprs_excel_write_run_report"
+      "target": "create_pprs_excel_write_run_report",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -10240,9 +10230,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L826",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_main",
-      "target": "create_pprs_excel_run_directory"
+      "target": "create_pprs_excel_run_directory",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
@@ -10250,9 +10240,9 @@
       "source_file": "create_PPRS_excel.py",
       "source_location": "L773",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "create_pprs_excel_rationale_773",
-      "target": "create_pprs_excel_run_directory"
+      "target": "create_pprs_excel_run_directory",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10260,9 +10250,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L49",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_cheap_tables"
+      "target": "tests_test_create_pprs_excel_cheap_tables",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -10271,9 +10261,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L29",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_py_pprcalculator"
+      "target": "tests_test_create_pprs_excel_py_pprcalculator",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10281,9 +10271,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L185",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_test_a_failing_method_is_recorded_and_leaves_its_cells_empty"
+      "target": "tests_test_create_pprs_excel_test_a_failing_method_is_recorded_and_leaves_its_cells_empty",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10291,9 +10281,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L115",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_test_a_source_a_method_does_not_resolve_is_nan_not_zero"
+      "target": "tests_test_create_pprs_excel_test_a_source_a_method_does_not_resolve_is_nan_not_zero",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10301,9 +10291,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L89",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_test_each_method_carries_the_three_sum_columns"
+      "target": "tests_test_create_pprs_excel_test_each_method_carries_the_three_sum_columns",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10311,9 +10301,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L134",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_test_footprint_columns_match_the_diagnose_sppr_footprint_keys"
+      "target": "tests_test_create_pprs_excel_test_footprint_columns_match_the_diagnose_sppr_footprint_keys",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10321,9 +10311,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L142",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_test_footprint_index_is_the_selected_method_names"
+      "target": "tests_test_create_pprs_excel_test_footprint_index_is_the_selected_method_names",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10331,9 +10321,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L146",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_test_footprint_ratio_matches_get_ppr2npp_ratio"
+      "target": "tests_test_create_pprs_excel_test_footprint_ratio_matches_get_ppr2npp_ratio",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10341,9 +10331,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L174",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_test_groups_table_keeps_the_parameter_columns_and_adds_group_types"
+      "target": "tests_test_create_pprs_excel_test_groups_table_keeps_the_parameter_columns_and_adds_group_types",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10351,9 +10341,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L162",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_test_health_table_echoes_the_locked_detritus_config"
+      "target": "tests_test_create_pprs_excel_test_health_table_echoes_the_locked_detritus_config",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10361,9 +10351,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L157",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_test_health_table_has_one_row_per_te_option"
+      "target": "tests_test_create_pprs_excel_test_health_table_has_one_row_per_te_option",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10371,9 +10361,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L66",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_test_heavy_methods_are_excluded_from_the_fast_key_set"
+      "target": "tests_test_create_pprs_excel_test_heavy_methods_are_excluded_from_the_fast_key_set",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10381,9 +10371,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L272",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_test_log_reports_method_failures_per_model"
+      "target": "tests_test_create_pprs_excel_test_log_reports_method_failures_per_model",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10391,9 +10381,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L205",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_test_monte_carlo_diagnostics_are_collected"
+      "target": "tests_test_create_pprs_excel_test_monte_carlo_diagnostics_are_collected",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10401,9 +10391,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L124",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_test_non_source_resolved_method_is_marked_aggregate_with_nan_sum_pp"
+      "target": "tests_test_create_pprs_excel_test_non_source_resolved_method_is_marked_aggregate_with_nan_sum_pp",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10411,9 +10401,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L57",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_test_registry_holds_the_nineteen_specified_methods"
+      "target": "tests_test_create_pprs_excel_test_registry_holds_the_nineteen_specified_methods",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10421,9 +10411,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L238",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_test_round_trip_preserves_the_footprint_table"
+      "target": "tests_test_create_pprs_excel_test_round_trip_preserves_the_footprint_table",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10431,9 +10421,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L220",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_test_round_trip_preserves_values_and_multiindex"
+      "target": "tests_test_create_pprs_excel_test_round_trip_preserves_values_and_multiindex",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10441,9 +10431,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L291",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_test_run_directory_records_a_model_that_cannot_be_loaded"
+      "target": "tests_test_create_pprs_excel_test_run_directory_records_a_model_that_cannot_be_loaded",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10451,9 +10441,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L254",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_test_run_directory_writes_one_workbook_per_model_and_a_log"
+      "target": "tests_test_create_pprs_excel_test_run_directory_writes_one_workbook_per_model_and_a_log",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10461,9 +10451,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L74",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_test_sppr_table_columns_are_a_method_source_multiindex"
+      "target": "tests_test_create_pprs_excel_test_sppr_table_columns_are_a_method_source_multiindex",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10471,9 +10461,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L82",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_test_sppr_table_rows_are_every_group_as_seq_and_name"
+      "target": "tests_test_create_pprs_excel_test_sppr_table_rows_are_every_group_as_seq_and_name",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10481,9 +10471,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L95",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_test_sums_follow_get_ppr_source_semantics"
+      "target": "tests_test_create_pprs_excel_test_sums_follow_get_ppr_source_semantics",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10491,9 +10481,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L41",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel",
-      "target": "tests_test_create_pprs_excel_toy_model"
+      "target": "tests_test_create_pprs_excel_toy_model",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
@@ -10501,9 +10491,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel_rationale_1",
-      "target": "tests_test_create_pprs_excel"
+      "target": "tests_test_create_pprs_excel",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -10512,9 +10502,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L41",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel_toy_model",
-      "target": "tests_test_create_pprs_excel_py_pprcalculator"
+      "target": "tests_test_create_pprs_excel_py_pprcalculator",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
@@ -10522,9 +10512,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L96",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel_rationale_96",
-      "target": "tests_test_create_pprs_excel_test_sums_follow_get_ppr_source_semantics"
+      "target": "tests_test_create_pprs_excel_test_sums_follow_get_ppr_source_semantics",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
@@ -10532,9 +10522,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L116",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel_rationale_116",
-      "target": "tests_test_create_pprs_excel_test_a_source_a_method_does_not_resolve_is_nan_not_zero"
+      "target": "tests_test_create_pprs_excel_test_a_source_a_method_does_not_resolve_is_nan_not_zero",
+      "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
@@ -10542,9 +10532,9 @@
       "source_file": "tests/test_create_pprs_excel.py",
       "source_location": "L125",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "tests_test_create_pprs_excel_rationale_125",
-      "target": "tests_test_create_pprs_excel_test_non_source_resolved_method_is_marked_aggregate_with_nan_sum_pp"
+      "target": "tests_test_create_pprs_excel_test_non_source_resolved_method_is_marked_aggregate_with_nan_sum_pp",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -11975,16 +11965,6 @@
       "confidence_score": 1.0,
       "source": "readme_fishestimationai",
       "target": "readme_what_it_does"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "README.md",
-      "source_location": "L67",
-      "weight": 1.0,
-      "source": "readme_usage",
-      "target": "readme_batch_export",
-      "confidence_score": 1.0
     },
     {
       "relation": "contains",

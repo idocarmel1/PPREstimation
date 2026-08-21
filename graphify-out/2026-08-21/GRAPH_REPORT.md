@@ -1,11 +1,11 @@
 # Graph Report - FishEstimationAI  (2026-08-21)
 
 ## Corpus Check
-- 265 files · ~3,236,383 words
+- 265 files · ~3,236,103 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 482 nodes · 780 edges · 41 communities (12 shown, 29 thin omitted)
+- 481 nodes · 779 edges · 41 communities (12 shown, 29 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 22 edges (avg confidence: 0.55)
 - Token cost: 0 input · 0 output
 
@@ -128,8 +128,8 @@ Cohesion: 0.05
 Nodes (36): 1. What SPPR means, 2. Shared building blocks, 3. Trophic-level SPPR methods, 4. Flow-network SPPR methods, 5. From SPPR to ecosystem footprint, 6. Quick chooser, By goal, `DET_as_PP` and `normalize` (in `get_DC` / `get_Z`) (+28 more)
 
 ### Community 30 - "Community 30"
-Cohesion: 0.25
-Nodes (7): Batch export, Documentation, FishEstimationAI, Project structure, Setup, Usage, What it does
+Cohesion: 0.29
+Nodes (6): Documentation, FishEstimationAI, Project structure, Setup, Usage, What it does
 
 ### Community 31 - "Community 31"
 Cohesion: 0.14
@@ -144,7 +144,7 @@ Cohesion: 0.47
 Nodes (6): black_sea(), _calc(), PPRCalculator, test_negative_catch_is_warned(), test_zero_catch_is_warned_without_invalidating_divergence(), toy()
 
 ## Knowledge Gaps
-- **87 isolated node(s):** `Documentation`, `What it does`, `Project structure`, `Batch export`, `Setup` (+82 more)
+- **87 isolated node(s):** `Documentation`, `What it does`, `Project structure`, `Usage`, `Setup` (+82 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **29 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -152,9 +152,9 @@ Nodes (6): black_sea(), _calc(), PPRCalculator, test_negative_catch_is_warned(),
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `PPRCalculator` connect `SPPR Solver Core` to `Community 32`, `Model Data Loading`, `Community 33`, `Model Construction & Balancing`, `Ecopath Concepts & Detritus`, `Excel Export & Matrix Utils`, `PPR Concepts & Classic Methods`, `Legacy Species Group`?**
-  _High betweenness centrality (0.405) - this node is a cross-community bridge._
+  _High betweenness centrality (0.406) - this node is a cross-community bridge._
 - **Why does `ModelData` connect `Model Data Loading` to `SPPR Solver Core`, `Ecopath Concepts & Detritus`, `Excel Export & Matrix Utils`, `PPR Concepts & Classic Methods`, `Community 31`?**
-  _High betweenness centrality (0.206) - this node is a cross-community bridge._
+  _High betweenness centrality (0.207) - this node is a cross-community bridge._
 - **Why does `ModelData class (user guide)` connect `Ecopath Concepts & Detritus` to `Model Data Loading`?**
   _High betweenness centrality (0.052) - this node is a cross-community bridge._
 - **Are the 9 inferred relationships involving `PPRCalculator` (e.g. with `MethodSpec` and `ModelTables`) actually correct?**
