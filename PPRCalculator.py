@@ -1695,7 +1695,8 @@ class PPRCalculator:
         sppr = sppr.fillna(1)
         return sppr.to_frame(name='sppr')
         
-    def SPPR_EwE(self, TE_option: str, use_EE: bool = True, return_paths: bool = True, silent: bool = True) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
+    def SPPR_EwE(self, TE_option: str, use_EE: bool = True, return_paths: bool = True, silent: bool = True,
+                 max_paths: int = 1_000_000) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
         """Path-enumeration SPPR in the style of Ecopath with Ecosim (EwE) flow-network analysis.
 
         Enumerates every simple path from each group down to a basal terminal node (a node with
@@ -1768,7 +1769,7 @@ class PPRCalculator:
                     break
 
             return final_paths
-        def _slow_EwE_with_paths(TE_option, use_EE, silent):
+        def _slow_EwE_with_paths(TE_option, use_EE, silent, max_paths=1_000_000):
             DC = self.get_DC(DET_as_PP=True)
             TE = self.get_TE(TE_option=TE_option, as_matrix=True, DET_values=1)
             A = (DC / TE).fillna(0)
@@ -1809,7 +1810,7 @@ class PPRCalculator:
 
                 # Fetch all simple paths at C-speed (returns list of integer lists)
                 # paths = g.get_all_simple_paths(start_idx, to=terminal_indices)
-                paths = _get_paths_with_safety_valve(g, start_idx, terminal_indices)
+                paths = _get_paths_with_safety_valve(g, start_idx, terminal_indices, max_paths=max_paths)
 
                 for path in tqdm(paths, disable=silent, desc="Inner Loop", leave=False):
                     sink_idx = path[-1]
@@ -1838,7 +1839,7 @@ class PPRCalculator:
                 SPPR = SPPR.mul(self.EE, axis='index')
 
             return SPPR, A, paths_dict
-        def _fast_EwE_no_paths(TE_option, use_EE, silent):
+        def _fast_EwE_no_paths(TE_option, use_EE, silent, max_paths=1_000_000):
             """
             High-performance SPPR calculation using vectorized edge lookups
             and segmented products.
@@ -1871,7 +1872,7 @@ class PPRCalculator:
             all_paths = []
             for start_idx in tqdm(range(num_nodes), disable=silent, desc="fetching paths"):
                 # paths = g.get_all_simple_paths(start_idx, to=terminal_indices)
-                paths = _get_paths_with_safety_valve(g, start_idx, terminal_indices)
+                paths = _get_paths_with_safety_valve(g, start_idx, terminal_indices, max_paths=max_paths)
                 all_paths.extend(paths)
 
             if not all_paths:
@@ -1934,9 +1935,9 @@ class PPRCalculator:
             return SPPR, A, {}
 
         if return_paths:
-            return _slow_EwE_with_paths(TE_option=TE_option, use_EE=use_EE, silent=silent)
+            return _slow_EwE_with_paths(TE_option=TE_option, use_EE=use_EE, silent=silent, max_paths=max_paths)
         else:
-            return _fast_EwE_no_paths(TE_option=TE_option, use_EE=use_EE, silent=silent)
+            return _fast_EwE_no_paths(TE_option=TE_option, use_EE=use_EE, silent=silent, max_paths=max_paths)
 
     def SPPR_EwE_Ulanowicz(self, TE_option: str, global_TE: str | float = 'mean', use_EE: bool = True) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """Matrix (nullspace) reformulation of the EwE path-summation SPPR.

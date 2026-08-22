@@ -307,5 +307,130 @@ def test_run_directory_records_a_model_that_cannot_be_loaded(tmp_path):
     assert "broken.json" in text
 
 
+# --------------------------------------------------------------------- per-method timeout
+
+# A budget no round trip can meet: the worker still has to receive the task, solve the whole
+# system and answer over a pipe, which is milliseconds at the very best. Nothing about the toy
+# model has to be slow for this to be deterministic -- the IPC alone outlasts the budget.
+IMPOSSIBLE_BUDGET = 0.001
+
+
+@pytest.fixture
+def one_health_row(monkeypatch):
+    """Trim model_health to a single TE option: each row costs a worker restart under a timeout."""
+    monkeypatch.setattr(cpe, "HEALTH_TE_OPTIONS", ("GE",))
+
+
+def test_a_method_over_its_budget_is_a_timeout_and_not_a_failure(toy_model, one_health_row):
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        tables = cpe.build_model_tables(toy_model, method_keys=("new_GE",),
+                                        method_timeout=IMPOSSIBLE_BUDGET)
+
+    assert tables.method_status["new_GE"] == "timeout"
+    timed_out = [i for i in tables.issues if i["kind"] == "method_timeout"]
+    assert [i["method"] for i in timed_out] == ["new_GE"]
+    assert "still running after" in timed_out[0]["detail"]
+    # a timeout is reported as its own thing, never folded into the failures
+    assert not [i for i in tables.issues if i["kind"] == "method_failed"]
+
+
+def test_a_timed_out_method_leaves_empty_cells_not_zeros(toy_model, one_health_row):
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        tables = cpe.build_model_tables(toy_model, method_keys=("new_GE",),
+                                        method_timeout=IMPOSSIBLE_BUDGET)
+
+    for table in (tables.sppr_pp, tables.sppr_inner, tables.sppr_all):
+        assert table["new_GE"].isna().all()
+    assert tables.footprint.loc["new_GE"].isna().all()
+    # the workbook itself has to say which of NaN's several meanings this one is
+    assert tables.notes.loc["method: new_GE", "status"] == "timeout"
+
+
+def test_a_diagnose_sppr_row_over_its_budget_is_marked_TIMEOUT(toy_model, one_health_row):
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        tables = cpe.build_model_tables(toy_model, method_keys=("new_GE",),
+                                        method_timeout=IMPOSSIBLE_BUDGET)
+
+    assert tables.health.loc["GE", "status"] == "TIMEOUT"
+    assert [i["kind"] for i in tables.issues if i["kind"] == "health_timeout"]
+
+
+def test_the_worker_gives_the_same_numbers_as_running_in_process(cheap_tables, toy_model):
+    """cheap_tables ran under the default budget, i.e. in a worker. Inline must match it."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        inline = cpe.build_model_tables(toy_model, method_keys=CHEAP, method_timeout=None)
+
+    assert inline.method_status == cheap_tables.method_status
+    for attr in ("sppr_pp", "sppr_inner", "sppr_all", "footprint"):
+        pd.testing.assert_frame_equal(getattr(inline, attr), getattr(cheap_tables, attr))
+
+
+def test_a_method_that_finishes_in_time_is_untouched_by_the_budget(cheap_tables):
+    assert set(cheap_tables.method_status) == set(CHEAP)
+    assert all(v == "ok" for v in cheap_tables.method_status.values()), cheap_tables.method_status
+    assert not [i for i in cheap_tables.issues if i["kind"] == "method_timeout"]
+
+
+def test_run_directory_counts_timeouts_and_names_them_in_the_report(tmp_path, one_health_row):
+    out = tmp_path / "out"
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        summary = cpe.run_directory(TOY_DIR, out_dir=str(out), method_keys=("new_GE",),
+                                    method_timeout=IMPOSSIBLE_BUDGET)
+
+    # a timeout must not cost the workbook: every other sheet is still written
+    assert summary["n_written"] == 1
+    assert summary["n_failed"] == 0
+    assert summary["n_timeout"] == 1
+
+    text = (out / cpe.LOG_FILENAME).read_text(encoding="utf-8")
+    assert "METHODS THAT TIMED OUT" in text
+    assert "new_GE" in text
+    assert "time budget" in text
+
+
+@pytest.mark.parametrize("argv,expected", [
+    (["--timeout", "42"], 42.0),
+    (["--timeout=90"], 90.0),
+    (["-t", "7.5"], 7.5),
+    (["--timeout", "none"], None),
+    (["--timeout=off"], None),
+    (["-t", "0"], None),
+    ([], cpe.DEFAULT_METHOD_TIMEOUT),
+])
+def test_the_timeout_flag_is_parsed_and_removed_from_argv(argv, expected):
+    rest = list(argv)
+    assert cpe._pop_timeout_flag(rest) == expected
+    assert rest == [], "the flag and its value must be consumed"
+
+
+def test_the_timeout_flag_leaves_the_positional_arguments_alone():
+    argv = ["real_models/ToyModels", "out", "--timeout", "12"]
+    assert cpe._pop_timeout_flag(argv) == 12.0
+    assert argv == ["real_models/ToyModels", "out"]
+
+
+def test_an_unusable_worker_falls_back_to_running_in_process(toy_model, monkeypatch,
+                                                             one_health_row):
+    """Losing the worker costs the time budget, never the results."""
+    class _Doomed(cpe._TaskRunner):
+        def _start(self):
+            raise OSError("synthetic spawn failure")
+
+    monkeypatch.setattr(cpe, "_TaskRunner", _Doomed)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        tables = cpe.build_model_tables(toy_model, method_keys=("new_GE",), method_timeout=60)
+
+    assert tables.method_status["new_GE"] == "ok"
+    assert tables.sppr_all["new_GE"].notna().any()
+    unavailable = [i for i in tables.issues if i["kind"] == "timeout_unavailable"]
+    assert unavailable and "synthetic spawn failure" in unavailable[0]["detail"]
+
+
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-v"]))

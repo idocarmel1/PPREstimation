@@ -72,7 +72,7 @@ run report listing every warning, skipped method and Monte-Carlo rejection:
 
 ```bash
 # defaults to real_models/EwE_jsons -> output/
-python create_PPRS_excel.py [json_dir] [out_dir]
+python create_PPRS_excel.py [json_dir] [out_dir] [--resume] [--timeout SECONDS]
 ```
 
 Each workbook holds eight sheets: `groups_df` (per-group parameters); `sppr_PP`,
@@ -81,6 +81,31 @@ scopes (primary producers only; within-system, i.e. adding detritus; and every s
 adding import); `model_health` (`diagnose_sppr` per `TE_option`), `footprint` (PPR and
 %NPP per method), `mc_diagnostics` (Monte-Carlo accept/reject breakdown) and `run_notes`
 (the conventions needed to read the numbers correctly).
+
+### Per-method time budget
+
+Every method — and every `diagnose_sppr` row — runs in a worker process with a wall-clock
+budget, **180 s by default**. The heavy methods (`SPPR_EwE`'s path enumeration, the
+Monte-Carlo drivers) can run for hours on a large food web, and once they are down in
+numpy/sympy there is no way to interrupt them from inside the interpreter — so a method
+that overruns has its worker killed, is left NaN and is recorded as a *timeout*, and the
+export moves straight on to the next method. One worker is shared by the whole directory,
+so the budget costs a single process spawn, not one per model.
+
+A timeout is not a failure of the method, and the workbook keeps the two apart: the
+`status` column of the `run_notes` sheet says `ok` / `failed` / `timeout` / `crashed` per
+method, and the run report gives the reason in full. Rerun with a larger budget before
+reading anything into a timeout.
+
+```bash
+python create_PPRS_excel.py real_models/EwE_jsons output --timeout 600  # 10 minutes
+python create_PPRS_excel.py real_models/EwE_jsons output --timeout none # no budget at all
+```
+
+```python
+cpe.run_directory('real_models/EwE_jsons', 'output', method_timeout=600)
+cpe.run_directory('real_models/EwE_jsons', 'output', method_timeout=None)  # in-process
+```
 
 From Python you can run a subset and read the result back:
 
@@ -98,7 +123,8 @@ tables['sppr_PP']['new_GE']     # the primary-producer-only share
 ```
 
 Throughout the workbook **NaN means "not available", never zero** — a method that raised,
-and a value that cannot be attributed to the sheet's source scope, both stay empty.
+one that ran out of time, and a value that cannot be attributed to the sheet's source
+scope all stay empty.
 `SPPR_1986` and `SPPR_1995` return a single un-attributed SPPR, so they are blank in
 `sppr_PP` while carrying their total in `sppr_inner` and `sppr_all`.
 
