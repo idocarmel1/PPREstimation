@@ -343,6 +343,8 @@ class PPRCalculator:
         # fillna for gs and egestion:
         df.loc[~is_regular, 'gs'] = df.loc[~is_regular, 'gs'].fillna(0)
         if default_gs:
+            is_small_zooplankton = df['group_name'].str.lower().replace('_', ' ').str.contains('small zooplankton')
+            df.loc[is_small_zooplankton, 'gs'] = df.loc[is_small_zooplankton, 'gs'].fillna(0.4)
             df.loc[is_regular, 'gs'] = df.loc[is_regular, 'gs'].fillna(0.2)
 
         # Sync gs -> egestion

@@ -15,6 +15,10 @@ and a plain-text run report next to them listing every warning, skip and failure
 
 `read_pprs_excel` reads a workbook back into the same tables, index and column structure.
 
+`collect_models_excel` pivots a whole directory of those workbooks into one comparison workbook:
+one sheet per footprint column (SPPR methods across the columns) and one per collected
+model_health field (TE options across the columns), with the models down the rows.
+
 Conventions used throughout, and repeated in the run_notes sheet:
   * NaN means "not available", never zero. A source a method does not resolve is NaN; a method
     that raised leaves its whole block NaN.
@@ -1043,6 +1047,170 @@ def read_pprs_excel(path: str) -> dict:
             continue
         out[sheet] = pd.read_excel(path, sheet_name=sheet, **kwargs)
     return out
+
+
+# --------------------------------------------------------------------------- collected workbook
+
+# The model_health fields worth carrying across models: the overall verdict plus the four
+# numbers the divergence grade actually turns on -- the recycling gain b, the living-network
+# spectral radius, the worst detritus price, and the SPPR of the most expensive group.
+COLLECTED_HEALTH_COLUMNS = ("status", "divergence_b", "divergence_rho_living",
+                            "divergence_max_sppr_det", "divergence_max_sppr_group_sppr")
+
+# Written to the left of every collected sheet, next to the model_number index.
+COLLECTED_LABEL_COLUMNS = ("model_name", "model_year")
+
+DEFAULT_COLLECTED_NAME = "collected_PPRs.xlsx"
+
+
+def _model_identity(stem: str) -> tuple:
+    """(model_number, model_name, model_year) for a workbook stem, via ModelData's own parser.
+
+    A stem that does not follow the `{source}_{number}_{name}_({year})` convention keeps its
+    whole stem as the name and gets no number, so an off-convention file is still collected
+    rather than dropped.
+    """
+    try:
+        return ModelData._parse_filename(stem)
+    except Exception:
+        return np.nan, stem, ""
+
+
+def _ordered_union(preferred: Sequence[str], seen: Sequence[str]) -> list:
+    """`seen` ordered by `preferred`, with anything unknown to `preferred` appended as found."""
+    known = [k for k in preferred if k in seen]
+    return known + [k for k in seen if k not in preferred]
+
+
+def _cell(table: Optional[pd.DataFrame], row, col):
+    """table.at[row, col] or NaN -- missing row, missing column and duplicate labels included."""
+    if table is None or row not in table.index or col not in table.columns:
+        return np.nan
+    try:
+        return table.at[row, col]
+    except Exception:  # duplicate labels, ragged sheet
+        return np.nan
+
+
+def _collected_frame(labels: list, rows: list, columns: Sequence[str]) -> pd.DataFrame:
+    """One collected sheet: models down the rows, `columns` across, model_number as the index."""
+    index_cols = ["model_number"] + list(COLLECTED_LABEL_COLUMNS)
+    table = pd.concat([pd.DataFrame(labels, columns=index_cols),
+                       pd.DataFrame(rows, columns=list(columns))], axis=1)
+    # NaN model numbers (off-convention filenames) sort last rather than raising.
+    table = table.sort_values("model_number", kind="stable", na_position="last")
+    return table.set_index("model_number")
+
+
+def collect_models_excel(models_dir: str = DEFAULT_OUT_DIR, out_path: Optional[str] = None, *,
+                         silent: bool = False) -> dict:
+    """Collect a directory of per-model workbooks into one workbook, one sheet per value.
+
+    `write_model_excel` gives every model its own workbook, which is the right shape for reading
+    one model and the wrong shape for comparing many. This pivots the directory: each value that
+    is scalar-per-(model, method) or scalar-per-(model, TE_option) becomes its own sheet holding
+    models down the rows.
+
+    Sheets written:
+      * one per footprint column (ppr_all, ppr_inner, ppr_pp_only, npp, ppr2npp,
+        ppr2npp_pp_only) -- columns are the SPPR methods.
+      * one per collected model_health field (status, divergence_b, divergence_rho_living,
+        divergence_max_sppr_det, divergence_max_sppr_group_sppr) -- columns are the TE options,
+        because diagnose_sppr grades a configuration and is run once per TE_option, not once
+        per method.
+
+    Every sheet has the same row axis: model_number as the index, then model_name and
+    model_year, then the value columns. The NaN convention of the per-model workbooks carries
+    over untouched -- a method that failed, timed out or was never run is empty, not zero, and
+    so is a health field for a TE_option whose diagnose_sppr row did not complete.
+
+    Only the two sheets it needs are read out of each workbook, so this is much cheaper than
+    `read_pprs_excel` per file. Workbooks that cannot be opened, and workbooks with neither
+    sheet, are skipped and named in the returned summary; Excel lock files (the `~$` ones) are
+    ignored.
+
+    Args:
+        models_dir: directory of per-model workbooks, as written by `run_directory`.
+        out_path: the collected workbook to write. Defaults to `collected_PPRs.xlsx` in the
+            parent of `models_dir`, i.e. outside the directory being scanned.
+        silent: suppress the progress bar.
+
+    Returns:
+        dict: {'out_path', 'n_models', 'n_unreadable', 'unreadable', 'methods', 'te_options',
+        'sheets'} -- 'unreadable' is a list of (stem, reason) and 'sheets' the sheet name ->
+        DataFrame mapping that was written.
+    """
+    if out_path is None:
+        out_path = str(Path(models_dir).parent / DEFAULT_COLLECTED_NAME)
+    out_abs = os.path.abspath(out_path)
+    paths = [p for p in sorted(Path(models_dir).glob("*.xlsx"))
+             if not p.name.startswith("~$") and os.path.abspath(str(p)) != out_abs]
+
+    entries, unreadable = [], []
+    methods_seen, te_seen = [], []
+
+    for path in tqdm(paths, disable=silent, desc="workbooks"):
+        stem = path.stem
+        try:
+            # Read only the two sheets this needs: a per-model workbook also holds the three
+            # groups x methods SPPR tables, which are far larger and irrelevant here.
+            with pd.ExcelFile(path) as xls:
+                available = set(xls.sheet_names)
+                footprint = (pd.read_excel(xls, sheet_name=SHEET_FOOTPRINT, index_col=0)
+                             if SHEET_FOOTPRINT in available else None)
+                health = (pd.read_excel(xls, sheet_name=SHEET_HEALTH, index_col=0)
+                          if SHEET_HEALTH in available else None)
+        except Exception as exc:
+            unreadable.append((stem, f"{type(exc).__name__}: {exc}"))
+            continue
+
+        if footprint is None and health is None:
+            unreadable.append((stem, f"neither a {SHEET_FOOTPRINT} nor a {SHEET_HEALTH} sheet"))
+            continue
+
+        number, name, year = _model_identity(stem)
+        entries.append({"model_number": number, "model_name": name, "model_year": year,
+                        "footprint": footprint, "health": health})
+
+        for method in ([] if footprint is None else footprint.index):
+            if method not in methods_seen:
+                methods_seen.append(method)
+        for te in ([] if health is None else health.index):
+            if te not in te_seen:
+                te_seen.append(te)
+
+    methods = _ordered_union(ALL_METHOD_KEYS, methods_seen)
+    te_options = _ordered_union(HEALTH_TE_OPTIONS, te_seen)
+    labels = [{k: e[k] for k in ("model_number",) + COLLECTED_LABEL_COLUMNS} for e in entries]
+
+    sheets = {}
+    for value in FOOTPRINT_COLUMNS:
+        sheets[value] = _collected_frame(
+            labels, [{m: _cell(e["footprint"], m, value) for m in methods} for e in entries],
+            methods)
+    for value in COLLECTED_HEALTH_COLUMNS:
+        sheets[value] = _collected_frame(
+            labels, [{te: _cell(e["health"], te, value) for te in te_options} for e in entries],
+            te_options)
+
+    Path(os.path.dirname(out_abs) or ".").mkdir(parents=True, exist_ok=True)
+    with pd.ExcelWriter(out_path, engine="openpyxl") as writer:
+        for sheet, table in sheets.items():
+            table.to_excel(writer, sheet_name=sheet)
+            # The label columns share the wide-index treatment: index + model_name + model_year
+            # are frozen and widened, and only the value columns get the numeric format.
+            _autoformat(writer, sheet, table.drop(columns=list(COLLECTED_LABEL_COLUMNS)),
+                        1 + len(COLLECTED_LABEL_COLUMNS), 1)
+
+    return {
+        "out_path": out_path,
+        "n_models": len(entries),
+        "n_unreadable": len(unreadable),
+        "unreadable": unreadable,
+        "methods": methods,
+        "te_options": te_options,
+        "sheets": sheets,
+    }
 
 
 # --------------------------------------------------------------------------- run report
