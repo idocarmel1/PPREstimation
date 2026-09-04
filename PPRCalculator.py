@@ -126,7 +126,7 @@ class PPRCalculator:
         return instance
 
     @classmethod
-    def from_modeldata(cls, modeldata: ModelData, underdetermined: bool = False, zero_catch: bool = True, zero_biomass_accum: bool = True, default_gs: bool = True, weight_flow: float = 1.0, weight_guess: float = 1.0) -> "PPRCalculator":
+    def from_modeldata(cls, modeldata: ModelData, underdetermined: bool = False, zero_catch: bool = True, zero_biomass_accum: bool = True, default_gs: bool = True, weight_flow: float = 1.0, weight_guess: float = 1.0, DC_tol=0.001) -> "PPRCalculator":
         """Core constructor used by __init__: build the calculator from a loaded ModelData.
 
         Copies the groups table, diet-composition (DC) matrix, detritus-fate matrix and the
@@ -175,7 +175,7 @@ class PPRCalculator:
         # Validate the input matrices before building the model: a diet composition must sum to 1
         # per consumer (raises otherwise), and detritus routing must be consistent -- a fully
         # degenerate multi-DET matrix raises, partial rows (legitimate export) only warn.
-        ModelData.validate_DC(instance._DC, instance._groups_df)
+        instance._DC = ModelData.validate_DC(instance._DC, instance._groups_df, tol=DC_tol)
         ModelData.validate_det_fate(instance._det_fate, instance._groups_df)
 
         # define all properties:

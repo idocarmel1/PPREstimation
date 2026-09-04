@@ -645,6 +645,8 @@ class ModelData:
                 f"{len(bad)} consumer group(s) have a diet composition (including diet_import) "
                 f"that does not sum to 1 (tol={tol}): {detail}."
             )
+        DC = DC.div(DC.sum(axis=1), axis=0).fillna(0)
+        return DC
 
     @staticmethod
     def _parse_filename(filename_no_ext: str) -> tuple[int, str, str]:

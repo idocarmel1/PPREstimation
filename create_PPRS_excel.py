@@ -1475,7 +1475,9 @@ if __name__ == "__main__":
     json_dir = os.path.join("real_models", "EwE_jsons")
     out_dir = "output/Ecobase_models"
 
-    run_directory(json_dir=json_dir, out_dir=out_dir, resume=True, silent=False,
-                  method_timeout=DEFAULT_METHOD_TIMEOUT)
+    # run_directory(json_dir=json_dir, out_dir=out_dir, resume=True, silent=False,
+    #               method_timeout=DEFAULT_METHOD_TIMEOUT)
+
+    collect_models_excel(models_dir=out_dir)
 
     # raise SystemExit(main())
