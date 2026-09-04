@@ -541,6 +541,12 @@ still return an all-positive SPPR and slip past the negative test.
 specify mean and coefficient of variation directly: with `shape = 1/CV²` and `scale = TE_mean/shape`, the
 draws have mean `TE_mean` and `std/mean = CV`. Basal rows are pinned to 1 each draw.
 
+Only strictly positive TEs are sampled. `get_TE` can legitimately return `TE = 0` for a group (float
+noise may make it a tiny negative), and gamma requires a positive scale, so those entries are pinned to
+their model value for every draw and skipped by the clip band rather than sampled. With all TEs positive
+this changes nothing. Such groups make `SPPR ~ 1/TE` near-singular, so their draws are typically rejected
+as diverged — check `n_rejected_diverged` in the diagnostics and `diagnose_sppr`'s near-zero-TE warning.
+
 **Returns** `(mean_sppr, accepted_samples_array, rejection_fraction, equations, variables)`. The last two
 are `None` when `kind='new'`. `rejection_fraction` tells you how often the model was unstable — a high value
 is a red flag about the model or the chosen TE error.

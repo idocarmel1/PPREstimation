@@ -948,10 +948,9 @@ def load_model(model_path: str) -> tuple[PPRCalculator, str]:
     """Load one Ecopath JSON into a calculator, returning it with a human-readable label."""
     model_data = ModelData(model_path)
     model = PPRCalculator.from_modeldata(
-        model_data, underdetermined=True, zero_biomass_accum=False)
+        model_data, underdetermined=True, zero_biomass_accum=False, DC_tol=0.001, normalize_DC=True)
     label = f"{model_data.model_name} ({model_data.model_year})"
     return model, label
-
 
 # --------------------------------------------------------------------------- excel writing
 
@@ -1472,11 +1471,11 @@ if __name__ == "__main__":
     import warnings
     warnings.filterwarnings("ignore", category=RuntimeWarning)
 
-    json_dir = os.path.join("real_models", "EwE_jsons")
-    out_dir = "output/Ecobase_models"
+    json_dir = os.path.join("real_models", "automatically_extracted_jsons")
+    out_dir = "output/top10"
 
-    # run_directory(json_dir=json_dir, out_dir=out_dir, resume=True, silent=False,
-    #               method_timeout=DEFAULT_METHOD_TIMEOUT)
+    run_directory(json_dir=json_dir, out_dir=out_dir, resume=False, silent=False,
+                  method_timeout=DEFAULT_METHOD_TIMEOUT)
 
     collect_models_excel(models_dir=out_dir)
 

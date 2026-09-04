@@ -10,6 +10,7 @@ import re
 import warnings
 from dataclasses import dataclass
 from typing import Any, Optional
+import warnings
 
 
 def load_json_dict(filename: str) -> dict:
@@ -610,7 +611,7 @@ class ModelData:
             )
 
     @staticmethod
-    def validate_DC(DC: pd.DataFrame, groups_data: pd.DataFrame, tol: float = 1e-3) -> None:
+    def validate_DC(DC: pd.DataFrame, groups_data: pd.DataFrame, normalize: bool = True, tol: float = 1e-3) -> None:
         """Validate that every consumer's diet composition sums to 1, raising otherwise.
 
         Each feeding (Regular) group's diet -- including its imported-diet column -- must sum to
@@ -622,6 +623,7 @@ class ModelData:
                 including the imported-diet column).
             groups_data (pd.DataFrame): the per-group table, used for ``trophic_info`` (to pick
                 the consumer rows) and group names in the message.
+            normalize (bool): wether to normalize the DC rows to 1.
             tol (float): allowed absolute deviation of a consumer row sum from 1; chosen loose
                 enough (1e-3) to absorb the rounding present in published diet matrices.
                 Defaults to 1e-3.
@@ -639,13 +641,19 @@ class ModelData:
 
         rowsums = DC.loc[consumer_seq].sum(axis=1)
         bad = [s for s in consumer_seq if abs(rowsums[s] - 1.0) > tol]
-        if bad:
+        if bad and not normalize:
             detail = ", ".join(f"{s} ({names.get(s, '?')})={rowsums[s]:.4f}" for s in bad)
             raise ValueError(
                 f"{len(bad)} consumer group(s) have a diet composition (including diet_import) "
                 f"that does not sum to 1 (tol={tol}): {detail}."
             )
-        DC = DC.div(DC.sum(axis=1), axis=0).fillna(0)
+        elif bad:
+            detail = ", ".join(f"{s} ({names.get(s, '?')})={rowsums[s]:.4f}" for s in bad)
+            # Issue a standard user warning
+            warnings.warn(f"{len(bad)} consumer group(s) have a diet composition (including diet_import) "
+                            f"that does not sum to 1 (tol={tol}): {detail}.", RuntimeWarning)
+        if normalize:
+            DC = DC.div(DC.sum(axis=1), axis=0).fillna(0)
         return DC
 
     @staticmethod
@@ -794,8 +802,8 @@ class ModelData:
                 diet = diet if isinstance(diet, list) else [diet]
                 # Map prey_seq -> proportion and prey_seq -> detritus_fate for this predator.
                 # (prey_seq can arrive as a float-like string, hence int(float(...))).
-                DC_dict[int(g['group_seq'])] = {int(float(d['prey_seq'])): float(d['proportion']) for d in diet}
-                detritus_fate_dict[int(g['group_seq'])] = {int(float(d['prey_seq'])): float(d['detritus_fate']) for d in diet}
+                DC_dict[int(g['group_seq'])] = {int(float(d['prey_seq'])): float(d['proportion'].replace('-9999', '0')) for d in diet}
+                detritus_fate_dict[int(g['group_seq'])] = {int(float(d['prey_seq'])): float(d['detritus_fate'].replace('-9999', '0')) for d in diet}
 
         # add missing columns:
         # Build the matrix from {predator: {prey: value}} with predators as the row index.

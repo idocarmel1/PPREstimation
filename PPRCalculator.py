@@ -126,7 +126,7 @@ class PPRCalculator:
         return instance
 
     @classmethod
-    def from_modeldata(cls, modeldata: ModelData, underdetermined: bool = False, zero_catch: bool = True, zero_biomass_accum: bool = True, default_gs: bool = True, weight_flow: float = 1.0, weight_guess: float = 1.0, DC_tol=0.001) -> "PPRCalculator":
+    def from_modeldata(cls, modeldata: ModelData, underdetermined: bool = False, zero_catch: bool = True, zero_biomass_accum: bool = True, default_gs: bool = True, weight_flow: float = 1.0, weight_guess: float = 1.0, normalize_DC=False, DC_tol=0.001) -> "PPRCalculator":
         """Core constructor used by __init__: build the calculator from a loaded ModelData.
 
         Copies the groups table, diet-composition (DC) matrix, detritus-fate matrix and the
@@ -175,7 +175,7 @@ class PPRCalculator:
         # Validate the input matrices before building the model: a diet composition must sum to 1
         # per consumer (raises otherwise), and detritus routing must be consistent -- a fully
         # degenerate multi-DET matrix raises, partial rows (legitimate export) only warn.
-        instance._DC = ModelData.validate_DC(instance._DC, instance._groups_df, tol=DC_tol)
+        instance._DC = ModelData.validate_DC(instance._DC, instance._groups_df, tol=DC_tol, normalize=normalize_DC)
         ModelData.validate_det_fate(instance._det_fate, instance._groups_df)
 
         # define all properties:
@@ -343,7 +343,23 @@ class PPRCalculator:
         # fillna for gs and egestion:
         df.loc[~is_regular, 'gs'] = df.loc[~is_regular, 'gs'].fillna(0)
         if default_gs:
-            is_small_zooplankton = df['group_name'].str.lower().replace('_', ' ').str.contains('small zooplankton')
+            whitelist = [
+                "smallzooplankton",
+                "smallsizedzooplankton",
+                "smallsizezooplankton",
+                "smallsizeooplankton",
+                "smallzooplankters",
+                "smallsizedzooplankters",
+                "petitzooplancton",
+                "zooplanctonpetit",
+                "petitszooplanctons",
+                "zooplanctondepetitetaille",
+                "zooplanctonpequeño",
+                "zooplanctonpequeno",
+                "zooplanctondetallapequeña",
+                "zooplanctondetallapequena"
+            ]
+            is_small_zooplankton = df['group_name'].str.lower().replace({'_': '', ' ': '', '-':''}, regex=True).str.contains('|'.join(whitelist), na=False)
             df.loc[is_small_zooplankton, 'gs'] = df.loc[is_small_zooplankton, 'gs'].fillna(0.4)
             df.loc[is_regular, 'gs'] = df.loc[is_regular, 'gs'].fillna(0.2)
 
@@ -3173,14 +3189,27 @@ class PPRCalculator:
 
             # Gamma keeps the sampled TE strictly positive (unlike a normal) with the requested
             # mean and CV; shape/scale chosen above so mean=TE_means and std/mean=TE_error.
-            sampler = lambda: gamma.rvs(a=shape, scale=TE_means/shape)
-            TE_sample = sampler()
+            #
+            # Only strictly positive TEs are drawn. get_TE legitimately returns TE = 0 for groups
+            # the deterministic solvers handle without trouble (and floating-point noise can leave
+            # such an entry a tiny negative), while gamma rejects a non-positive scale outright --
+            # sampling those would raise and take the whole Monte-Carlo method down. Every
+            # non-positive entry is instead pinned to its model value, so a draw shows the solver
+            # exactly what the deterministic method sees for that group.
+            TE_vals = TE_means.to_numpy(dtype=float)
+            positive = TE_vals > 0
+            TE_sample = TE_vals.copy()
+            if positive.any():
+                TE_sample[positive] = gamma.rvs(a=shape, scale=TE_vals[positive]/shape)
 
-            # Clip each TE to the +/- TE_error_cut_percent band to drop extreme tail draws.
-            TE_high = (TE_means * (1 + TE_error_cut_percent/100)).values
-            TE_low = (TE_means * (1 - TE_error_cut_percent/100)).values
-            TE_sample[TE_sample >= TE_high] = TE_high[TE_sample >= TE_high]
-            TE_sample[TE_sample <= TE_low] = TE_low[TE_sample <= TE_low]
+            # Clip each sampled TE to the +/- TE_error_cut_percent band to drop extreme tail draws.
+            # Pinned entries are excluded, so they stay bit-identical to the deterministic TE.
+            TE_high = TE_vals * (1 + TE_error_cut_percent/100)
+            TE_low = TE_vals * (1 - TE_error_cut_percent/100)
+            too_high = positive & (TE_sample >= TE_high)
+            too_low = positive & (TE_sample <= TE_low)
+            TE_sample[too_high] = TE_high[too_high]
+            TE_sample[too_low] = TE_low[too_low]
 
             # Broadcast the per-group TE vector into a full n x n matrix, then pin basal rows to 1.
             TE_sample = pd.DataFrame([TE_sample]*self.n_groups, index=TE_means.index, columns=TE_means.index).T

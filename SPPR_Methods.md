@@ -699,6 +699,17 @@ averaged. The gamma is chosen deliberately: it keeps every sampled TE **strictly
 the requested mean and spread — essential because $1/TE$ diverges near zero and a negative TE is
 meaningless, so a symmetric normal would be wrong here.
 
+**Non-positive TEs are pinned, not sampled.** `get_TE` legitimately returns $\overline{TE}_i = 0$ for
+some groups (and floating-point cancellation can leave such an entry a tiny negative), which the
+deterministic solvers handle but gamma rejects outright — its scale $\theta_i$ must be strictly
+positive, so drawing those would raise and take the whole Monte-Carlo run down. Every entry with
+$\overline{TE}_i \le 0$ is therefore held fixed at its model value for all draws and excluded from
+the clip band, so the solver sees exactly what the deterministic method sees for that group; only
+the strictly positive TEs are resampled. When all TEs are positive this is a no-op. Note that such
+groups usually make the system near-singular ($SPPR \sim 1/TE$), so draws on those models tend to be
+rejected as diverged — an honest `n_rejected_diverged` rather than a crash. `diagnose_sppr` reports
+them via its "near-zero TE" warning.
+
 **Choosing the solver and passing it parameters.** `kind` selects `SPPR_new` (`'new'`) or
 `SPPR_symbolic` (`'symbolic'`) — the only two solvers that accept an injected `TE` matrix, which is
 what resampling requires. Anything else that solver takes goes through `method_kwargs`, e.g.

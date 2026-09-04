@@ -1,4 +1,7 @@
 __pycache__/
 .idea/
 venv/
-output/
+output/*
+!output/top10/
+# Excel lock files, created whenever a workbook in output/top10 is open
+~$*

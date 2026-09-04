@@ -1,0 +1,271 @@
+========================================================================================
+SPPR EXPORT RUN REPORT
+========================================================================================
+generated      : 2026-09-05T02:05:40
+models found   : 16
+workbooks ok   : 6
+models skipped : 10 (resume: workbook already present)
+models failed  : 0
+methods run    : 20 -> SPPR_1986, SPPR_1995_TE0.1, SPPR_1995_TEmean, Ulanowicz_globalTEmean, Ulanowicz_TE, EwE_TE_noEE, EwE_TE_EE, SPPR_2015, new_TE_noEEfix, new_TE_EEfix, new_GE, new_WithEgestion, sym_TE_asPP, sym_TE_asDC, sym_GE_asPP, sym_GE_asDC, sym_WithEgestion_asPP, sym_WithEgestion_asDC, MC_new_GE, MC_new_TE_EEfix
+MC draws       : 75
+time budget    : 900s per method
+
+READ THIS BEFORE USING THE NUMBERS
+----------------------------------------------------------------------------------------
+* NaN convention: NaN means not available, never zero. A basal source a method does not resolve is NaN, and a method that raised leaves its entire block NaN.
+* The three SPPR sheets: sppr_all, sppr_inner and sppr_PP are the same table under three source scopes, mirroring get_PPR: sppr_all sums every basal source, sppr_inner drops Import, and sppr_PP drops Import and Detritus. Each is a flat groups x methods table -- rows are group seq with the group name in the first column, one column per method, no MultiIndex. Sums are taken over each method's own basal-source columns before aggregation; the per-source breakdown itself is not written to the workbook.
+* Un-attributed methods are blank in sppr_PP: SPPR_1986 and SPPR_1995 return one un-attributed SPPR column, so their value cannot be split into a PP-only part: they are NaN in sppr_PP (and in ppr_pp_only) while sppr_inner and sppr_all carry the total. A method that resolves no Detritus source (SPPR_2015) has sppr_inner equal to sppr_PP by construction.
+* SPPR_2015 takes no arguments: SPPR_2015() has no only_pp_det parameter (only_pp belongs to get_PPR / get_PPR2NPP_ratio). It is called bare here and PP-only filtering is applied downstream at the get_PPR layer, which is what the ppr_pp_only column and SUM_PP already do.
+* det_theta is inert here: Under det_open_mode='none' det_theta does not affect the recycling gain b at all (verified: identical b at theta = 1, 3 and 10). Do not read the health sheet as a theta sensitivity.
+* Monte-Carlo rejections: MC runs use exclude_diverged=True, so draws graded FAIL on divergence are dropped as well as draws with a negative SPPR. The two are often the same draws rather than additive -- see the mc_diagnostics sheet for the split by cause.
+* Solver progress output is suppressed: SPPR_EwE and the Monte-Carlo methods are called with silent=True rather than silent=False: PPRCalculator imports tqdm.notebook, whose bar needs ipywidgets and raises ImportError('IProgress not found') outside Jupyter, which makes those methods fail outright in a terminal run. Nothing is lost -- this exporter has its own progress bar, and the MC rejection counts appear in mc_diagnostics and in the run report.
+* model_health is per configuration: diagnose_sppr grades a CONFIGURATION, not a model: a model can be healthy under one TE_option and divergent under another. Read each row with its config_ columns.
+* Per-method timeout: Every SPPR method, and every diagnose_sppr row, runs in a worker process with a wall-clock budget (180 s by default; --timeout SECONDS on the command line, method_timeout= from Python, and None or 0 to disable it). A method still running when the budget expires is killed and left NaN, exactly like a method that raised -- the status column of this sheet and the run report are the only places that say which of the two happened. A timeout is a statement about this machine and this model, not about the method: rerun it with a larger budget before reading anything into it.
+
+========================================================================================
+PER-MODEL DETAIL
+========================================================================================
+
+MODEL: 077HS_1_Eastern_tropical_Pacific_(1993-1997).json
+  workbook       : output/top10\077HS_1_Eastern_tropical_Pacific_(1993-1997).xlsx
+  skipped        : workbook already present (resume)
+
+MODEL: 13_1_Chilean_Patagonia_(1980).json
+  workbook       : output/top10\13_1_Chilean_Patagonia_(1980).xlsx
+  skipped        : workbook already present (resume)
+
+MODEL: 13_2_Northern_Humboldt_Current_(1995-1998).json
+  workbook       : output/top10\13_2_Northern_Humboldt_Current_(1995-1998).xlsx
+  skipped        : workbook already present (resume)
+
+MODEL: 27_118_Northwest_Africa_(1987).json
+  workbook       : output/top10\27_118_Northwest_Africa_(1987).xlsx
+  skipped        : workbook already present (resume)
+
+MODEL: 27_1_Banc_d_Arguin_and_Mauritanian_Shelf_(1991).json
+  workbook       : output/top10\27_1_Banc_d_Arguin_and_Mauritanian_Shelf_(1991).xlsx
+  skipped        : workbook already present (resume)
+
+MODEL: 28_646_Guinea_(1998).json
+  workbook       : output/top10\28_646_Guinea_(1998).xlsx
+  skipped        : workbook already present (resume)
+
+MODEL: 28_726_Guinea_(1985).json
+  workbook       : output/top10\28_726_Guinea_(1985).xlsx
+  skipped        : workbook already present (resume)
+
+MODEL: 32_1_Arabian_Sea_off_Karnataka_(2000).json
+  workbook       : output/top10\32_1_Arabian_Sea_off_Karnataka_(2000).xlsx
+  skipped        : workbook already present (resume)
+
+MODEL: 34_1_Bay_of_Bengal_(1978).json
+  workbook       : output/top10\34_1_Bay_of_Bengal_(1978).xlsx
+  skipped        : workbook already present (resume)
+
+MODEL: 35_412_Gulf_of_Thailande_(1963).json
+  workbook       : output/top10\35_412_Gulf_of_Thailande_(1963).xlsx
+  skipped        : workbook already present (resume)
+
+MODEL: 36_1_South_China_Sea_SCS-2007_Northern_South_China_Sea_(2000s).json
+  name           : South_China_Sea_SCS-2007_Northern_South_China_Sea (2000s)
+  workbook       : output/top10\36_1_South_China_Sea_SCS-2007_Northern_South_China_Sea_(2000s).xlsx
+  health         : GE=WARN, TE=WARN, With Egestion=OK
+  methods ok     : 20/20
+  monte-carlo    : MC_new_GE: 75/75 accepted (0 negative, 0 diverged); MC_new_TE_EEfix: 75/75 accepted (0 negative, 0 diverged)
+  SPPR BALANCE PROBLEMS (inflow != outflow):
+    - SPPR_1986: inflow 130373 != outflow 8.19131e+06
+    - SPPR_1995_TE0.1: inflow 130373 != outflow 129876
+    - SPPR_1995_TEmean: inflow 130373 != outflow 129331
+    - Ulanowicz_globalTEmean: inflow 130373 != outflow 129436
+    - Ulanowicz_TE: inflow 130373 != outflow 130387
+    - EwE_TE_noEE: inflow 130373 != outflow 1300.26
+    - EwE_TE_EE: inflow 130373 != outflow 129916
+    - MC_new_TE_EEfix: inflow 130373 != outflow 130480
+  diagnose_sppr WARNINGS:
+    - [GE] 1 group(s) have near-zero TE (SPPR ~ 1/te is near-singular): [34]
+    - [TE] TE_option='TE' has no detritus recycling matrix: b reported as 0.0 (mortality-derived SPPR is written off as lost)
+    - [TE] 3 group(s) have near-zero TE (SPPR ~ 1/te is near-singular): [36, 35, 34]
+  PYTHON WARNINGS RAISED DURING THE RUN:
+    - new_TE_noEEfix: RuntimeWarning: 3 group(s) have near-zero TE (0 < EE << 1): 36 (Other mammals), 35 (Pinnipeds), 34 (Seabirds). Their SPPR is near-singular (inherent to the TE method); the detritus SPPR may be inflated and is not corrected by fix_EE_0_cases.
+    - new_TE_EEfix: RuntimeWarning: 3 group(s) have near-zero TE (0 < EE << 1): 36 (Other mammals), 35 (Pinnipeds), 34 (Seabirds). Their SPPR is near-singular (inherent to the TE method); the detritus SPPR may be inflated and is not corrected by fix_EE_0_cases.
+    - MC_new_TE_EEfix: RuntimeWarning: 3 group(s) have near-zero TE (0 < EE << 1): 36 (Other mammals), 35 (Pinnipeds), 34 (Seabirds). Their SPPR is near-singular (inherent to the TE method); the detritus SPPR may be inflated and is not corrected by fix_EE_0_cases.
+    - MC_new_TE_EEfix: RuntimeWarning: 2 group(s) have near-zero TE (0 < EE << 1): 36 (Other mammals), 34 (Seabirds). Their SPPR is near-singular (inherent to the TE method); the detritus SPPR may be inflated and is not corrected by fix_EE_0_cases.
+    - [diagnose_sppr TE] RuntimeWarning: 3 group(s) have near-zero TE (0 < EE << 1): 36 (Other mammals), 35 (Pinnipeds), 34 (Seabirds). Their SPPR is near-singular (inherent to the TE method); the detritus SPPR may be inflated and is not corrected by fix_EE_0_cases.
+
+MODEL: 36_2_South_China_Sea_SCS-2007_Northern_South_China_Sea_(1970s).json
+  name           : South_China_Sea_SCS-2007_Northern_South_China_Sea (1970s)
+  workbook       : output/top10\36_2_South_China_Sea_SCS-2007_Northern_South_China_Sea_(1970s).xlsx
+  health         : GE=WARN, TE=WARN, With Egestion=OK
+  methods ok     : 20/20
+  monte-carlo    : MC_new_GE: 75/75 accepted (0 negative, 0 diverged); MC_new_TE_EEfix: 75/75 accepted (0 negative, 0 diverged)
+  SPPR BALANCE PROBLEMS (inflow != outflow):
+    - SPPR_1986: inflow 130696 != outflow 1.78149e+07
+    - SPPR_1995_TE0.1: inflow 130696 != outflow 126684
+    - SPPR_1995_TEmean: inflow 130696 != outflow 126535
+    - Ulanowicz_globalTEmean: inflow 130696 != outflow 126778
+    - Ulanowicz_TE: inflow 130696 != outflow 130858
+    - EwE_TE_noEE: inflow 130696 != outflow 4674.58
+    - EwE_TE_EE: inflow 130696 != outflow 129053
+    - MC_new_GE: inflow 130696 != outflow 130765
+    - MC_new_TE_EEfix: inflow 130696 != outflow 131037
+  diagnose_sppr WARNINGS:
+    - [GE] 1 group(s) have near-zero TE (SPPR ~ 1/te is near-singular): [34]
+    - [TE] TE_option='TE' has no detritus recycling matrix: b reported as 0.0 (mortality-derived SPPR is written off as lost)
+    - [TE] 2 group(s) have near-zero TE (SPPR ~ 1/te is near-singular): [36, 34]
+  PYTHON WARNINGS RAISED DURING THE RUN:
+    - new_TE_noEEfix: RuntimeWarning: 2 group(s) have near-zero TE (0 < EE << 1): 36 (Other mammals), 34 (Seabirds). Their SPPR is near-singular (inherent to the TE method); the detritus SPPR may be inflated and is not corrected by fix_EE_0_cases.
+    - new_TE_EEfix: RuntimeWarning: 2 group(s) have near-zero TE (0 < EE << 1): 36 (Other mammals), 34 (Seabirds). Their SPPR is near-singular (inherent to the TE method); the detritus SPPR may be inflated and is not corrected by fix_EE_0_cases.
+    - MC_new_TE_EEfix: RuntimeWarning: 2 group(s) have near-zero TE (0 < EE << 1): 36 (Other mammals), 34 (Seabirds). Their SPPR is near-singular (inherent to the TE method); the detritus SPPR may be inflated and is not corrected by fix_EE_0_cases.
+    - [diagnose_sppr TE] RuntimeWarning: 2 group(s) have near-zero TE (0 < EE << 1): 36 (Other mammals), 34 (Seabirds). Their SPPR is near-singular (inherent to the TE method); the detritus SPPR may be inflated and is not corrected by fix_EE_0_cases.
+
+MODEL: 47_1_East_China_Sea_(1997).json
+  name           : East_China_Sea (1997)
+  workbook       : output/top10\47_1_East_China_Sea_(1997).xlsx
+  health         : GE=WARN, TE=WARN, With Egestion=WARN
+  methods ok     : 20/20
+  monte-carlo    : MC_new_GE: 75/75 accepted (0 negative, 0 diverged); MC_new_TE_EEfix: 35/75 accepted (0 negative, 40 diverged)
+  SPPR BALANCE PROBLEMS (inflow != outflow):
+    - SPPR_1986: inflow 2819.96 != outflow 0
+    - SPPR_1995_TE0.1: inflow 2819.96 != outflow 2970.86
+    - SPPR_1995_TEmean: inflow 2819.96 != outflow 2249.46
+    - Ulanowicz_globalTEmean: inflow 2819.96 != outflow 2249.47
+    - Ulanowicz_TE: inflow 2819.96 != outflow 2930.93
+    - EwE_TE_noEE: inflow 2819.96 != outflow 719.701
+    - EwE_TE_EE: inflow 2819.96 != outflow 2803.91
+    - SPPR_2015: inflow 2819.96 != outflow 2736.12
+    - new_TE_noEEfix: inflow 2819.96 != outflow 2736.12
+    - sym_TE_asDC: inflow 2819.96 != outflow 2736.12
+    - MC_new_GE: inflow 2819.96 != outflow 2822.96
+    - MC_new_TE_EEfix: inflow 2819.96 != outflow 2819.22
+  diagnose_sppr WARNINGS:
+    - [GE] total catch is 0: every footprint number is identically 0 (the divergence diagnostics are unaffected)
+    - [GE] 2 group(s) with EE=0 (all production is non-predatory death): 23 (Marine mammals), 22 (Sharks). Under TE_option='TE' their TE row is 0, which severs them from the nullspace and leaks the PP they consumed
+    - [TE] total catch is 0: every footprint number is identically 0 (the divergence diagnostics are unaffected)
+    - [TE] 2 group(s) with EE=0 (all production is non-predatory death): 23 (Marine mammals), 22 (Sharks). Under TE_option='TE' their TE row is 0, which severs them from the nullspace and leaks the PP they consumed
+    - [TE] TE_option='TE' has no detritus recycling matrix: b reported as 0.0 (mortality-derived SPPR is written off as lost)
+    - [TE] rho(A_LL)=0.9995 is within 0.3 of divergence (max SPPR 9.98e+04 at group 6 (Echinoderms), TL 2.16)
+    - [With Egestion] total catch is 0: every footprint number is identically 0 (the divergence diagnostics are unaffected)
+    - [With Egestion] 2 group(s) with EE=0 (all production is non-predatory death): 23 (Marine mammals), 22 (Sharks). Under TE_option='TE' their TE row is 0, which severs them from the nullspace and leaks the PP they consumed
+  PYTHON WARNINGS RAISED DURING THE RUN:
+    - new_TE_noEEfix: RuntimeWarning: 2 group(s) have TE=0 because EE=0 (M0=p): 23 (Marine mammals), 22 (Sharks). Their consumed PP is dropped, so the TE SPPR will not balance; pass fix_EE_0_cases=True to correct.
+    - new_TE_EEfix: RuntimeWarning: 2 group(s) have TE=0 because EE=0 (M0=p): 23 (Marine mammals), 22 (Sharks). Their consumed PP is re-credited to detritus (fix_EE_0_cases=True) so the TE SPPR stays PP-balanced.
+    - MC_new_TE_EEfix: RuntimeWarning: 2 group(s) have TE=0 because EE=0 (M0=p): 23 (Marine mammals), 22 (Sharks). Their consumed PP is re-credited to detritus (fix_EE_0_cases=True) so the TE SPPR stays PP-balanced.
+    - [diagnose_sppr TE] RuntimeWarning: 2 group(s) have TE=0 because EE=0 (M0=p): 23 (Marine mammals), 22 (Sharks). Their consumed PP is re-credited to detritus (fix_EE_0_cases=True) so the TE SPPR stays PP-balanced.
+
+MODEL: 47_2_East_China_Sea_(2018).json
+  name           : East_China_Sea (2018)
+  workbook       : output/top10\47_2_East_China_Sea_(2018).xlsx
+  health         : GE=WARN, TE=WARN, With Egestion=WARN
+  methods ok     : 20/20
+  monte-carlo    : MC_new_GE: 75/75 accepted (0 negative, 0 diverged); MC_new_TE_EEfix: 75/75 accepted (0 negative, 0 diverged)
+  SPPR BALANCE PROBLEMS (inflow != outflow):
+    - SPPR_1986: inflow 3574.8 != outflow 0
+    - SPPR_1995_TE0.1: inflow 3574.8 != outflow 3561.88
+    - SPPR_1995_TEmean: inflow 3574.8 != outflow 2279.14
+    - Ulanowicz_globalTEmean: inflow 3574.8 != outflow 2278.92
+    - Ulanowicz_TE: inflow 3574.8 != outflow 3802.54
+    - EwE_TE_noEE: inflow 3574.8 != outflow 1574.34
+    - EwE_TE_EE: inflow 3574.8 != outflow 3322.37
+    - SPPR_2015: inflow 3574.8 != outflow 3543.55
+    - new_TE_noEEfix: inflow 3574.8 != outflow 3543.55
+    - sym_TE_asDC: inflow 3574.8 != outflow 3543.55
+    - MC_new_GE: inflow 3574.8 != outflow 3658.01
+    - MC_new_TE_EEfix: inflow 3574.8 != outflow 3715.43
+  diagnose_sppr WARNINGS:
+    - [GE] total catch is 0: every footprint number is identically 0 (the divergence diagnostics are unaffected)
+    - [GE] 2 group(s) with EE=0 (all production is non-predatory death): 23 (Marine mammals), 22 (Sharks). Under TE_option='TE' their TE row is 0, which severs them from the nullspace and leaks the PP they consumed
+    - [TE] total catch is 0: every footprint number is identically 0 (the divergence diagnostics are unaffected)
+    - [TE] 2 group(s) with EE=0 (all production is non-predatory death): 23 (Marine mammals), 22 (Sharks). Under TE_option='TE' their TE row is 0, which severs them from the nullspace and leaks the PP they consumed
+    - [TE] TE_option='TE' has no detritus recycling matrix: b reported as 0.0 (mortality-derived SPPR is written off as lost)
+    - [TE] rho(A_LL)=0.7841 is within 0.3 of divergence (max SPPR 950 at group 13 (Piscivores), TL 3.91)
+    - [With Egestion] total catch is 0: every footprint number is identically 0 (the divergence diagnostics are unaffected)
+    - [With Egestion] 2 group(s) with EE=0 (all production is non-predatory death): 23 (Marine mammals), 22 (Sharks). Under TE_option='TE' their TE row is 0, which severs them from the nullspace and leaks the PP they consumed
+  PYTHON WARNINGS RAISED DURING THE RUN:
+    - new_TE_noEEfix: RuntimeWarning: 2 group(s) have TE=0 because EE=0 (M0=p): 23 (Marine mammals), 22 (Sharks). Their consumed PP is dropped, so the TE SPPR will not balance; pass fix_EE_0_cases=True to correct.
+    - new_TE_EEfix: RuntimeWarning: 2 group(s) have TE=0 because EE=0 (M0=p): 23 (Marine mammals), 22 (Sharks). Their consumed PP is re-credited to detritus (fix_EE_0_cases=True) so the TE SPPR stays PP-balanced.
+    - MC_new_TE_EEfix: RuntimeWarning: 2 group(s) have TE=0 because EE=0 (M0=p): 23 (Marine mammals), 22 (Sharks). Their consumed PP is re-credited to detritus (fix_EE_0_cases=True) so the TE SPPR stays PP-balanced.
+    - [diagnose_sppr TE] RuntimeWarning: 2 group(s) have TE=0 because EE=0 (M0=p): 23 (Marine mammals), 22 (Sharks). Their consumed PP is re-credited to detritus (fix_EE_0_cases=True) so the TE SPPR stays PP-balanced.
+
+MODEL: 52_1_Sea_of_Okhotsk_NE_(1980).json
+  name           : Sea_of_Okhotsk_NE (1980)
+  workbook       : output/top10\52_1_Sea_of_Okhotsk_NE_(1980).xlsx
+  health         : GE=WARN, TE=FAIL, With Egestion=WARN
+  methods ok     : 20/20
+  monte-carlo    : MC_new_GE: 72/75 accepted (0 negative, 3 diverged); MC_new_TE_EEfix: 9/75 accepted (0 negative, 66 diverged)
+  NEGATIVE SPPR VALUES:
+    - SPPR_2015: 8 negative SPPR cell(s), min -2.68091e+10
+    - new_TE_noEEfix: 12 negative SPPR cell(s), min -1.37134e+10
+    - new_TE_EEfix: 12 negative SPPR cell(s), min -1.41603e+10
+    - sym_TE_asPP: 12 negative SPPR cell(s), min -1.41603e+10
+    - sym_TE_asDC: 12 negative SPPR cell(s), min -1.37134e+10
+  SPPR BALANCE PROBLEMS (inflow != outflow):
+    - SPPR_1986: inflow 26654.2 != outflow 0
+    - SPPR_1995_TE0.1: inflow 26654.2 != outflow 20388.4
+    - SPPR_1995_TEmean: inflow 26654.2 != outflow 21625.5
+    - Ulanowicz_globalTEmean: inflow 26654.2 != outflow 21677.8
+    - Ulanowicz_TE: inflow 26654.2 != outflow 23534.3
+    - EwE_TE_noEE: inflow 26654.2 != outflow 1600.44
+    - EwE_TE_EE: inflow 26654.2 != outflow 22572.8
+    - SPPR_2015: inflow 26654.2 != outflow 25904.3
+    - new_TE_noEEfix: inflow 26654.2 != outflow 25904.3
+    - sym_TE_asDC: inflow 26654.2 != outflow 25904.3
+    - MC_new_GE: inflow 26654.2 != outflow 29618.8
+    - MC_new_TE_EEfix: inflow 26654.2 != outflow 23460.6
+  diagnose_sppr WARNINGS:
+    - [GE] total catch is 0: every footprint number is identically 0 (the divergence diagnostics are unaffected)
+    - [GE] 2 group(s) with EE=0 (all production is non-predatory death): 5 (Seabirds), 3 (Sperm whales). Under TE_option='TE' their TE row is 0, which severs them from the nullspace and leaks the PP they consumed
+    - [GE] rho(A_LL)=0.8672 is within 0.3 of divergence (max SPPR 2.08e+06 at group 2 (Toothed whales), TL 4.45)
+    - [TE] total catch is 0: every footprint number is identically 0 (the divergence diagnostics are unaffected)
+    - [TE] 2 group(s) with EE=0 (all production is non-predatory death): 5 (Seabirds), 3 (Sperm whales). Under TE_option='TE' their TE row is 0, which severs them from the nullspace and leaks the PP they consumed
+    - [TE] TE_option='TE' has no detritus recycling matrix: b reported as 0.0 (mortality-derived SPPR is written off as lost)
+    - [TE] living network diverges: rho(A_LL)=1.025 >= 1; this corrupts the basis B is built from, so b is unreliable
+    - [TE] 3 basal source column(s) contain negative SPPR
+    - [TE] 1 group(s) have near-zero TE (SPPR ~ 1/te is near-singular): [1]
+    - [With Egestion] total catch is 0: every footprint number is identically 0 (the divergence diagnostics are unaffected)
+    - [With Egestion] 2 group(s) with EE=0 (all production is non-predatory death): 5 (Seabirds), 3 (Sperm whales). Under TE_option='TE' their TE row is 0, which severs them from the nullspace and leaks the PP they consumed
+  PYTHON WARNINGS RAISED DURING THE RUN:
+    - new_TE_noEEfix: RuntimeWarning: 2 group(s) have TE=0 because EE=0 (M0=p): 5 (Seabirds), 3 (Sperm whales). Their consumed PP is dropped, so the TE SPPR will not balance; pass fix_EE_0_cases=True to correct.
+    - new_TE_noEEfix: RuntimeWarning: 1 group(s) have near-zero TE (0 < EE << 1): 1 (Baleen whales). Their SPPR is near-singular (inherent to the TE method); the detritus SPPR may be inflated and is not corrected by fix_EE_0_cases.
+    - new_TE_EEfix: RuntimeWarning: 2 group(s) have TE=0 because EE=0 (M0=p): 5 (Seabirds), 3 (Sperm whales). Their consumed PP is re-credited to detritus (fix_EE_0_cases=True) so the TE SPPR stays PP-balanced.
+    - new_TE_EEfix: RuntimeWarning: 1 group(s) have near-zero TE (0 < EE << 1): 1 (Baleen whales). Their SPPR is near-singular (inherent to the TE method); the detritus SPPR may be inflated and is not corrected by fix_EE_0_cases.
+    - MC_new_TE_EEfix: RuntimeWarning: 2 group(s) have TE=0 because EE=0 (M0=p): 5 (Seabirds), 3 (Sperm whales). Their consumed PP is re-credited to detritus (fix_EE_0_cases=True) so the TE SPPR stays PP-balanced.
+    - MC_new_TE_EEfix: RuntimeWarning: 1 group(s) have near-zero TE (0 < EE << 1): 1 (Baleen whales). Their SPPR is near-singular (inherent to the TE method); the detritus SPPR may be inflated and is not corrected by fix_EE_0_cases.
+    - MC_new_TE_EEfix: RuntimeWarning: 2 group(s) have near-zero TE (0 < EE << 1): 2 (Toothed whales), 1 (Baleen whales). Their SPPR is near-singular (inherent to the TE method); the detritus SPPR may be inflated and is not corrected by fix_EE_0_cases.
+    - MC_new_TE_EEfix: RuntimeWarning: 1 group(s) have near-zero TE (0 < EE << 1): 2 (Toothed whales). Their SPPR is near-singular (inherent to the TE method); the detritus SPPR may be inflated and is not corrected by fix_EE_0_cases.
+    - [diagnose_sppr TE] RuntimeWarning: 2 group(s) have TE=0 because EE=0 (M0=p): 5 (Seabirds), 3 (Sperm whales). Their consumed PP is re-credited to detritus (fix_EE_0_cases=True) so the TE SPPR stays PP-balanced.
+    - [diagnose_sppr TE] RuntimeWarning: 1 group(s) have near-zero TE (0 < EE << 1): 1 (Baleen whales). Their SPPR is near-singular (inherent to the TE method); the detritus SPPR may be inflated and is not corrected by fix_EE_0_cases.
+
+MODEL: 52_2_Sea_of_Okhotsk_SD_(1980).json
+  name           : Sea_of_Okhotsk_SD (1980)
+  workbook       : output/top10\52_2_Sea_of_Okhotsk_SD_(1980).xlsx
+  health         : GE=WARN, TE=WARN, With Egestion=WARN
+  methods ok     : 20/20
+  monte-carlo    : MC_new_GE: 75/75 accepted (0 negative, 0 diverged); MC_new_TE_EEfix: 58/75 accepted (0 negative, 17 diverged)
+  SPPR BALANCE PROBLEMS (inflow != outflow):
+    - SPPR_1986: inflow 9496.76 != outflow 0
+    - SPPR_1995_TE0.1: inflow 9496.76 != outflow 5283.44
+    - SPPR_1995_TEmean: inflow 9496.76 != outflow 5118.42
+    - Ulanowicz_globalTEmean: inflow 9496.76 != outflow 5125.19
+    - Ulanowicz_TE: inflow 9496.76 != outflow 5366.37
+    - EwE_TE_noEE: inflow 9496.76 != outflow 279.145
+    - EwE_TE_EE: inflow 9496.76 != outflow 5217.46
+    - SPPR_2015: inflow 9496.76 != outflow 8873.67
+    - new_TE_noEEfix: inflow 9496.76 != outflow 8873.67
+    - sym_TE_asDC: inflow 9496.76 != outflow 8873.67
+    - MC_new_GE: inflow 9496.76 != outflow 14910
+    - MC_new_TE_EEfix: inflow 9496.76 != outflow 12049.4
+  diagnose_sppr WARNINGS:
+    - [GE] total catch is 0: every footprint number is identically 0 (the divergence diagnostics are unaffected)
+    - [GE] 1 group(s) with EE=0 (all production is non-predatory death): 8 (Mammals and birds). Under TE_option='TE' their TE row is 0, which severs them from the nullspace and leaks the PP they consumed
+    - [GE] rho(A_LL)=0.7153 is within 0.3 of divergence (max SPPR 1.1e+03 at group 8 (Mammals and birds), TL 3.62)
+    - [TE] total catch is 0: every footprint number is identically 0 (the divergence diagnostics are unaffected)
+    - [TE] 1 group(s) with EE=0 (all production is non-predatory death): 8 (Mammals and birds). Under TE_option='TE' their TE row is 0, which severs them from the nullspace and leaks the PP they consumed
+    - [TE] TE_option='TE' has no detritus recycling matrix: b reported as 0.0 (mortality-derived SPPR is written off as lost)
+    - [TE] rho(A_LL)=0.9254 is within 0.3 of divergence (max SPPR 3.56e+04 at group 7 (Nectobenthos), TL 3.55)
+    - [With Egestion] total catch is 0: every footprint number is identically 0 (the divergence diagnostics are unaffected)
+    - [With Egestion] 1 group(s) with EE=0 (all production is non-predatory death): 8 (Mammals and birds). Under TE_option='TE' their TE row is 0, which severs them from the nullspace and leaks the PP they consumed
+  PYTHON WARNINGS RAISED DURING THE RUN:
+    - new_TE_noEEfix: RuntimeWarning: 1 group(s) have TE=0 because EE=0 (M0=p): 8 (Mammals and birds). Their consumed PP is dropped, so the TE SPPR will not balance; pass fix_EE_0_cases=True to correct.
+    - new_TE_EEfix: RuntimeWarning: 1 group(s) have TE=0 because EE=0 (M0=p): 8 (Mammals and birds). Their consumed PP is re-credited to detritus (fix_EE_0_cases=True) so the TE SPPR stays PP-balanced.
+    - MC_new_TE_EEfix: RuntimeWarning: 1 group(s) have TE=0 because EE=0 (M0=p): 8 (Mammals and birds). Their consumed PP is re-credited to detritus (fix_EE_0_cases=True) so the TE SPPR stays PP-balanced.
+    - [diagnose_sppr TE] RuntimeWarning: 1 group(s) have TE=0 because EE=0 (M0=p): 8 (Mammals and birds). Their consumed PP is re-credited to detritus (fix_EE_0_cases=True) so the TE SPPR stays PP-balanced.
